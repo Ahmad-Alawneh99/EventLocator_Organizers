@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_size">16sp</dimen>
+    <dimen name="et_start_end_margin">16dp</dimen>
+    <dimen name="large_label">16sp</dimen>
+    <dimen name="larger_label">18sp</dimen>
+</resources>
