@@ -79,11 +79,10 @@
         android:id="@+id/btnCreateEvent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:text="@string/host_an_event"
-        android:layout_marginBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -103,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/large_label"
-                android:text="Your Email (visible to visitors of your profile): "/>
+                android:text="@string/your_email"/>
             <TextView
                 android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
@@ -115,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/large_label"
-                android:text="Your phone number (only visible to you): "/>
+                android:text="@string/your_phone"/>
             <TextView
                 android:id="@+id/tvPhoneNumber"
                 android:layout_width="wrap_content"
@@ -139,11 +138,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/large_label"
-                android:text="Social Media Accounts"/>
+                android:text="@string/social_media_accounts"/>
             <!-- TODO: add icons representing all platforms -->
 
 
         </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/tvRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="Rating"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/ivOrgImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

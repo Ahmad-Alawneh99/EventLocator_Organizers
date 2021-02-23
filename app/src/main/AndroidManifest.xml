@@ -9,26 +9,42 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers">
-        <activity android:name=".ui.ProfileActivity" android:label="Profile">
+        <activity android:name=".ui.CreateEventActivity" android:label="Create Event"></activity>
+        <activity
+            android:name=".ui.EventsActivity"
+            android:label="Events">
+
+        </activity>
+        <activity android:name=".ui.ChangePasswordActivity"
+            android:label="Change Password" />
+        <activity android:name=".ui.UpdateEmailActivity"
+            android:label="Update Email" />
+        <activity
+            android:name=".ui.IndividualEditProfileActivity"
+            android:label="Edit Profile" />
+        <activity
+            android:name=".ui.OrganizationUpdateProfileActivity"
+            android:label="Edit Profile" />
+        <activity
+            android:name=".ui.ProfileActivity"
+            android:label="Profile"></activity>
+        <activity android:name=".ui.IndividualSetUpProfileActivity"
+            android:label="Setup Your Profile" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.IndividualSetUpProfileActivity" />
         <activity
             android:name=".ui.OrganizationSetUpProfileActivity"
-            android:label="Set up your profile">
+            android:label="Setup Your Profile" >
 
         </activity>
         <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.SignUpActivity"
-            android:label="Sign Up" >
-
-        </activity>
-
+            android:label="Sign Up" />
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="Welcome" />

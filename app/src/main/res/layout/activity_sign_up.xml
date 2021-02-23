@@ -138,7 +138,7 @@
                     android:id="@+id/tvUploadedImageName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/upload_image"/>
+                    android:text="@string/uploaded_image"/>
             </LinearLayout>
 
             <Button
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/next"
                 android:textSize="@dimen/button_size"
-                android:layout_marginBottom="18dp"/>
+                android:layout_marginBottom="8dp"/>
 
         </LinearLayout>
 
