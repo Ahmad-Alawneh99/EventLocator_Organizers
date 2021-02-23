@@ -22,12 +22,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/are_you"
-                android:textSize="@dimen/large_label"/>
+                android:textSize="@dimen/larger_label"/>
 
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
                 <RadioButton
                     android:id="@+id/rbOrganization"
                     android:layout_width="match_parent"
@@ -121,7 +121,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/proof_picture_hint" />
+                android:text="@string/proof_picture_hint"
+                android:textSize="@dimen/larger_label"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

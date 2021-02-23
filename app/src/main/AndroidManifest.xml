@@ -9,7 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers">
-        <activity android:name=".ui.CreateEventActivity" android:label="Create Event"></activity>
+        <activity android:name=".ui.CreateEventActivity" android:label="Create Event">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.EventsActivity"
             android:label="Events">
@@ -30,11 +36,7 @@
             android:label="Profile"></activity>
         <activity android:name=".ui.IndividualSetUpProfileActivity"
             android:label="Setup Your Profile" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.OrganizationSetUpProfileActivity"
