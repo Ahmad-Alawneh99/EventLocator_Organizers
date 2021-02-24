@@ -11,7 +11,7 @@
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm password</string>
     <string name="phone_number_hint">Phone number</string>
-    <string name="proof_picture_hint">Please upload an image to proof that you are eligible to host events, it could be any certificate, or your id or passport if you are an individual.</string>
+    <string name="proof_picture_hint">Please upload an image to prove that you are eligible to host events, it could be any certificate, or your id or passport if you are an individual.</string>
     <string name="upload">Upload</string>
     <string name="uploaded_image">Uploaded image</string>
     <string name="next">Next</string>
@@ -74,4 +74,19 @@
     <string name="create_event">Create event</string>
     <string name="number_of_participants_hint">Number of participants (optional)</string>
     <string name="whatsapp_group_link_hint">WhatsApp group link (optional)</string>
+    <string name="email_cant_be_empty_error">Email can\'t be empty</string>
+    <string name="invalid_email_error">Invalid Email address</string>
+    <string name="password_cant_be_empty_error">Password can\'t be empty</string>
+    <string name="org_name_cant_be_empty_error">Name can\'t be empty</string>
+    <string name="org_name_max_length_error">Name length should be less than 33 characters</string>
+    <string name="phone_number_cant_be_empty_error">Phone number can\'t be empty</string>
+    <string name="invalid_phone_error">Please enter a valid phone number</string>
+    <string name="passwords_dont_match_error">Passwords don\'t match</string>
+    <string name="password_length_error">Passwords must be within 8 – 16 characters</string>
+    <string name="passwords_contents_error">Passwords must contain at least one letter and one number</string>
+    <string name="remove_image">Remove image</string>
+    <string name="name_contains_numbers_error">Name can\'t contain numbers</string>
+    <string name="field_cant_be_empty_error">This field can\'t be empty</string>
+    <string name="about_limit_error">Only 50 - 500 words are allowed</string>
+    <string name="max_number_of_characters_error">Max number of characters reached (65535)</string>
 </resources>

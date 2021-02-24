@@ -32,7 +32,8 @@
                     android:id="@+id/rbOrganization"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/an_organization"/>
+                    android:text="@string/an_organization"
+                    android:checked="true"/>
                 <RadioButton
                     android:id="@+id/rbIndividual"
                     android:layout_width="match_parent"
@@ -123,24 +124,30 @@
                 android:layout_height="wrap_content"
                 android:text="@string/proof_picture_hint"
                 android:textSize="@dimen/larger_label"/>
-            <LinearLayout
+
+            <Button
+                android:id="@+id/btnUploadImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-                <Button
-                    android:id="@+id/btnUploadImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/upload"
-                    android:layout_marginEnd="8dp"/>
+                android:text="@string/upload"
+                android:layout_marginBottom="8dp"
+                android:textSize="@dimen/button_size"/>
 
-                <TextView
-                    android:id="@+id/tvUploadedImageName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/uploaded_image"/>
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivImagePreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnRemoveImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/remove_image"
+                android:layout_marginBottom="16dp"
+                android:textSize="@dimen/button_size"/>
 
             <Button
                 android:id="@+id/btnNext"

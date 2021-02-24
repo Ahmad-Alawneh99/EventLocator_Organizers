@@ -1,5 +1,6 @@
 package com.eventlocator.eventlocatororganizers.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.eventlocator.eventlocatororganizers.R
@@ -11,6 +12,11 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        binding.btnLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+        binding.btnSignUp.setOnClickListener {
+            Intent(this, SignUpActivity::class.java)
+        }
     }
 }
