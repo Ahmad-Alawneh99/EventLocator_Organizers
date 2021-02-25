@@ -87,6 +87,10 @@
     <string name="remove_image">Remove image</string>
     <string name="name_contains_numbers_error">Name can\'t contain numbers</string>
     <string name="field_cant_be_empty_error">This field can\'t be empty</string>
-    <string name="about_limit_error">Only 50 - 500 words are allowed</string>
+    <string name="about_limit_error">50 – 500 words are allowed</string>
     <string name="max_number_of_characters_error">Max number of characters reached (65535)</string>
+    <string name="social_media_name_error">Account name can\'t be empty when URL is provided</string>
+    <string name="account_name_max_characters_error">Account name should be less than 33 characters</string>
+    <string name="URL_not_valid_error">URL is not valid</string>
+    <string name="select_an_image">Select an image</string>
 </resources>

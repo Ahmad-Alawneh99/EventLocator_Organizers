@@ -19,6 +19,7 @@ import com.eventlocator.eventlocatororganizers.utilities.Utils
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignUpBinding
+    val IMAGE_REQUEST_CODE = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
@@ -52,7 +53,10 @@ class SignUpActivity : AppCompatActivity() {
         })
 
         binding.etEmail.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) binding.etEmail.setText(binding.etEmail.text.toString().trim(),TextView.BufferType.EDITABLE)
+            if (!hasFocus){
+                binding.etEmail.setText(binding.etEmail.text.toString().trim(),TextView.BufferType.EDITABLE)
+                updateNextButton()
+            }
         }
 
         binding.etName.addTextChangedListener(object : TextWatcher {
@@ -88,7 +92,10 @@ class SignUpActivity : AppCompatActivity() {
         })
 
         binding.etName.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) binding.etName.setText(binding.etName.text.toString().trim(), TextView.BufferType.EDITABLE)
+            if (!hasFocus) {
+                binding.etName.setText(binding.etName.text.toString().trim(), TextView.BufferType.EDITABLE)
+                updateNextButton()
+            }
         }
 
         binding.etPhoneNumber.addTextChangedListener(object : TextWatcher {
@@ -114,7 +121,10 @@ class SignUpActivity : AppCompatActivity() {
         })
 
         binding.etPhoneNumber.setOnFocusChangeListener { v, hasFocus ->
-            if(!hasFocus) binding.etPhoneNumber.setText(binding.etPhoneNumber.text.toString().trim(),TextView.BufferType.EDITABLE)
+            if(!hasFocus) {
+                binding.etPhoneNumber.setText(binding.etPhoneNumber.text.toString().trim(),TextView.BufferType.EDITABLE)
+                updateNextButton()
+            }
         }
 
         binding.etPassword.addTextChangedListener(object : TextWatcher {
@@ -162,7 +172,10 @@ class SignUpActivity : AppCompatActivity() {
         })
 
         binding.etPassword.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) binding.etPassword.setText(binding.etPassword.text.toString().trim(),TextView.BufferType.EDITABLE)
+            if (!hasFocus) {
+                binding.etPassword.setText(binding.etPassword.text.toString().trim(),TextView.BufferType.EDITABLE)
+                updateNextButton()
+            }
         }
 
         binding.etConfirmPassword.addTextChangedListener(object : TextWatcher {
@@ -184,14 +197,17 @@ class SignUpActivity : AppCompatActivity() {
         })
 
         binding.etConfirmPassword.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) binding.etConfirmPassword.setText(binding.etConfirmPassword.text.toString().trim(),TextView.BufferType.EDITABLE)
+            if (!hasFocus) {
+                binding.etConfirmPassword.setText(binding.etConfirmPassword.text.toString().trim(), TextView.BufferType.EDITABLE)
+                updateNextButton()
+            }
         }
 
         binding.btnUploadImage.setOnClickListener {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_an_image)), IMAGE_REQUEST_CODE)
         }
 
         binding.btnRemoveImage.setOnClickListener {
@@ -213,14 +229,14 @@ class SignUpActivity : AppCompatActivity() {
         var btd: BitmapDrawable? = if (binding.ivImagePreview.drawable is BitmapDrawable)
             binding.ivImagePreview.drawable as BitmapDrawable else null
 
-        binding.btnNext.isEnabled =  !(btd == null || btd.bitmap == null)
+        binding.btnNext.isEnabled = binding.btnNext.isEnabled && !(btd == null || btd.bitmap == null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode){
-            1 -> {
+            IMAGE_REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)

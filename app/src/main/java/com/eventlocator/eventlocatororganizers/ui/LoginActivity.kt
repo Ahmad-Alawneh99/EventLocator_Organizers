@@ -49,7 +49,10 @@ class LoginActivity : AppCompatActivity() {
         })
 
         binding.etEmail.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) binding.etEmail.setText(binding.etEmail.text.toString().trim(), TextView.BufferType.EDITABLE)
+            if (!hasFocus) {
+                binding.etEmail.setText(binding.etEmail.text.toString().trim(), TextView.BufferType.EDITABLE)
+                updateLoginButton()
+            }
         }
 
         binding.etPassword.addTextChangedListener(object: TextWatcher{
@@ -74,7 +77,10 @@ class LoginActivity : AppCompatActivity() {
         })
 
         binding.etPassword.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) binding.etPassword.setText(binding.etPassword.text.toString().trim(),TextView.BufferType.EDITABLE)
+            if (!hasFocus) {
+                binding.etPassword.setText(binding.etPassword.text.toString().trim(),TextView.BufferType.EDITABLE)
+                updateLoginButton()
+            }
         }
     }
 

@@ -18,15 +18,31 @@
 
         </activity>
         <activity android:name=".ui.ChangePasswordActivity"
-            android:label="Change Password" />
+            android:label="Change Password" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.UpdateEmailActivity"
-            android:label="Update Email" />
+            android:label="Update Email" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.IndividualEditProfileActivity"
-            android:label="Edit Profile" />
+            android:label="Edit Profile" >
+
+        </activity>
         <activity
             android:name=".ui.OrganizationUpdateProfileActivity"
-            android:label="Edit Profile" />
+            android:label="Edit Profile" >
+
+        </activity>
         <activity
             android:name=".ui.ProfileActivity"
             android:label="Profile"></activity>
@@ -45,11 +61,7 @@
         <activity
             android:name=".ui.SignUpActivity"
             android:label="Sign Up" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.WelcomeActivity"
