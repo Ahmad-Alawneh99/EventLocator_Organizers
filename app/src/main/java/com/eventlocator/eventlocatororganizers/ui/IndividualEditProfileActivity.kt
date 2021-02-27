@@ -3,6 +3,7 @@ package com.eventlocator.eventlocatororganizers.ui
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -19,12 +20,22 @@ import com.google.android.material.textfield.TextInputLayout
 class IndividualEditProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityIndividualEditProfileBinding
     val IMAGE_REQUEST_CODE = 1
+    val INSTANCE_STATE_IMAGE = "Image"
+    var image: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityIndividualEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (savedInstanceState!=null){
+            image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
+            if (image!=null){
+                binding.ivProfilePicturePreview.setImageBitmap(Utils.instance.uriToBitmap(image!!,this))
+                updateSaveButton()
+            }
+        }
         binding.btnSave.isEnabled = false
-        binding.btnRemoveImage.isEnabled = false
+        if (image==null)
+            binding.btnRemoveImage.isEnabled = false
 
         binding.btnSave.setOnClickListener{
             //TODO: Handle save
@@ -65,6 +76,7 @@ class IndividualEditProfileActivity : AppCompatActivity() {
         binding.etAbout.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus)binding.etAbout.setText(
                     Utils.instance.connectWordsIntoString(binding.etAbout.text.toString().trim().split(' ')))
+            updateSaveButton()
         }
 
         binding.etPhoneNumber.addTextChangedListener(object : TextWatcher {
@@ -232,6 +244,7 @@ class IndividualEditProfileActivity : AppCompatActivity() {
                         val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
                         binding.ivProfilePicturePreview.setImageBitmap(bitmap)
                         binding.btnRemoveImage.isEnabled = true
+                        image = data.data
                         updateSaveButton()
                     }
                 }
@@ -295,6 +308,11 @@ class IndividualEditProfileActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(INSTANCE_STATE_IMAGE, image)
     }
 
 }

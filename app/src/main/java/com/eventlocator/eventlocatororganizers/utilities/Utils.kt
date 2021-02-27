@@ -83,4 +83,18 @@ class Utils {
         return res.trim()
     }
 
+    fun differenceBetweenTimesInMinutes(h1: Int, m1:Int, h2: Int, m2: Int): Int{
+        var h1Temp = h1
+        var h2Temp = h2
+        var m1Temp = m1
+        var m2Temp = m2
+        if (m2Temp < m1Temp){
+            h2Temp--
+            m2Temp+=60
+        }
+        var res = (h2Temp - h1Temp) * 60
+        res += m2Temp - m1Temp
+        return res
+    }
+
 }

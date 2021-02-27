@@ -2,6 +2,7 @@ package com.eventlocator.eventlocatororganizers.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -18,7 +19,6 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btnLogin.isEnabled = false
-
         binding.btnLogin.setOnClickListener {
             //TODO: handle log in
         }
@@ -90,4 +90,5 @@ class LoginActivity : AppCompatActivity() {
                 && binding.etPassword.text.toString().trim() != ""
                 && binding.tlPassword.error == null)
     }
+
 }

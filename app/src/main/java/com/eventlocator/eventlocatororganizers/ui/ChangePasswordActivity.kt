@@ -2,6 +2,7 @@ package com.eventlocator.eventlocatororganizers.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
@@ -14,7 +15,6 @@ class ChangePasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityChangePasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         binding.btnSave.isEnabled = false
 
         binding.btnSave.setOnClickListener {
@@ -133,4 +133,6 @@ class ChangePasswordActivity : AppCompatActivity() {
                 && binding.etNewPassword.text.toString().trim() == binding.etConfirmNewPassword.text.toString().trim()
                 && binding.tlNewPassword.error == null)
     }
+
+
 }

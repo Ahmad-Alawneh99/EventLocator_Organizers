@@ -54,33 +54,64 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/larger_label"
                 android:text="@string/event_categories_select_all_that_apply"/>
+            <TextView
+                android:id="@+id/tvEventCategoryError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/design_default_color_error"
+                android:text="@string/event_category_error"/>
 
-            <!-- TODO: add check boxes for categories -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbEducational"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/educational"/>
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbEntertainment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/entertainment"/>
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbVolunteering"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/volunteering"/>
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbSports"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sports"
+                android:layout_marginBottom="8dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/upload_event_image_hint"
                 android:textSize="@dimen/larger_label"/>
-            <LinearLayout
+            <Button
+                android:id="@+id/btnUploadImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-                <Button
-                    android:id="@+id/btnUploadEventImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/upload"
-                    android:layout_marginEnd="8dp"
-                    android:textSize="@dimen/button_size"/>
+                android:text="@string/upload"
+                android:layout_marginBottom="8dp"
+                android:textSize="@dimen/button_size"/>
 
-                <TextView
-                    android:id="@+id/tvUploadedImageName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/uploaded_image"/>
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivImagePreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnRemoveImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/remove_image"
+                android:layout_marginBottom="16dp"
+                android:textSize="@dimen/button_size"/>
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -202,8 +233,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
                 <Button
                     android:id="@+id/btnSelectLocation"
                     android:layout_width="wrap_content"
@@ -218,6 +248,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/select_a_location"/>
             </LinearLayout>
+            <TextView
+                android:id="@+id/tvCityAndLocationWarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/warning"
+                android:text="City and location are only available for located events"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

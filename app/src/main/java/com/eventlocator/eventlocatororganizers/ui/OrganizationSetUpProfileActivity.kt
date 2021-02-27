@@ -3,6 +3,7 @@ package com.eventlocator.eventlocatororganizers.ui
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -19,12 +20,22 @@ import com.google.android.material.textfield.TextInputLayout
 class OrganizationSetUpProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityOrganizationSetUpProfileBinding
     val IMAGE_REQUEST_CODE = 1
+    val INSTANCE_STATE_IMAGE = "Image"
+    var image: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrganizationSetUpProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (savedInstanceState!=null){
+            image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
+            if (image!=null){
+                binding.ivLogoPreview.setImageBitmap(Utils.instance.uriToBitmap(image!!,this))
+                updateRegisterButton()
+            }
+        }
         binding.btnRegister.isEnabled = false
-        binding.btnRemoveImage.isEnabled = false
+        if (image==null)
+            binding.btnRemoveImage.isEnabled = false
 
         binding.btnRegister.setOnClickListener {
             //TODO: Handle registration
@@ -57,6 +68,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etAbout.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus)binding.etAbout.setText(
                     Utils.instance.connectWordsIntoString(binding.etAbout.text.toString().trim().split(' ')))
+            updateRegisterButton()
         }
 
         binding.btnUploadLogo.setOnClickListener {
@@ -177,6 +189,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                         val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
                         binding.ivLogoPreview.setImageBitmap(bitmap)
                         binding.btnRemoveImage.isEnabled = true
+                        image = data.data
                         updateRegisterButton()
                     }
                 }
@@ -241,6 +254,9 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
 
         }
     }
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(INSTANCE_STATE_IMAGE, image)
+    }
 
 }

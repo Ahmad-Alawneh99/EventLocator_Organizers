@@ -1,9 +1,8 @@
-package adapters
+package com.eventlocator.eventlocatororganizers.adapters
 
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.eventlocator.eventlocatororganizers.ui.CanceledEventsFragment
 import com.eventlocator.eventlocatororganizers.ui.PreviousEventsFragment

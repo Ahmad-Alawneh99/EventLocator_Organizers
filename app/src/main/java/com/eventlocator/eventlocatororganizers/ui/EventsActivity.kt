@@ -1,10 +1,8 @@
 package com.eventlocator.eventlocatororganizers.ui
 
-import adapters.EventPagerAdapter
+import com.eventlocator.eventlocatororganizers.adapters.EventPagerAdapter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.viewpager.widget.PagerAdapter
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityEventsBinding
 import com.google.android.material.tabs.TabLayout

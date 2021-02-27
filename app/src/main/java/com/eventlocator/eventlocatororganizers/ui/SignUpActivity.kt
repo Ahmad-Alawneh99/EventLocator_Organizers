@@ -2,15 +2,12 @@ package com.eventlocator.eventlocatororganizers.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
-import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivitySignUpBinding
@@ -20,12 +17,22 @@ import com.eventlocator.eventlocatororganizers.utilities.Utils
 class SignUpActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignUpBinding
     val IMAGE_REQUEST_CODE = 1
+    val INSTANCE_STATE_IMAGE = "Image"
+    var image: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (savedInstanceState!=null){
+            image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
+            if (image!=null){
+                binding.ivImagePreview.setImageBitmap(Utils.instance.uriToBitmap(image!!,this))
+                updateNextButton()
+            }
+        }
         binding.btnNext.isEnabled = false
-        binding.btnRemoveImage.isEnabled = false
+        if (image==null)
+            binding.btnRemoveImage.isEnabled = false
         binding.btnNext.setOnClickListener {
             //TODO: handle next step
         }
@@ -68,7 +75,7 @@ class SignUpActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 if (binding.etName.text.toString().trim() == "") {
-                    binding.tlName.error = getString(R.string.org_name_cant_be_empty_error)
+                    binding.tlName.error = getString(R.string.name_cant_be_empty_error)
                 } else if (binding.etName.text.toString().trim().length > 32) {
                     binding.tlName.error = getString(R.string.org_name_max_length_error)
                 } else {
@@ -213,6 +220,7 @@ class SignUpActivity : AppCompatActivity() {
         binding.btnRemoveImage.setOnClickListener {
             binding.ivImagePreview.setImageBitmap(null)
             binding.btnRemoveImage.isEnabled = false
+            image = null
             updateNextButton()
         }
     }
@@ -242,12 +250,18 @@ class SignUpActivity : AppCompatActivity() {
                         val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
                         binding.ivImagePreview.setImageBitmap(bitmap)
                         binding.btnRemoveImage.isEnabled = true
+                        image = data.data
                         updateNextButton()
                     }
                 }
             }
         }
 
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(INSTANCE_STATE_IMAGE, image)
     }
 
 }
