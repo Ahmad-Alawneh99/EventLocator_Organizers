@@ -11,9 +11,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.util.Pair
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.R
+import com.eventlocator.eventlocatororganizers.adapters.SessionInputAdapter
 import com.eventlocator.eventlocatororganizers.databinding.ActivityCreateEventBinding
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.datepicker.CalendarConstraints
@@ -23,12 +28,13 @@ import java.time.*
 import java.util.*
 
 class CreateEventActivity : AppCompatActivity() {
-    //TODO("Not yet implemented")
     lateinit var binding: ActivityCreateEventBinding
     val DATE_PERIOD_LIMIT = 6
     val IMAGE_REQUEST_CODE = 1
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
+    lateinit var startDate: LocalDate
+    lateinit var endDate: LocalDate
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateEventBinding.inflate(layoutInflater)
@@ -133,7 +139,11 @@ class CreateEventActivity : AppCompatActivity() {
             else{
                 alterCityAndLocationStatus(false)
             }
-            //TODO: Handle effect on sessions
+            alterLimitedLocatedSessions(isLimited())
+        }
+
+        binding.rbLocated.setOnCheckedChangeListener { buttonView, isChecked ->
+            alterLimitedLocatedSessions(isLimited()) //needed because the other one will be called before the check actually changes
         }
 
         binding.etNumberOfParticipants.addTextChangedListener(object : TextWatcher {
@@ -146,13 +156,14 @@ class CreateEventActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.etNumberOfParticipants.text.toString().trim().toInt() !in 1 .. 1000) {
+                if (binding.etNumberOfParticipants.text.toString().trim() !="" &&
+                        binding.etNumberOfParticipants.text.toString().trim().toInt() !in 1 .. 1000) {
                     binding.tlNumberOfParticipants.error = getString(R.string.number_of_participants_limit_error)
                 } else {
                     binding.tlNumberOfParticipants.error = null
                 }
                 updateCreateEventButton()
-                //TODO: Handle effect on sessions
+                alterLimitedLocatedSessions(isLimited())
             }
 
         })
@@ -179,7 +190,8 @@ class CreateEventActivity : AppCompatActivity() {
             picker.addOnPositiveButtonClickListener {
                 var from: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.first!!), ZoneId.systemDefault()).toLocalDate()
                 var to: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.second!!), ZoneId.systemDefault()).toLocalDate()
-                if (Duration.between(from.atStartOfDay(), to.atStartOfDay()).toDays() > DATE_PERIOD_LIMIT){
+                var diff: Int = Duration.between(from.atStartOfDay(), to.atStartOfDay()).toDays().toInt()
+                if (diff > DATE_PERIOD_LIMIT){
                     AlertDialog.Builder(this)
                             .setTitle(getString(R.string.date_error))
                             .setMessage(getString(R.string.date_period_error_text))
@@ -189,13 +201,15 @@ class CreateEventActivity : AppCompatActivity() {
                 else {
                     binding.tvStartDate.text = from.toString()
                     binding.tvEndDate.text = to.toString()
-
+                    startDate = from
+                    endDate = to
+                    createRecyclerView(diff+1) //diff = number of days - 1
                 }
             }
             picker.show(supportFragmentManager, builder.build().toString())
         }
 
-        //TODO: Handle sessions
+
 
 
     }
@@ -237,5 +251,31 @@ class CreateEventActivity : AppCompatActivity() {
         binding.tlCityMenu.isEnabled = !b
         binding.btnSelectLocation.isEnabled = !b
         binding.tvCityAndLocationWarning.visibility = if(b)View.VISIBLE else View.INVISIBLE
+    }
+
+    fun createRecyclerView(size: Int){
+        var dates = ArrayList<String>()
+        for(i in 0 until size){
+            dates.add(startDate.plusDays(i.toLong()).toString())
+        }
+        var adapter = SessionInputAdapter(dates, isLimited())
+        binding.rvSessions.adapter = adapter
+        var layoutManager = LinearLayoutManager(binding.rvSessions.context, LinearLayoutManager.VERTICAL, false)
+        binding.rvSessions.layoutManager = layoutManager
+        binding.rvSessions.addItemDecoration( DividerItemDecoration(binding.rvSessions.context, layoutManager.orientation))
+        //TODO: make it so that changes to the first event affect all events (preferably all enabled events)
+    }
+
+    fun alterLimitedLocatedSessions(b: Boolean){
+        if (binding.rvSessions.adapter!=null) {
+            for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                var holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                holder.setLimited(b)
+            }
+        }
+    }
+
+    fun isLimited(): Boolean{
+        return binding.rbLocated.isChecked && binding.etNumberOfParticipants.text.toString().trim() !="" && binding.tlNumberOfParticipants.error == null
     }
 }

@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -15,10 +16,8 @@ import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 
-class SessionInputAdapter(var size: Int): RecyclerView.Adapter<SessionInputAdapter.SessionInputHolder>() {
-    lateinit var inflater: LayoutInflater
+class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean): RecyclerView.Adapter<SessionInputAdapter.SessionInputHolder>() {
     lateinit var context: Context
-    var isLimited = false
 
     inner class SessionInputHolder(var binding: SessionInputBinding): RecyclerView.ViewHolder(binding.root) {
         var startTimeHour: Int = -1
@@ -45,6 +44,9 @@ class SessionInputAdapter(var size: Int): RecyclerView.Adapter<SessionInputAdapt
                     startTimeHour = picker.hour
                     startTimeMinute = picker.minute
                     binding.btnEndTime.isEnabled = true
+                    binding.tvEndTime.text = context.getString(R.string.select_time)
+                    binding.tvCheckInTime.text = context.getString(R.string.select_time)
+                    setLimited(isLimited)
                 }
 
                 picker.show((context as AppCompatActivity).supportFragmentManager, "sessionStartTime")
@@ -78,6 +80,7 @@ class SessionInputAdapter(var size: Int): RecyclerView.Adapter<SessionInputAdapt
                         binding.tvEndTime.text = "${picker.hour} ${picker.minute}"
                         endTimeHour = picker.hour
                         endTimeMinute = picker.minute
+
                     }
                 }
 
@@ -95,7 +98,8 @@ class SessionInputAdapter(var size: Int): RecyclerView.Adapter<SessionInputAdapt
                         .build()
                 picker.addOnPositiveButtonClickListener {
                     //TODO: Handle pm or fm
-                    if (Utils.instance.differenceBetweenTimesInMinutes(picker.hour, picker.minute, startTimeHour, startTimeMinute) > 3 * 60){
+                    //11 hours 59 mins
+                    if (Utils.instance.differenceBetweenTimesInMinutes(picker.hour, picker.minute, startTimeHour, startTimeMinute) > 3 * 60 - 1){
                         AlertDialog.Builder(context)
                                 .setTitle(context.getString(R.string.time_error))
                                 .setMessage(context.getString(R.string.check_in_time_limit_error))
@@ -126,7 +130,7 @@ class SessionInputAdapter(var size: Int): RecyclerView.Adapter<SessionInputAdapt
                 }
                 else{
                     binding.btnStartTime.isEnabled = true
-                    if (binding.tvEndTime.text.toString() != context.getString(R.string.select_end_time)){
+                    if (binding.tvStartTime.text.toString() != context.getString(R.string.select_time)){
                         binding.btnEndTime.isEnabled = true
                         setLimited(isLimited)
                     }
@@ -158,9 +162,14 @@ class SessionInputAdapter(var size: Int): RecyclerView.Adapter<SessionInputAdapt
 
     override fun onBindViewHolder(holder: SessionInputHolder, position: Int) {
 
+        holder.binding.cbEnableSession.text = dates[position]
+        holder.binding.cbEnableSession.isEnabled = !(position ==0 || position == dates.size - 1)
+
+
+    }
+    override fun getItemCount(): Int {
+        return dates.size
     }
 
-    override fun getItemCount(): Int {
-        return size
-    }
+
 }
