@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers">
-        <activity android:name=".ui.CreateEventActivity" android:label="Create Event">
+        <activity android:name=".ui.ViewEventActivity"></activity>
+        <activity
+            android:name=".ui.CreateEventActivity"
+            android:label="Create Event">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,49 +21,32 @@
         </activity>
         <activity
             android:name=".ui.EventsActivity"
-            android:label="Events">
-
-        </activity>
-        <activity android:name=".ui.ChangePasswordActivity"
-            android:label="Change Password" >
-
-        </activity>
-        <activity android:name=".ui.UpdateEmailActivity"
-            android:label="Update Email" >
-
-        </activity>
+            android:label="Events"></activity>
+        <activity
+            android:name=".ui.ChangePasswordActivity"
+            android:label="Change Password"></activity>
+        <activity
+            android:name=".ui.UpdateEmailActivity"
+            android:label="Update Email"></activity>
         <activity
             android:name=".ui.IndividualEditProfileActivity"
-            android:label="Edit Profile" >
-
-
-        </activity>
+            android:label="Edit Profile"></activity>
         <activity
             android:name=".ui.OrganizationEditProfileActivity"
-            android:label="Edit Profile" >
-
-
-        </activity>
+            android:label="Edit Profile"></activity>
         <activity
             android:name=".ui.ProfileActivity"
-            android:label="Profile"></activity>
-        <activity android:name=".ui.IndividualSetUpProfileActivity"
-            android:label="Setup Your Profile" >
-
-        </activity>
+            android:label="Profile" />
+        <activity
+            android:name=".ui.IndividualSetUpProfileActivity"
+            android:label="Setup Your Profile"></activity>
         <activity
             android:name=".ui.OrganizationSetUpProfileActivity"
-            android:label="Setup Your Profile" >
-
-        </activity>
-        <activity android:name=".ui.LoginActivity" >
-
-        </activity>
+            android:label="Setup Your Profile"></activity>
+        <activity android:name=".ui.LoginActivity"></activity>
         <activity
             android:name=".ui.SignUpActivity"
-            android:label="Sign Up" >
-
-        </activity>
+            android:label="Sign Up"></activity>
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="Welcome" />

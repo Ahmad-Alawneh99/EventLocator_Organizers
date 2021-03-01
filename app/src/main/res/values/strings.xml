@@ -113,4 +113,16 @@
     <string name="check_in_time_limit_error">Check-in time must be at most 3 hours before the start of the session</string>
     <string name="end_time_before_start_time_error">End time must occur after start time</string>
     <string name="check_in_time_before_start_time_error">Check-in time must be before the start time</string>
+    <string name="date_s2">Date(s):</string>
+    <string name="status">Status:</string>
+    <string name="description">Description</string>
+    <string name="max_participants">Max participants:</string>
+    <string name="current_number_of_participants">Current number of participants:</string>
+    <string name="city2">City:</string>
+    <string name="location2">Location:</string>
+    <string name="click_to_view_location">Click to view location</string>
+    <string name="registration_closes_on">Registration closes on:</string>
+    <string name="categories">Categories</string>
+    <string name="canceled_on">Canceled on:</string>
+    <string name="cancellation_reason">Cancellation reason</string>
 </resources>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.ViewEventActivity"
+    android:orientation="vertical"
+    android:weightSum="100">
+
+    <ImageView
+        android:id="@+id/ivEventImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/bomber"/>
+
+    <TextView
+        android:id="@+id/tvEventName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:layout_marginStart="@dimen/et_start_end_margin"
+        android:layout_marginEnd="@dimen/et_start_end_margin"
+        android:text="Placeholder Placeholder Placeholder"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/et_start_end_margin"
+        android:layout_marginEnd="@dimen/et_start_end_margin">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_s2"
+            android:layout_marginEnd="4dp"
+            android:textSize="@dimen/larger_label"/>
+
+        <TextView
+            android:id="@+id/tvEventDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="69/69/2069 - 69/69/3069"
+            android:textSize="@dimen/larger_label"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/et_start_end_margin"
+        android:layout_marginEnd="@dimen/et_start_end_margin"
+        android:layout_marginBottom="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status"
+            android:layout_marginEnd="4dp"
+            android:textSize="@dimen/larger_label"/>
+
+        <TextView
+            android:id="@+id/tvEventStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textSize="@dimen/larger_label"/>
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/et_start_end_margin"
+            android:layout_marginEnd="@dimen/et_start_end_margin"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label"
+                android:text="@string/description"/>
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Text Text Text Text Text Text Text Text Text Text Text Text Text Text"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label"
+                android:text="@string/sessions"/>
+            <!--TODO: add a recyclerview for sessions (or a list view that could work too) -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/max_participants"
+                    android:layout_marginEnd="4dp"
+                    android:textSize="@dimen/large_label"/>
+
+                <TextView
+                    android:id="@+id/tvMaxNumOfParticipants"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="6969" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current_number_of_participants"
+                    android:layout_marginEnd="4dp"
+                    android:textSize="@dimen/large_label"/>
+
+                <TextView
+                    android:id="@+id/tvNumOfParticipants"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="6969" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/city2"
+                    android:layout_marginEnd="4dp"
+                    android:textSize="@dimen/large_label"/>
+
+                <TextView
+                    android:id="@+id/tvCity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="City" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/location2"
+                    android:layout_marginEnd="4dp"
+                    android:textSize="@dimen/large_label"/>
+
+                <TextView
+                    android:id="@+id/tvLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/click_to_view_location"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/registration_closes_on"
+                    android:layout_marginEnd="4dp"
+                    android:textSize="@dimen/large_label"/>
+
+                <TextView
+                    android:id="@+id/tvRegistrationCloseDateTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24/24/2424 12:00 AM"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label"
+                android:text="@string/categories"/>
+            <TextView
+                android:id="@+id/tvCategories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Educational, Entertainment, etc"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/canceled_on"
+                    android:layout_marginEnd="4dp"
+                    android:textSize="@dimen/large_label"/>
+
+                <TextView
+                    android:id="@+id/tvCancellationDateTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24/24/2424 12:00 AM"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label"
+                android:text="@string/cancellation_reason"/>
+            <TextView
+                android:id="@+id/tvCancellationReason"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reason Reason Reason Reason Reason Reason Reason Reason Reason Reason Reason "
+                android:layout_marginBottom="16dp"/>
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
