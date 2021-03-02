@@ -52,8 +52,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/et_start_end_margin"
-        android:layout_marginEnd="@dimen/et_start_end_margin"
-        android:layout_marginBottom="16dp">
+        android:layout_marginEnd="@dimen/et_start_end_margin">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,6 +67,14 @@
             android:text="Status"
             android:textSize="@dimen/larger_label"/>
     </LinearLayout>
+    <TextView
+        android:id="@+id/tvRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rating (Placeholder)"
+        android:textSize="@dimen/larger_label"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="@dimen/et_start_end_margin"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -94,7 +101,12 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/large_label"
                 android:text="@string/sessions"/>
-            <!--TODO: add a recyclerview for sessions (or a list view that could work too) -->
+            <!--TODO: Might change to recycler view-->
+            <ListView
+                android:id="@+id/lvSessionTimes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

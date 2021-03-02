@@ -125,4 +125,9 @@
     <string name="categories">Categories</string>
     <string name="canceled_on">Canceled on:</string>
     <string name="cancellation_reason">Cancellation reason</string>
+    <string name="wrong_email_and_or_password_error">Wrong email and/or password</string>
+    <string name="email_title">Email title</string>
+    <string name="message">Message</string>
+    <string name="send_email">Send Email</string>
+    <string name="title_length_error">Title length should be less than 64 characters</string>
 </resources>
