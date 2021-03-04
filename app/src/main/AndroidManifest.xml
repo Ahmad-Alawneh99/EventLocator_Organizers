@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers">
-        <activity android:name=".ui.EventFeedbackActivity"></activity>
+        <activity android:name=".ui.CheckInParticipantActivity"></activity>
+        <activity android:name=".ui.EventFeedbackActivity" />
         <activity android:name=".ui.EmailParticipantsOfAnEvent" />
         <activity android:name=".ui.ViewFollowersActivity" />
         <activity android:name=".ui.ViewParticipantsOfAnEventActivity" />
@@ -17,15 +18,17 @@
         <activity
             android:name=".ui.CreateEventActivity"
             android:label="Create Event">
+
+        </activity>
+        <activity
+            android:name=".ui.EventsActivity"
+            android:label="Events">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.EventsActivity"
-            android:label="Events" />
         <activity
             android:name=".ui.ChangePasswordActivity"
             android:label="Change Password" />

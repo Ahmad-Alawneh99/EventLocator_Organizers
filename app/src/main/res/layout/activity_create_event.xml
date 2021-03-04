@@ -116,7 +116,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/type"
+                android:text="@string/event_type"
                 android:textSize="@dimen/larger_label"/>
 
             <RadioGroup

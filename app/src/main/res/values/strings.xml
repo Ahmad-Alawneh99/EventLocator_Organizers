@@ -57,7 +57,7 @@
     <string name="select_date">Select date</string>
     <string name="start_date">Selected start date:</string>
     <string name="end_date">Selected end date:</string>
-    <string name="type">Type</string>
+    <string name="event_type">Event type</string>
     <string name="online">Online</string>
     <string name="located">Located</string>
     <string name="sessions">Sessions</string>
@@ -130,4 +130,10 @@
     <string name="message">Message</string>
     <string name="send_email">Send Email</string>
     <string name="title_length_error">Title length should be less than 64 characters</string>
+    <string name="confirm">Confirm</string>
+    <string name="scan_qr_code">Scan QR code</string>
+    <string name="event_categories">Event categories</string>
+    <string name="select_a_date_or_a_date_period">Select a date or a date period</string>
+    <string name="remove_selected_dates">Remove selected dates</string>
+    <string name="apply">Apply</string>
 </resources>
