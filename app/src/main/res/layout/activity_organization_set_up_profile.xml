@@ -194,11 +194,11 @@
             </com.google.android.material.textfield.TextInputLayout>
 
            <Button
-               android:id="@+id/btnRegister"
+               android:id="@+id/btnSignUp"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:layout_marginBottom="16dp"
-               android:text="@string/register"
+               android:text="@string/sign_up"
                android:textSize="@dimen/button_size"/>
         </LinearLayout>
     </ScrollView>

@@ -30,15 +30,15 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
             if (image!=null){
                 binding.ivLogoPreview.setImageBitmap(Utils.instance.uriToBitmap(image!!,this))
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
-        binding.btnRegister.isEnabled = false
+        binding.btnSignUp.isEnabled = false
         if (image==null)
             binding.btnRemoveImage.isEnabled = false
 
-        binding.btnRegister.setOnClickListener {
-            //TODO: Handle registration
+        binding.btnSignUp.setOnClickListener {
+            //TODO: Handle sign up
         }
 
         binding.etAbout.addTextChangedListener(object: TextWatcher{
@@ -60,7 +60,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                 else{
                     binding.tlAbout.error = null
                 }
-                updateRegisterButton()
+                updateSignUpButton()
             }
 
         })
@@ -68,7 +68,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etAbout.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus)binding.etAbout.setText(
                     Utils.instance.connectWordsIntoString(binding.etAbout.text.toString().trim().split(' ')))
-            updateRegisterButton()
+            updateSignUpButton()
         }
 
         binding.btnUploadLogo.setOnClickListener {
@@ -81,7 +81,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.btnRemoveImage.setOnClickListener {
             binding.ivLogoPreview.setImageBitmap(null)
             binding.btnRemoveImage.isEnabled = false
-            updateRegisterButton()
+            updateSignUpButton()
         }
 
         binding.etFacebookName.addTextChangedListener(createTextWatcherForAccountNames(binding.etFacebookName,
@@ -89,7 +89,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etFacebookName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 binding.etFacebookName.setText(binding.etFacebookName.text.toString().trim(), TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -99,7 +99,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etFacebookURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
                 binding.etFacebookURL.setText(binding.etFacebookURL.text.toString().trim(), TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -109,7 +109,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etYoutubeName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 binding.etYoutubeName.setText(binding.etYoutubeName.text.toString().trim(), TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -119,7 +119,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etYoutubeURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
                 binding.etYoutubeURL.setText(binding.etYoutubeURL.text.toString().trim(),TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -129,7 +129,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etInstagramName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
                 binding.etInstagramName.setText(binding.etInstagramName.text.toString().trim(),TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -139,7 +139,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etInstagramURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
                 binding.etInstagramURL.setText(binding.etInstagramURL.text.toString().trim(),TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -149,7 +149,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etTwitterName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
                 binding.etTwitterName.setText(binding.etTwitterName.text.toString().trim(),TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
@@ -159,15 +159,15 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.etTwitterURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
                 binding.etTwitterURL.setText(binding.etTwitterURL.text.toString().trim(),TextView.BufferType.EDITABLE)
-                updateRegisterButton()
+                updateSignUpButton()
             }
         }
 
 
     }
 
-    fun updateRegisterButton(){
-        binding.btnRegister.isEnabled = (binding.etAbout.text.toString().trim()!="" && binding.tlAbout.error == null
+    fun updateSignUpButton(){
+        binding.btnSignUp.isEnabled = (binding.etAbout.text.toString().trim()!="" && binding.tlAbout.error == null
                 && binding.tlFacebookName.error == null && binding.tlFacebookURL.error == null
                 && binding.tlYoutubeName.error == null && binding.tlYoutubeURL.error == null
                 && binding.tlInstagramName.error == null && binding.tlInstagramURL.error == null
@@ -176,7 +176,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         val btd: BitmapDrawable? = if (binding.ivLogoPreview.drawable is BitmapDrawable)
             binding.ivLogoPreview.drawable as BitmapDrawable else null
 
-        binding.btnRegister.isEnabled = binding.btnRegister.isEnabled  && !(btd == null || btd.bitmap == null)
+        binding.btnSignUp.isEnabled = binding.btnSignUp.isEnabled  && !(btd == null || btd.bitmap == null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -190,7 +190,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                         binding.ivLogoPreview.setImageBitmap(bitmap)
                         binding.btnRemoveImage.isEnabled = true
                         image = data.data
-                        updateRegisterButton()
+                        updateSignUpButton()
                     }
                 }
             }
@@ -216,7 +216,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                 else{
                     tl.error = null
                 }
-                updateRegisterButton()
+                updateSignUpButton()
             }
 
         }
@@ -249,7 +249,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                 if (etURL.text.toString().trim()!="" && etName.text.toString().trim()==""){
                     tlName.error = getString(R.string.social_media_name_error)
                 }
-                updateRegisterButton()
+                updateSignUpButton()
             }
 
         }
