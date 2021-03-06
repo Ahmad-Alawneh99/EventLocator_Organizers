@@ -1,19 +1,20 @@
 package com.eventlocator.eventlocatororganizers.adapters
 
-import android.content.Context
+
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.eventlocator.eventlocatororganizers.ui.CanceledEventsFragment
 import com.eventlocator.eventlocatororganizers.ui.PreviousEventsFragment
 import com.eventlocator.eventlocatororganizers.ui.UpcomingEventsFragment
 
-class EventPagerAdapter(var context: Context, var fm:FragmentManager, var behaviour: Int): FragmentStatePagerAdapter(fm, behaviour) {
-    override fun getCount(): Int {
-        return behaviour
+class EventPagerAdapter(fa: FragmentActivity, var numberOfTabs: Int): FragmentStateAdapter(fa) {
+
+    override fun getItemCount(): Int {
+        return numberOfTabs
     }
 
-    override fun getItem(position: Int): Fragment {
+    override fun createFragment(position: Int): Fragment {
         when(position){
             0 -> return UpcomingEventsFragment()
             1 -> return PreviousEventsFragment()
