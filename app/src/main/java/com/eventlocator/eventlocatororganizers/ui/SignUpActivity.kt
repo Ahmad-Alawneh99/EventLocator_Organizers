@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivitySignUpBinding
@@ -16,7 +17,6 @@ import com.eventlocator.eventlocatororganizers.utilities.Utils
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignUpBinding
-    val IMAGE_REQUEST_CODE = 1
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +33,19 @@ class SignUpActivity : AppCompatActivity() {
         binding.btnNext.isEnabled = false
         if (image==null)
             binding.btnRemoveImage.isEnabled = false
+
+        val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
+                    binding.ivImagePreview.setImageBitmap(bitmap)
+                    binding.btnRemoveImage.isEnabled = true
+                    image = result.data!!.data
+                    updateNextButton()
+                }
+            }
+        }
+
         binding.btnNext.setOnClickListener {
             //TODO: handle next step
         }
@@ -214,7 +227,7 @@ class SignUpActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_an_image)), IMAGE_REQUEST_CODE)
+            imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
         binding.btnRemoveImage.setOnClickListener {
@@ -231,32 +244,13 @@ class SignUpActivity : AppCompatActivity() {
                 && binding.etPhoneNumber.text.toString().trim()!="" && binding.tlPhoneNumber.error == null
                 && binding.etPassword.text.toString().trim() != ""
                 && binding.etPassword.text.toString().trim() == binding.etConfirmPassword.text.toString().trim()
-                && binding.tlPassword.error == null)
+                && binding.tlPassword.error == null && image!=null)
 
         //done like this because after the first bitmap is removed the drawable is not set to null, even if there is no bitmap
-        var btd: BitmapDrawable? = if (binding.ivImagePreview.drawable is BitmapDrawable)
-            binding.ivImagePreview.drawable as BitmapDrawable else null
+//        var btd: BitmapDrawable? = if (binding.ivImagePreview.drawable is BitmapDrawable)
+//            binding.ivImagePreview.drawable as BitmapDrawable else null
 
-        binding.btnNext.isEnabled = binding.btnNext.isEnabled && !(btd == null || btd.bitmap == null)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode){
-            IMAGE_REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
-                        binding.ivImagePreview.setImageBitmap(bitmap)
-                        binding.btnRemoveImage.isEnabled = true
-                        image = data.data
-                        updateNextButton()
-                    }
-                }
-            }
-        }
-
+        //binding.btnNext.isEnabled = binding.btnNext.isEnabled && !(btd == null || btd.bitmap == null)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

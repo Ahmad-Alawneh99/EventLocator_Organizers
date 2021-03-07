@@ -12,6 +12,7 @@ import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityOrganizationSetUpProfileBinding
 import com.eventlocator.eventlocatororganizers.utilities.Utils
@@ -36,6 +37,18 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.btnSignUp.isEnabled = false
         if (image==null)
             binding.btnRemoveImage.isEnabled = false
+
+        val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
+                    binding.ivLogoPreview.setImageBitmap(bitmap)
+                    binding.btnRemoveImage.isEnabled = true
+                    image = result.data!!.data
+                    updateSignUpButton()
+                }
+            }
+        }
 
         binding.btnSignUp.setOnClickListener {
             //TODO: Handle sign up
@@ -75,7 +88,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_an_image)), IMAGE_REQUEST_CODE)
+            imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
         binding.btnRemoveImage.setOnClickListener {
@@ -171,32 +184,14 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                 && binding.tlFacebookName.error == null && binding.tlFacebookURL.error == null
                 && binding.tlYoutubeName.error == null && binding.tlYoutubeURL.error == null
                 && binding.tlInstagramName.error == null && binding.tlInstagramURL.error == null
-                && binding.tlTwitterName.error == null && binding.tlTwitterURL.error == null)
+                && binding.tlTwitterName.error == null && binding.tlTwitterURL.error == null && image!=null)
 
-        val btd: BitmapDrawable? = if (binding.ivLogoPreview.drawable is BitmapDrawable)
-            binding.ivLogoPreview.drawable as BitmapDrawable else null
-
-        binding.btnSignUp.isEnabled = binding.btnSignUp.isEnabled  && !(btd == null || btd.bitmap == null)
+//        val btd: BitmapDrawable? = if (binding.ivLogoPreview.drawable is BitmapDrawable)
+//            binding.ivLogoPreview.drawable as BitmapDrawable else null
+//
+//        binding.btnSignUp.isEnabled = binding.btnSignUp.isEnabled  && !(btd == null || btd.bitmap == null)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode){
-            IMAGE_REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
-                        binding.ivLogoPreview.setImageBitmap(bitmap)
-                        binding.btnRemoveImage.isEnabled = true
-                        image = data.data
-                        updateSignUpButton()
-                    }
-                }
-            }
-        }
-
-    }
 
     fun createTextWatcherForAccountNames(etName: EditText, tl: TextInputLayout, etURL: EditText): TextWatcher{
         return object: TextWatcher{

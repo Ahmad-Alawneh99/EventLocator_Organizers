@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,7 +31,6 @@ import java.util.*
 class CreateEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityCreateEventBinding
     val DATE_PERIOD_LIMIT = 6
-    val IMAGE_REQUEST_CODE = 1
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
     lateinit var startDate: LocalDate
@@ -49,7 +49,17 @@ class CreateEventActivity : AppCompatActivity() {
         alterCityAndLocationStatus(true)
         if (image == null)
             binding.btnRemoveImage.isEnabled = false
-
+        val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
+                    binding.ivImagePreview.setImageBitmap(bitmap)
+                    binding.btnRemoveImage.isEnabled = true
+                    image = result.data!!.data
+                    updateCreateEventButton()
+                }
+            }
+        }
         binding.etEventName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -122,7 +132,7 @@ class CreateEventActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_an_image)), IMAGE_REQUEST_CODE)
+            imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
         binding.btnRemoveImage.setOnClickListener {
@@ -221,25 +231,6 @@ class CreateEventActivity : AppCompatActivity() {
     fun updateEventCategoryStatus(){
         binding.tvEventCategoryError.visibility = if (!(binding.cbEducational.isChecked || binding.cbEntertainment.isChecked ||
                 binding.cbVolunteering.isChecked || binding.cbSports.isChecked)) View.VISIBLE else View.INVISIBLE
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode){
-            IMAGE_REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
-                        binding.ivImagePreview.setImageBitmap(bitmap)
-                        binding.btnRemoveImage.isEnabled = true
-                        image = data.data
-                        updateCreateEventButton()
-                    }
-                }
-            }
-        }
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

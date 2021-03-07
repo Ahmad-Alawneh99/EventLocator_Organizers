@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityIndividualSetUpProfileBinding
 import com.eventlocator.eventlocatororganizers.utilities.Utils
@@ -35,6 +36,18 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
         binding.btnSignUp.isEnabled = false
         if (image==null)
             binding.btnRemoveImage.isEnabled = false
+
+        val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
+                    binding.ivProfilePicturePreview.setImageBitmap(bitmap)
+                    binding.btnRemoveImage.isEnabled = true
+                    image = result.data!!.data
+                    updateSignUpButton()
+                }
+            }
+        }
 
         binding.btnSignUp.setOnClickListener {
             //TODO: Handle sign up
@@ -75,7 +88,7 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_an_image)), IMAGE_REQUEST_CODE)
+            imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
         binding.btnRemoveImage.setOnClickListener {
@@ -194,25 +207,6 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                 && binding.tlInstagramName.error == null && binding.tlInstagramURL.error == null
                 && binding.tlTwitterName.error == null && binding.tlTwitterURL.error == null
                 && binding.tlLinkedInName.error == null && binding.tlLinkedInURL.error == null)
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode){
-            IMAGE_REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
-                        binding.ivProfilePicturePreview.setImageBitmap(bitmap)
-                        binding.btnRemoveImage.isEnabled = true
-                        image = data.data
-                        updateSignUpButton()
-                    }
-                }
-            }
-        }
 
     }
 

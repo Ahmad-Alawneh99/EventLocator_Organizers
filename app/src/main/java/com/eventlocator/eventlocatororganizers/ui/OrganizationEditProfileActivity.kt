@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityOrganizationEditProfileBinding
 import com.eventlocator.eventlocatororganizers.utilities.Utils
@@ -35,7 +36,19 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
         }
         binding.btnSave.isEnabled = false
         if (image==null)
-        binding.btnRemoveImage.isEnabled = false
+            binding.btnRemoveImage.isEnabled = false
+
+        val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
+                    binding.ivLogoPreview.setImageBitmap(bitmap)
+                    binding.btnRemoveImage.isEnabled = true
+                    image = result.data!!.data
+                    updateSaveButton()
+                }
+            }
+        }
 
         binding.btnSave.setOnClickListener{
             //TODO: Handle save
@@ -112,7 +125,7 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.select_an_image)), IMAGE_REQUEST_CODE)
+            imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
         binding.btnRemoveImage.setOnClickListener {
@@ -208,32 +221,14 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
                 && binding.tlYoutubeName.error == null && binding.tlYoutubeURL.error == null
                 && binding.tlInstagramName.error == null && binding.tlInstagramURL.error == null
                 && binding.tlTwitterName.error == null && binding.tlTwitterURL.error == null
-                && binding.etPhoneNumber.text.toString().trim()!="" && binding.tlPhoneNumber.error == null)
+                && binding.etPhoneNumber.text.toString().trim()!="" && binding.tlPhoneNumber.error == null && image!=null)
 
-        val btd: BitmapDrawable? = if (binding.ivLogoPreview.drawable is BitmapDrawable)
-            binding.ivLogoPreview.drawable as BitmapDrawable else null
-
-        binding.btnSave.isEnabled = binding.btnSave.isEnabled  && !(btd == null || btd.bitmap == null)
+//        val btd: BitmapDrawable? = if (binding.ivLogoPreview.drawable is BitmapDrawable)
+//            binding.ivLogoPreview.drawable as BitmapDrawable else null
+//
+//        binding.btnSave.isEnabled = binding.btnSave.isEnabled  && !(btd == null || btd.bitmap == null)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode){
-            IMAGE_REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val bitmap = Utils.instance.uriToBitmap(data?.data!!, this)
-                        binding.ivLogoPreview.setImageBitmap(bitmap)
-                        binding.btnRemoveImage.isEnabled = true
-                        image = data.data
-                        updateSaveButton()
-                    }
-                }
-            }
-        }
-
-    }
 
     fun createTextWatcherForAccountNames(etName: EditText, tl: TextInputLayout, etURL: EditText): TextWatcher {
         return object: TextWatcher {
