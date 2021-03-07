@@ -19,7 +19,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class IndividualSetUpProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityIndividualSetUpProfileBinding
-    val IMAGE_REQUEST_CODE = 1
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {

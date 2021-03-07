@@ -20,7 +20,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class OrganizationEditProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityOrganizationEditProfileBinding
-    val IMAGE_REQUEST_CODE = 1
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {

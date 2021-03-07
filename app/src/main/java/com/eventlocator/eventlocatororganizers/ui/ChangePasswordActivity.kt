@@ -2,7 +2,6 @@ package com.eventlocator.eventlocatororganizers.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
