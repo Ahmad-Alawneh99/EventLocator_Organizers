@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.OrganizationEditProfileActivity">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/main_button_height">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -211,7 +213,7 @@
                 android:id="@+id/tlTwitterURL"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="24dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etTwitterURL"
@@ -221,15 +223,20 @@
                     android:inputType="text"/>
 
             </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/btnSave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="@string/save_changes"
-                android:textSize="@dimen/button_size"/>
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_button_height"
+        android:text="@string/save_changes"
+        android:textSize="@dimen/button_size"
+        android:minHeight="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

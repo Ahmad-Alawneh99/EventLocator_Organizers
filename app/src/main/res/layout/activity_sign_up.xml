@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/main_button_height">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -148,17 +149,20 @@
                 android:text="@string/remove_image"
                 android:layout_marginBottom="16dp"
                 android:textSize="@dimen/button_size"/>
-
-            <Button
-                android:id="@+id/btnNext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/next"
-                android:textSize="@dimen/button_size"
-                android:layout_marginBottom="8dp"/>
-
         </LinearLayout>
-
     </ScrollView>
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_button_height"
+        android:text="@string/next"
+        android:textSize="@dimen/button_size"
+        android:minHeight="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -119,7 +119,7 @@
     <string name="current_number_of_participants">Current number of participants:</string>
     <string name="city2">City:</string>
     <string name="location2">Location:</string>
-    <string name="click_to_view_location">Click to view location</string>
+    <string name="tap_to_view_location">Tap to view location</string>
     <string name="registration_closes_on">Registration closes on:</string>
     <string name="categories">Categories</string>
     <string name="canceled_on">Canceled on:</string>

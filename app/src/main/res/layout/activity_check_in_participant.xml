@@ -48,25 +48,28 @@
     <Button
         android:id="@+id/btnConfirm"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/main_button_height"
         android:text="@string/confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/et_start_end_margin"
-        android:layout_marginEnd="@dimen/et_start_end_margin"
+        android:minHeight="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
         android:textSize="@dimen/button_size"/>
 
     <Button
         android:id="@+id/btnScan"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/main_button_height"
         android:text="@string/scan_qr_code"
         app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/et_start_end_margin"
-        android:layout_marginEnd="@dimen/et_start_end_margin"
+        android:minHeight="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:layout_marginBottom="16dp"
         android:textSize="@dimen/button_size"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

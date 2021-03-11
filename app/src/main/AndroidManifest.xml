@@ -31,15 +31,17 @@
         <activity
             android:name=".ui.UpdateEmailActivity"
             android:label="Update Email">
+
+        </activity>
+        <activity
+            android:name=".ui.IndividualEditProfileActivity"
+            android:label="Edit Profile">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.IndividualEditProfileActivity"
-            android:label="Edit Profile" />
         <activity
             android:name=".ui.OrganizationEditProfileActivity"
             android:label="Edit Profile" />
@@ -61,7 +63,6 @@
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="Welcome" />
-        <activity android:name=".ui.MainActivity" />
     </application>
 
 </manifest>
