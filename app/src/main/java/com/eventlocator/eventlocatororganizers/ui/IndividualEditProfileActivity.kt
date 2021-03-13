@@ -123,7 +123,7 @@ class IndividualEditProfileActivity : AppCompatActivity() {
         binding.btnUploadProfilePicture.setOnClickListener {
             val intent = Intent()
             intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
+            intent.action = Intent.ACTION_PICK
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 

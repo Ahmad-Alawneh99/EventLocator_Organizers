@@ -12,11 +12,23 @@ import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.eventlocator.eventlocatororganizers.R
+import com.eventlocator.eventlocatororganizers.data.Organizer
+import com.eventlocator.eventlocatororganizers.data.SocialMediaAccount
 import com.eventlocator.eventlocatororganizers.databinding.ActivityOrganizationSetUpProfileBinding
+import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
+import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class OrganizationSetUpProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityOrganizationSetUpProfileBinding
@@ -50,7 +62,73 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         }
 
         binding.btnSignUp.setOnClickListener {
-            //TODO: Handle sign up
+            val bundle = intent.getBundleExtra("data")!!
+            val organizerBuilder = Organizer.OrganizerBuilder(
+                bundle.getString("name", "name"),
+                bundle.getString("email", "email"),
+                binding.etAbout.text.toString(),
+                bundle.getString("phonenumber", "phonenumber"),
+                bundle.getString("password", "password")
+            )
+
+            val socialMediaAccounts = ArrayList<SocialMediaAccount>()
+            socialMediaAccounts.add(
+                SocialMediaAccount(
+                    binding.etFacebookName.text.toString(),
+                    binding.etFacebookURL.text.toString()
+                )
+            )
+            socialMediaAccounts.add(
+                SocialMediaAccount(
+                    binding.etYoutubeName.text.toString(),
+                    binding.etYoutubeURL.text.toString()
+                )
+            )
+            socialMediaAccounts.add(
+                SocialMediaAccount(
+                    binding.etInstagramName.text.toString(),
+                    binding.etInstagramURL.text.toString()
+                )
+            )
+            socialMediaAccounts.add(
+                SocialMediaAccount(
+                    binding.etTwitterName.text.toString(),
+                    binding.etTwitterURL.text.toString()
+                )
+            )
+            organizerBuilder.setSocialMediaAccounts(socialMediaAccounts)
+
+            val proofImage = bundle.getParcelable<Uri>("proofimage")!!
+
+            var inputStream = contentResolver.openInputStream(proofImage)
+            val proofImagePart: RequestBody = RequestBody.create(
+                MediaType.parse("image/*"), inputStream?.readBytes()!!
+            )
+            val proofImageMultipartBody = MultipartBody.Part.createFormData("image","image", proofImagePart)
+            var profilePictureMultipartBody: MultipartBody.Part? = null
+            inputStream = contentResolver.openInputStream(image!!)
+            val profilePicturePart = RequestBody.create(MediaType.parse("image/*"), inputStream?.readBytes()!!)
+            profilePictureMultipartBody = MultipartBody.Part.createFormData("image", "image", profilePicturePart)
+
+            val organizer = organizerBuilder.build()
+
+            RetrofitServiceFactory.createService(OrganizerService::class.java).createOrganizer(proofImageMultipartBody,
+                profilePictureMultipartBody, organizer)
+                .enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+                        //TODO: Handle success (Take to login)
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(applicationContext, t.localizedMessage, Toast.LENGTH_SHORT).show()
+                        //TODO: Handle failure (display what's wrong)
+                    }
+
+                })
         }
 
         binding.etAbout.addTextChangedListener(object: TextWatcher{
@@ -86,7 +164,7 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         binding.btnUploadLogo.setOnClickListener {
             val intent = Intent()
             intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
+            intent.action = Intent.ACTION_PICK
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 

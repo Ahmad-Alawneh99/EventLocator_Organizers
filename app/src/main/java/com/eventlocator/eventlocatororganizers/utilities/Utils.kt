@@ -6,8 +6,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 import java.io.FileDescriptor
 import java.io.IOException
+
 
 
 class Utils {
@@ -51,7 +54,10 @@ class Utils {
 
     fun uriToBitmap(selectedFileUri: Uri, context: Context): Bitmap? {
         try {
-            val parcelFileDescriptor: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(selectedFileUri, "r")
+            val parcelFileDescriptor: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
+                selectedFileUri,
+                "r"
+            )
             val fileDescriptor: FileDescriptor? = parcelFileDescriptor?.fileDescriptor
             val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
             parcelFileDescriptor?.close()
@@ -61,6 +67,7 @@ class Utils {
         }
         return null
     }
+
 
     fun countWords(s: String): Int {
         var count = 0
@@ -81,7 +88,7 @@ class Utils {
         return res.trim()
     }
 
-    fun differenceBetweenTimesInMinutes(h1: Int, m1:Int, h2: Int, m2: Int): Int{
+    fun differenceBetweenTimesInMinutes(h1: Int, m1: Int, h2: Int, m2: Int): Int{
         var h1Temp = h1
         var h2Temp = h2
         var m1Temp = m1

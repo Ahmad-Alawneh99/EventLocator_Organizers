@@ -47,7 +47,21 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         binding.btnNext.setOnClickListener {
-            //TODO: handle next step
+            val bundle = Bundle()
+            bundle.putString("email", binding.etEmail.text.toString())
+            bundle.putString("name", binding.etName.text.toString())
+            bundle.putString("password", binding.etPassword.text.toString())
+            bundle.putString("phonenumber", binding.etPhoneNumber.text.toString())
+            bundle.putParcelable("proofimage", image)
+
+            val intent = if (binding.rbIndividual.isChecked)
+                Intent(this, IndividualSetUpProfileActivity::class.java)
+            else
+                Intent(this, OrganizationSetUpProfileActivity::class.java)
+
+            intent.putExtra("data", bundle)
+            startActivity(intent)
+            //TODO: Handle if email or name already taken
         }
 
         binding.etEmail.addTextChangedListener(object : TextWatcher {
@@ -226,7 +240,7 @@ class SignUpActivity : AppCompatActivity() {
         binding.btnUploadImage.setOnClickListener {
             val intent = Intent()
             intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
+            intent.action = Intent.ACTION_PICK
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
