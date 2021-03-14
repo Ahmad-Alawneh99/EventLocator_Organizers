@@ -133,6 +133,7 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                     ) {
                         Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
                         //TODO: Handle success (Take to login)
+                        //TODO: Check status code
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

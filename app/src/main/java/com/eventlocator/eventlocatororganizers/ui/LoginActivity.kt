@@ -1,5 +1,6 @@
 package com.eventlocator.eventlocatororganizers.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -10,7 +11,13 @@ import android.widget.TextView
 import android.widget.Toast
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityLoginBinding
+import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
+import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
 import com.eventlocator.eventlocatororganizers.utilities.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
@@ -20,7 +27,28 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnLogin.isEnabled = false
         binding.btnLogin.setOnClickListener {
-            //TODO: handle log in
+            val credentials = ArrayList<String>()
+            credentials.add(binding.etEmail.text.toString())
+            credentials.add(binding.etPassword.text.toString())
+
+            RetrofitServiceFactory.createService(OrganizerService::class.java).login(credentials)
+                    .enqueue(object: Callback<String>{
+                        override fun onResponse(call: Call<String>, response: Response<String>) {
+                            if (response.code() == 200) { //TODO: Make sure code is correct
+                                val sharedPreferenceEditor =
+                                        getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, response.body())
+                                sharedPreferenceEditor.apply()
+                                startActivity(Intent(applicationContext, ProfileActivity::class.java))
+                            }
+                            //TODO: Handle other request codes (for incorrect credentials)
+                        }
+
+                        override fun onFailure(call: Call<String>, t: Throwable) {
+                            //TODO: Display error message
+                        }
+
+                    })
         }
 
         binding.etEmail.addTextChangedListener(object: TextWatcher{

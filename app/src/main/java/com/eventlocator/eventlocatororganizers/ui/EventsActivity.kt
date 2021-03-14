@@ -17,12 +17,13 @@ import com.google.android.material.tabs.TabLayoutMediator
 class EventsActivity : AppCompatActivity(){
     lateinit var binding: ActivityEventsBinding
     var filterFragment: FilterPreviousEventsFragment? = null
+    lateinit var pagerAdapter: EventPagerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pagerAdapter = EventPagerAdapter(this, 3)
+        pagerAdapter = EventPagerAdapter(this, 3)
         binding.pagerEvents.adapter = pagerAdapter
         TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
             when (position){
@@ -74,5 +75,10 @@ class EventsActivity : AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    private fun getAndLoadEvents(){
+
     }
 }
