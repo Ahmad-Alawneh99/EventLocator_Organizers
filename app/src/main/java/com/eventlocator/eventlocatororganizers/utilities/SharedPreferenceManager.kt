@@ -7,4 +7,5 @@ class SharedPreferenceManager {
     companion object{
         val instance: SharedPreferenceManager = SharedPreferenceManager()
     }
+
 }

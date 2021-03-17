@@ -8,12 +8,11 @@ import android.net.Uri
 import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcel
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.CheckBox
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -21,10 +20,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.adapters.SessionInputAdapter
 import com.eventlocator.eventlocatororganizers.databinding.ActivityCreateEventBinding
+import com.eventlocator.eventlocatororganizers.utilities.TimeStamp
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.time.*
 import java.util.*
 
@@ -33,12 +35,30 @@ class CreateEventActivity : AppCompatActivity() {
     val DATE_PERIOD_LIMIT = 6
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
+
     lateinit var startDate: LocalDate
     lateinit var endDate: LocalDate
+
+    lateinit var registrationCloseDate: LocalDate
+    var registrationCloseTime = TimeStamp(-1,-1)
+
+    //for the first session
+    var firstSessionStartTime = TimeStamp(-1,-1)
+    var firstSessionEndTime = TimeStamp(-1,-1)
+    var firstSessionCheckInTime = TimeStamp(-1,-1)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        binding.btnRegistrationCloseDate.isEnabled = false
+        binding.btnRegistrationCloseTime.isEnabled = false
+        binding.loFirstSession.visibility = View.INVISIBLE
+        setClickListenersForFirstSession()
+        setDateError()
+
         if (savedInstanceState != null) {
             image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
             if (image != null) {
@@ -154,6 +174,7 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.rbLocated.setOnCheckedChangeListener { buttonView, isChecked ->
             alterLimitedLocatedSessions(isLimited()) //needed because the other one will be called before the check actually changes
+            updateCreateEventButton()
         }
 
         binding.etNumberOfParticipants.addTextChangedListener(object : TextWatcher {
@@ -187,20 +208,20 @@ class CreateEventActivity : AppCompatActivity() {
 
 
         binding.btnSelectDates.setOnClickListener {
-            var builder: MaterialDatePicker.Builder<Pair<Long, Long>> = MaterialDatePicker.Builder.dateRangePicker()
+            val builder: MaterialDatePicker.Builder<Pair<Long, Long>> = MaterialDatePicker.Builder.dateRangePicker()
 
-            var calendarConstraints = CalendarConstraints.Builder()
-            var startConstraint = LocalDate.now()
-            var min = startConstraint.plusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val calendarConstraints = CalendarConstraints.Builder()
+            val startConstraint = LocalDate.now()
+            val min = startConstraint.plusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             calendarConstraints.setStart(min)
             calendarConstraints.setValidator(DateValidatorPointForward.from(min))
             builder.setCalendarConstraints(calendarConstraints.build())
             builder.setTitleText(getString(R.string.select_start_end_dates))
-            var picker = builder.build()
+            val picker = builder.build()
             picker.addOnPositiveButtonClickListener {
-                var from: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.first!!), ZoneId.systemDefault()).toLocalDate()
-                var to: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.second!!), ZoneId.systemDefault()).toLocalDate()
-                var diff: Int = Duration.between(from.atStartOfDay(), to.atStartOfDay()).toDays().toInt()
+                val from: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.first!!), ZoneId.systemDefault()).toLocalDate()
+                val to: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.second!!), ZoneId.systemDefault()).toLocalDate()
+                val diff: Int = Duration.between(from.atStartOfDay(), to.atStartOfDay()).toDays().toInt()
                 if (diff > DATE_PERIOD_LIMIT){
                     AlertDialog.Builder(this)
                             .setTitle(getString(R.string.date_error))
@@ -213,10 +234,113 @@ class CreateEventActivity : AppCompatActivity() {
                     binding.tvEndDate.text = to.toString()
                     startDate = from
                     endDate = to
-                    createRecyclerView(diff+1) //diff = number of days - 1
+                    createRecyclerView(diff + 1) //diff = number of days - 1
+                    binding.tvDateError.text = getString(R.string.session_times_error)
+                    binding.btnRegistrationCloseDate.isEnabled = true
+                    binding.btnRegistrationCloseTime.isEnabled = false
+                    binding.tvRegistrationCloseDate.text = getString(R.string.select_date)
+                    binding.tvRegistrationCloseTime.text = getString(R.string.select_time)
+                    registrationCloseTime = TimeStamp(-1,-1)
                 }
             }
             picker.show(supportFragmentManager, builder.build().toString())
+        }
+
+        val cities = listOf(getString(R.string.Amman),getString(R.string.Zarqa),getString(R.string.Balqa)
+                ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
+                ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
+                ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
+
+        val cityAdapter = ArrayAdapter(this, R.layout.city_list_item, cities)
+        binding.acCityMenu.setAdapter(cityAdapter)
+        Toast.makeText(this, binding.acCityMenu.text.toString(), Toast.LENGTH_SHORT).show()
+        binding.acCityMenu.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                updateCreateEventButton()
+            }
+
+        })
+
+
+        binding.btnRegistrationCloseDate.setOnClickListener {
+            val builder: MaterialDatePicker.Builder<Long> = MaterialDatePicker.Builder.datePicker()
+            val calendarConstraints = CalendarConstraints.Builder()
+            val startConstraint = LocalDate.now().minusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val endConstraint = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            calendarConstraints.setStart(startConstraint)
+            calendarConstraints.setEnd(endConstraint)
+            calendarConstraints.setValidator(object: CalendarConstraints.DateValidator{
+                override fun describeContents(): Int {
+                    TODO("not to be implemented")
+                }
+
+                override fun writeToParcel(dest: Parcel?, flags: Int) {
+                    TODO("not to be implemented")
+                }
+
+                override fun isValid(date: Long): Boolean = !(startConstraint > date || endConstraint < date)
+
+
+
+            })
+            builder.setCalendarConstraints(calendarConstraints.build())
+            builder.setTitleText(getString(R.string.select_registration_close_date))
+            val picker = builder.build()
+
+            picker.addOnPositiveButtonClickListener {
+                registrationCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it!!), ZoneId.systemDefault()).toLocalDate()
+                binding.tvRegistrationCloseDate.text = registrationCloseDate.toString()
+                binding.btnRegistrationCloseTime.isEnabled = true
+            }
+
+            picker.show(supportFragmentManager, builder.build().toString())
+
+
+        }
+
+        binding.btnRegistrationCloseTime.setOnClickListener {
+            val picker = MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select registration close time")
+                    .build()
+
+            picker.addOnPositiveButtonClickListener {
+                if (startDate.minusDays(2).dayOfMonth == registrationCloseDate.dayOfMonth){
+                    if (TimeStamp(picker.hour, picker.minute).minusInMinutes(firstSessionStartTime)<0){
+                        AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.time_error))
+                                .setMessage(getString(R.string.registration_close_time_error))
+                                .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                                .create().show()
+                    }
+                    else{
+                        registrationCloseTime = TimeStamp(picker.hour, picker.minute)
+                        binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
+                    }
+                }
+                else{
+                    registrationCloseTime = TimeStamp(picker.hour, picker.minute)
+                    binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
+                }
+            }
+
+            picker.show(supportFragmentManager, "registrationCloseTime")
+        }
+
+
+        binding.btnSelectLocation.setOnClickListener {
+            //TODO: Create a map activity
+            updateCreateEventButton()
         }
 
 
@@ -225,12 +349,24 @@ class CreateEventActivity : AppCompatActivity() {
     }
 
     fun updateCreateEventButton(){
+        var enabled = binding.etEventName.text.toString().trim() != "" && binding.tlEventName.error == null
+                && binding.etEventDescription.text.toString().trim() !="" && binding.tlEventDescription.error == null
+                && image!=null /*&& binding.rvSessions.adapter!=null*/
+
+        enabled = enabled && binding.tvEventCategoryError.visibility == View.INVISIBLE
+                && binding.tvDateError.text == ""
+        if (binding.rbLocated.isChecked){
+            enabled = enabled && binding.acCityMenu.text.toString() != "" /* TODO: && LOCATION */
+        }
+
+        binding.btnCreateEvent.isEnabled = enabled
 
     }
 
-    fun updateEventCategoryStatus(){
+    private fun updateEventCategoryStatus(){
         binding.tvEventCategoryError.visibility = if (!(binding.cbEducational.isChecked || binding.cbEntertainment.isChecked ||
                 binding.cbVolunteering.isChecked || binding.cbSports.isChecked)) View.VISIBLE else View.INVISIBLE
+        updateCreateEventButton()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -238,35 +374,234 @@ class CreateEventActivity : AppCompatActivity() {
         outState.putParcelable(INSTANCE_STATE_IMAGE, image)
     }
 
-    fun alterCityAndLocationStatus(b: Boolean){
+    private fun alterCityAndLocationStatus(b: Boolean){
         binding.tlCityMenu.isEnabled = !b
         binding.btnSelectLocation.isEnabled = !b
         binding.tvCityAndLocationWarning.visibility = if(b)View.VISIBLE else View.INVISIBLE
+        updateCreateEventButton()
     }
 
-    fun createRecyclerView(size: Int){
-        var dates = ArrayList<String>()
-        for(i in 0 until size){
+    private fun createRecyclerView(size: Int){
+        val dates = ArrayList<String>()
+        for(i in 1 until size){
             dates.add(startDate.plusDays(i.toLong()).toString())
         }
-        var adapter = SessionInputAdapter(dates, isLimited())
+        val adapter = SessionInputAdapter(dates, isLimited(), firstSessionStartTime, firstSessionEndTime, firstSessionCheckInTime)
         binding.rvSessions.adapter = adapter
-        var layoutManager = LinearLayoutManager(binding.rvSessions.context, LinearLayoutManager.VERTICAL, false)
+        val layoutManager = LinearLayoutManager(binding.rvSessions.context, LinearLayoutManager.VERTICAL, false)
         binding.rvSessions.layoutManager = layoutManager
         binding.rvSessions.addItemDecoration( DividerItemDecoration(binding.rvSessions.context, layoutManager.orientation))
-        //TODO: make it so that changes to the first event affect all events (preferably all enabled events)
+        binding.loFirstSession.visibility = View.VISIBLE
+        binding.cbEnableSession.text = startDate.toString()
+        binding.cbEnableSession.isEnabled = false
+
+
     }
 
     fun alterLimitedLocatedSessions(b: Boolean){
         if (binding.rvSessions.adapter!=null) {
+            if (isLimited()){
+                if (binding.btnEndTime.isEnabled){
+                    binding.btnCheckInTime.isEnabled = true
+                }
+            }
+            else{
+                binding.btnCheckInTime.isEnabled = false
+                binding.tvCheckInTime.text = getString(R.string.select_time)
+                firstSessionCheckInTime = TimeStamp(-1,-1)
+            }
             for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
-                var holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
                 holder.setLimited(b)
             }
         }
     }
 
     fun isLimited(): Boolean{
-        return binding.rbLocated.isChecked && binding.etNumberOfParticipants.text.toString().trim() !="" && binding.tlNumberOfParticipants.error == null
+        return binding.rbLocated.isChecked && binding.etNumberOfParticipants.text.toString().trim()!=""
+                && binding.tlNumberOfParticipants.error == null
+    }
+
+    private fun setClickListenersForFirstSession(){
+
+        binding.cbEnableSession.isChecked = true
+        binding.btnEndTime.isEnabled = false
+        binding.btnCheckInTime.isEnabled = false
+        binding.btnStartTime.setOnClickListener {
+            val picker = MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select start time")
+                    .build()
+            picker.addOnPositiveButtonClickListener {
+
+                firstSessionStartTime = TimeStamp(picker.hour, picker.minute)
+                binding.tvStartTime.text = firstSessionStartTime.format12H()
+                binding.btnEndTime.isEnabled = true
+                binding.tvEndTime.text = getString(R.string.select_time)
+                binding.tvCheckInTime.text = getString(R.string.select_time)
+                if (isLimited()){
+                    if (binding.btnEndTime.isEnabled){
+                        binding.btnCheckInTime.isEnabled = true
+                    }
+                }
+                else{
+                    binding.btnCheckInTime.isEnabled = false
+                    binding.tvCheckInTime.text = getString(R.string.select_time)
+                    firstSessionCheckInTime = TimeStamp(-1,-1)
+                }
+                applyStatusToAllSessions()
+                setDateError()
+            }
+
+            picker.show(supportFragmentManager, "sessionStartTime")
+
+        }
+
+        binding.btnEndTime.setOnClickListener {
+            val picker = MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select end time")
+                    .build()
+            picker.addOnPositiveButtonClickListener {
+                if (TimeStamp(picker.hour, picker.minute).minusInMinutes(firstSessionStartTime) > 12*60){
+                    AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.time_error))
+                            .setMessage(getString(R.string.session_time_limit_error))
+                            .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                            .create().show()
+                }
+                else if (TimeStamp(picker.hour, picker.minute).minusInMinutes(firstSessionStartTime)  < 0){
+                    AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.time_error))
+                            .setMessage(getString(R.string.end_time_before_start_time_error))
+                            .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                            .create().show()
+                }
+                else {
+                    firstSessionEndTime = TimeStamp(picker.hour, picker.minute)
+                    binding.tvEndTime.text = firstSessionEndTime.format12H()
+                    applyStatusToAllSessions()
+                    setDateError()
+
+                }
+            }
+
+            picker.show(supportFragmentManager, "sessionEndTime")
+
+        }
+
+
+        binding.btnCheckInTime.setOnClickListener {
+            val picker = MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(12)
+                    .setMinute(10)
+                    .setTitleText("Select check-in time")
+                    .build()
+            picker.addOnPositiveButtonClickListener {
+                if (firstSessionStartTime.minusInMinutes(TimeStamp(picker.hour, picker.minute)) > 3 * 60){
+                    AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.time_error))
+                            .setMessage(getString(R.string.check_in_time_limit_error))
+                            .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                            .create().show()
+                }else if (firstSessionStartTime.minusInMinutes(TimeStamp(picker.hour, picker.minute))  < 0){
+                    AlertDialog.Builder(this)
+                            .setTitle(getString(R.string.time_error))
+                            .setMessage(getString(R.string.check_in_time_before_start_time_error))
+                            .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                            .create().show()
+                }else{
+                    firstSessionCheckInTime = TimeStamp(picker.hour, picker.minute)
+                    binding.tvCheckInTime.text = firstSessionCheckInTime.format12H()
+                    applyStatusToAllSessions()
+                }
+
+            }
+
+            picker.show(supportFragmentManager, "sessionStartTime")
+        }
+
+        binding.cbEnableSession.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!isChecked){
+                binding.btnStartTime.isEnabled = false
+                binding.btnEndTime.isEnabled = false
+                binding.btnCheckInTime.isEnabled = false
+            }
+            else{
+                binding.btnStartTime.isEnabled = true
+                if (binding.tvStartTime.text.toString() != getString(R.string.select_time)){
+                    binding.btnEndTime.isEnabled = true
+                    if (isLimited()){
+                        if (binding.btnEndTime.isEnabled){
+                            binding.btnCheckInTime.isEnabled = true
+                        }
+                    }
+                    else{
+                        binding.btnCheckInTime.isEnabled = false
+                        binding.tvCheckInTime.text = getString(R.string.select_time)
+                        firstSessionCheckInTime = TimeStamp(-1,-1)
+                    }
+                }
+            }
+            setDateError()
+        }
+    }
+
+    private fun applyStatusToAllSessions() {
+        if (binding.rvSessions.adapter != null) {
+            for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                if (holder.binding.cbEnableSession.isChecked) {
+                    holder.binding.tvStartTime.text = binding.tvStartTime.text
+                    holder.binding.tvEndTime.text = binding.tvEndTime.text
+                    holder.binding.tvCheckInTime.text = binding.tvCheckInTime.text
+                    holder.binding.btnEndTime.isEnabled = binding.btnEndTime.isEnabled
+                    holder.binding.btnCheckInTime.isEnabled = binding.btnCheckInTime.isEnabled
+                    holder.startTime = TimeStamp(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                    holder.endTime = TimeStamp(firstSessionEndTime.hour, firstSessionEndTime.minute)
+                    holder.checkInTime = TimeStamp(firstSessionCheckInTime.hour, firstSessionCheckInTime.minute)
+
+                }
+            }
+        }
+    }
+
+    fun setDateError(){
+        if (binding.rvSessions.adapter==null){
+            binding.tvDateError.text = getString(R.string.no_date_error)
+        }
+        else{
+            var datesProvided = true
+            for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                if (holder.binding.cbEnableSession.isChecked) {
+                    if ((holder.binding.tvStartTime.text == getString(R.string.select_time) ||
+                                    holder.binding.tvEndTime.text == getString(R.string.select_time))
+                            && holder.binding.cbEnableSession.isEnabled) {
+                        datesProvided = false
+                        break
+                    }
+                }
+            }
+
+            if (binding.tvStartTime.text == getString(R.string.select_time) ||
+                    binding.tvEndTime.text == getString(R.string.select_time)){
+                        datesProvided = false
+            }
+
+            if (datesProvided){
+                binding.tvDateError.text = ""
+            }
+            else{
+                binding.tvDateError.text = getString(R.string.session_times_error)
+            }
+
+        }
+        updateCreateEventButton()
     }
 }

@@ -1,5 +1,5 @@
 package com.eventlocator.eventlocatororganizers.utilities
 
 enum class City {
-    //TODO: add cities
+    AMMAN, ZARQA, BALQA, MADABA, IRBID, JERASH, MAFRAQ, AJLOUN, KARAK, AQABA, MAAN, TAFILA
 }

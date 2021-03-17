@@ -12,41 +12,63 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.SessionInputBinding
+import com.eventlocator.eventlocatororganizers.ui.CreateEventActivity
+import com.eventlocator.eventlocatororganizers.utilities.TimeStamp
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 
-class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean): RecyclerView.Adapter<SessionInputAdapter.SessionInputHolder>() {
-    lateinit var context: Context
+class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean, val initialStartTime: TimeStamp,
+val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.Adapter<SessionInputAdapter.SessionInputHolder>() {
+    lateinit var context: CreateEventActivity
 
     inner class SessionInputHolder(var binding: SessionInputBinding): RecyclerView.ViewHolder(binding.root) {
-        var startTimeHour: Int = -1
-        var startTimeMinute: Int = -1
-        var endTimeHour: Int = -1
-        var endTimeMinute: Int = -1
-        var checkInTimeHour = -1
-        var checkInTimeMinute = -1
+        var startTime = TimeStamp()
+        var endTime = TimeStamp()
+        var checkInTime = TimeStamp()
         init {
+            if (initialStartTime.hour >= 0){
+                startTime = TimeStamp(initialStartTime.hour, initialStartTime.minute)
+                binding.tvStartTime.text = startTime.format12H()
+                if (initialEndTime.hour >= 0){
+                    endTime = TimeStamp(initialEndTime.hour, initialEndTime.minute)
+                    binding.tvEndTime.text = endTime.format12H()
+                    if (initialCheckInTime.hour >= 0){
+                        checkInTime = TimeStamp(initialCheckInTime.hour, initialCheckInTime.minute)
+                        binding.tvCheckInTime.text = checkInTime.format12H()
+                    }
+                    else{
+                        binding.btnCheckInTime.isEnabled = false
+                    }
+                }
+                else{
+                    binding.btnEndTime.isEnabled = false
+                    binding.btnCheckInTime.isEnabled = false
+                }
+            }
+            else{
+                binding.btnEndTime.isEnabled = false
+                binding.btnCheckInTime.isEnabled = false
+            }
 
             binding.cbEnableSession.isChecked = true
-            binding.btnEndTime.isEnabled = false
-            binding.btnCheckInTime.isEnabled = false
             binding.btnStartTime.setOnClickListener {
                 val picker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_12H)
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
                         .setHour(12)
                         .setMinute(10)
                         .setTitleText("Select start time")
                         .build()
                 picker.addOnPositiveButtonClickListener {
-                    //TODO: Handle pm or fm
-                    binding.tvStartTime.text = "${picker.hour} ${picker.minute}"
-                    startTimeHour = picker.hour
-                    startTimeMinute = picker.minute
+                    startTime = TimeStamp(picker.hour, picker.minute)
+                    binding.tvStartTime.text = startTime.format12H()
                     binding.btnEndTime.isEnabled = true
                     binding.tvEndTime.text = context.getString(R.string.select_time)
                     binding.tvCheckInTime.text = context.getString(R.string.select_time)
+                    endTime = TimeStamp(-1,-1)
+                    checkInTime = TimeStamp(-1,-1)
                     setLimited(isLimited)
+                    context.setDateError()
                 }
 
                 picker.show((context as AppCompatActivity).supportFragmentManager, "sessionStartTime")
@@ -55,21 +77,20 @@ class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean):
 
             binding.btnEndTime.setOnClickListener {
                 val picker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_12H)
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
                         .setHour(12)
                         .setMinute(10)
                         .setTitleText("Select end time")
                         .build()
                 picker.addOnPositiveButtonClickListener {
-                    //TODO: Handle pm or fm
-                    if (Utils.instance.differenceBetweenTimesInMinutes(startTimeHour, startTimeMinute, picker.hour, picker.minute) > 12*60){
+                    if (TimeStamp(picker.hour, picker.minute).minusInMinutes(startTime) > 12*60){
                         AlertDialog.Builder(context)
                                 .setTitle(context.getString(R.string.time_error))
                                 .setMessage(context.getString(R.string.session_time_limit_error))
                                 .setPositiveButton(context.getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
                                 .create().show()
                     }
-                    else if (Utils.instance.differenceBetweenTimesInMinutes(startTimeHour, startTimeMinute, picker.hour, picker.minute) < 0){
+                    else if (TimeStamp(picker.hour, picker.minute).minusInMinutes(startTime) < 0){
                         AlertDialog.Builder(context)
                                 .setTitle(context.getString(R.string.time_error))
                                 .setMessage(context.getString(R.string.end_time_before_start_time_error))
@@ -77,10 +98,9 @@ class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean):
                                 .create().show()
                     }
                     else {
-                        binding.tvEndTime.text = "${picker.hour} ${picker.minute}"
-                        endTimeHour = picker.hour
-                        endTimeMinute = picker.minute
-
+                        endTime = TimeStamp(picker.hour, picker.minute)
+                        binding.tvEndTime.text = endTime.format12H()
+                        context.setDateError()
                     }
                 }
 
@@ -91,30 +111,27 @@ class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean):
 
             binding.btnCheckInTime.setOnClickListener {
                 val picker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_12H)
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
                         .setHour(12)
                         .setMinute(10)
-                        .setTitleText("Select start time")
+                        .setTitleText("Select check-in time")
                         .build()
                 picker.addOnPositiveButtonClickListener {
-                    //TODO: Handle pm or fm
-                    //11 hours 59 mins
-                    if (Utils.instance.differenceBetweenTimesInMinutes(picker.hour, picker.minute, startTimeHour, startTimeMinute) > 3 * 60 - 1){
+                    if (startTime.minusInMinutes(TimeStamp(picker.hour, picker.minute)) > 3 * 60){
                         AlertDialog.Builder(context)
                                 .setTitle(context.getString(R.string.time_error))
                                 .setMessage(context.getString(R.string.check_in_time_limit_error))
                                 .setPositiveButton(context.getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
                                 .create().show()
-                    }else if (Utils.instance.differenceBetweenTimesInMinutes(picker.hour, picker.minute, startTimeHour, startTimeMinute) < 0){
+                    }else if (startTime.minusInMinutes(TimeStamp(picker.hour, picker.minute)) < 0){
                         AlertDialog.Builder(context)
                                 .setTitle(context.getString(R.string.time_error))
                                 .setMessage(context.getString(R.string.check_in_time_before_start_time_error))
                                 .setPositiveButton(context.getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
                                 .create().show()
                     }else{
-                        binding.tvCheckInTime.text = "${picker.hour} ${picker.minute}"
-                        checkInTimeHour = picker.hour
-                        checkInTimeMinute = picker.minute
+                        checkInTime = TimeStamp(picker.hour, picker.minute)
+                        binding.tvCheckInTime.text = checkInTime.format12H()
                     }
 
                 }
@@ -135,6 +152,7 @@ class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean):
                         setLimited(isLimited)
                     }
                 }
+                context.setDateError()
             }
         }
 
@@ -147,7 +165,8 @@ class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean):
             }
             else{
                 binding.btnCheckInTime.isEnabled = false
-                //TODO: remove data from text view
+                binding.tvCheckInTime.text = context.getString(R.string.select_time)
+                checkInTime = TimeStamp(-1,-1)
             }
         }
 
@@ -156,15 +175,13 @@ class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean):
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SessionInputHolder {
         val binding = SessionInputBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        context = parent.context
+        context = parent.context as CreateEventActivity
         return SessionInputHolder(binding)
     }
 
     override fun onBindViewHolder(holder: SessionInputHolder, position: Int) {
-
         holder.binding.cbEnableSession.text = dates[position]
-        holder.binding.cbEnableSession.isEnabled = !(position ==0 || position == dates.size - 1)
-
+        holder.binding.cbEnableSession.isEnabled = position != dates.size - 1
 
     }
     override fun getItemCount(): Int {

@@ -64,8 +64,8 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun getAndLoadOrganizerInfo(){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
-        RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")!!
+        RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token)
                 .getOrganizerInfo().enqueue(object: Callback<Organizer> {
                     override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
                         //TODO: Check status code

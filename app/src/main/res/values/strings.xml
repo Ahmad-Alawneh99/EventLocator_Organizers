@@ -137,4 +137,21 @@
     <string name="apply">Apply</string>
     <string name="sign_up">Sign up</string>
     <string name="logout">Logout</string>
+
+    <string name="Amman">Amman</string>
+    <string name="Zarqa">Al-Zarqa</string>
+    <string name="Balqa">Al-Balqa</string>
+    <string name="Madaba">Madaba</string>
+    <string name="Irbid">Irbid</string>
+    <string name="Mafraq">Al-Mafraq</string>
+    <string name="Jerash">Jerash</string>
+    <string name="Ajloun">Ajloun</string>
+    <string name="Karak">Al-Karak</string>
+    <string name="Aqaba">Al-Aqaba</string>
+    <string name="Maan">Ma\'an</string>
+    <string name="Tafila">Al-Tafila</string>
+    <string name="no_date_error">Please select start and end date for the event</string>
+    <string name="session_times_error">Please select start and end time for each session</string>
+    <string name="select_registration_close_date">Select registration close date</string>
+    <string name="registration_close_time_error">Registration must close at most 48 hours before the event starts (selected date and time are more than 48 hours)</string>
 </resources>

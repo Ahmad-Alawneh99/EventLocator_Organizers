@@ -10,40 +10,35 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
 import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocatororganizers.R
+import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.databinding.ActivityEventsBinding
+import com.eventlocator.eventlocatororganizers.retrofit.EventService
+import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EventsActivity : AppCompatActivity(){
     lateinit var binding: ActivityEventsBinding
     var filterFragment: FilterPreviousEventsFragment? = null
     lateinit var pagerAdapter: EventPagerAdapter
+    val that = this
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        pagerAdapter = EventPagerAdapter(this, 3)
-        binding.pagerEvents.adapter = pagerAdapter
-        TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
-            when (position){
-                0 -> tab.text = getString(R.string.upcoming_events)
-                1 -> tab.text = getString(R.string.previous_events)
-                2 -> tab.text = getString(R.string.canceled_events)
-            }
 
-        }.attach()
+        getAndLoadEvents()
 
-        binding.pagerEvents.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT).show()
-            }
+    }
 
-        })
-
-
-
+    override fun onResume() {
+        super.onResume()
+        getAndLoadEvents()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -79,6 +74,35 @@ class EventsActivity : AppCompatActivity(){
 
 
     private fun getAndLoadEvents(){
+        val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")!!
+        RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token)
+                .getEvents().enqueue(object: Callback<ArrayList<Event>>{
+                    override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
+                        //TODO: Check response code
+                        pagerAdapter = EventPagerAdapter(that, 3, response.body()!!)
+                        binding.pagerEvents.adapter = pagerAdapter
+                        TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
+                            when (position){
+                                0 -> tab.text = getString(R.string.upcoming_events)
+                                1 -> tab.text = getString(R.string.previous_events)
+                                2 -> tab.text = getString(R.string.canceled_events)
+                            }
 
+                        }.attach()
+
+                        binding.pagerEvents.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+                            override fun onPageSelected(position: Int) {
+                                super.onPageSelected(position)
+                                Toast.makeText(applicationContext, position.toString(), Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+
+                    override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
+                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                })
     }
 }

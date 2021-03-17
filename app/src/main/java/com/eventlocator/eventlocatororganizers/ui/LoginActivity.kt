@@ -41,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
                                 sharedPreferenceEditor.apply()
                                 startActivity(Intent(applicationContext, ProfileActivity::class.java))
                             }
-                            //TODO: Handle other request codes (for incorrect credentials)
+                            //TODO: Handle other request codes (for incorrect credentials or not account suspended or not accepted yet)
                         }
 
                         override fun onFailure(call: Call<String>, t: Throwable) {
