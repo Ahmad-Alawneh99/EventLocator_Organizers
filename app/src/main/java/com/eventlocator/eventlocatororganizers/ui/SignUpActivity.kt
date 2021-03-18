@@ -156,7 +156,8 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.etPhoneNumber.setOnFocusChangeListener { v, hasFocus ->
             if(!hasFocus) {
-                binding.etPhoneNumber.setText(binding.etPhoneNumber.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etPhoneNumber.setText(binding.etPhoneNumber.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateNextButton()
             }
         }
@@ -232,7 +233,8 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.etConfirmPassword.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                binding.etConfirmPassword.setText(binding.etConfirmPassword.text.toString().trim(), TextView.BufferType.EDITABLE)
+                binding.etConfirmPassword.setText(binding.etConfirmPassword.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateNextButton()
             }
         }

@@ -179,17 +179,19 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                 binding.tlFacebookName,binding.etFacebookURL))
         binding.etFacebookName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                binding.etFacebookName.setText(binding.etFacebookName.text.toString().trim(), TextView.BufferType.EDITABLE)
+                binding.etFacebookName.setText(binding.etFacebookName.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }
 
-        binding.etFacebookURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etFacebookURL, binding.tlFacebookURL,
-        binding.tlFacebookName, binding.etFacebookName))
+        binding.etFacebookURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etFacebookURL,
+            binding.tlFacebookURL, binding.tlFacebookName, binding.etFacebookName))
 
         binding.etFacebookURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
-                binding.etFacebookURL.setText(binding.etFacebookURL.text.toString().trim(), TextView.BufferType.EDITABLE)
+                binding.etFacebookURL.setText(binding.etFacebookURL.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }
@@ -199,17 +201,19 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
 
         binding.etYoutubeName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                binding.etYoutubeName.setText(binding.etYoutubeName.text.toString().trim(), TextView.BufferType.EDITABLE)
+                binding.etYoutubeName.setText(binding.etYoutubeName.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }
 
-        binding.etYoutubeURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etYoutubeURL, binding.tlYoutubeURL,
-        binding.tlYoutubeName, binding.etYoutubeName))
+        binding.etYoutubeURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etYoutubeURL,
+            binding.tlYoutubeURL, binding.tlYoutubeName, binding.etYoutubeName))
 
         binding.etYoutubeURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
-                binding.etYoutubeURL.setText(binding.etYoutubeURL.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etYoutubeURL.setText(binding.etYoutubeURL.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }
@@ -224,12 +228,13 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             }
         }
 
-        binding.etInstagramURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etInstagramURL, binding.tlInstagramURL,
-        binding.tlInstagramName, binding.etInstagramName))
+        binding.etInstagramURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etInstagramURL,
+            binding.tlInstagramURL, binding.tlInstagramName, binding.etInstagramName))
 
         binding.etInstagramURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
-                binding.etInstagramURL.setText(binding.etInstagramURL.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etInstagramURL.setText(binding.etInstagramURL.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }
@@ -239,17 +244,19 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
 
         binding.etTwitterName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
-                binding.etTwitterName.setText(binding.etTwitterName.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etTwitterName.setText(binding.etTwitterName.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }
 
-        binding.etTwitterURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etTwitterURL,binding.tlTwitterURL,
-        binding.tlTwitterName, binding.etTwitterName))
+        binding.etTwitterURL.addTextChangedListener(createTextWatcherForAccountURLs(binding.etTwitterURL,
+            binding.tlTwitterURL, binding.tlTwitterName, binding.etTwitterName))
 
         binding.etTwitterURL.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus){
-                binding.etTwitterURL.setText(binding.etTwitterURL.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etTwitterURL.setText(binding.etTwitterURL.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateSignUpButton()
             }
         }

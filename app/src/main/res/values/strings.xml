@@ -64,7 +64,7 @@
     <string name="select">Select</string>
     <string name="select_location_hint">Select the exact location of the event</string>
     <string name="select_a_location">Select a location</string>
-    <string name="select_registration_close_hint">Select the date and time when registration closes (optional, registration closes 2 hours before the start of the event by default)</string>
+    <string name="select_registration_close_hint">Select the date and time when registration closes (optional, registration closes when the event starts by default)</string>
     <string name="time">Time</string>
     <string name="selected_date">Selected date:</string>
     <string name="date">Date</string>
@@ -154,4 +154,5 @@
     <string name="session_times_error">Please select start and end time for each session</string>
     <string name="select_registration_close_date">Select registration close date</string>
     <string name="registration_close_time_error">Registration must close at most 48 hours before the event starts (selected date and time are more than 48 hours)</string>
+    <string name="city_and_location_warning">City and location are only available for located events</string>
 </resources>

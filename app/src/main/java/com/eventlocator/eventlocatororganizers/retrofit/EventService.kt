@@ -15,4 +15,7 @@ interface EventService {
     @GET("/organizer/events")
     fun getEvents(): Call<ArrayList<Event>>
 
+    @GET("/organizer/event/{id}")
+    fun getEvent(@Path("id") eventID: Int): Call<Event>
+
 }

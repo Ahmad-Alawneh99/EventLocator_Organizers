@@ -19,15 +19,19 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.adapters.SessionInputAdapter
+import com.eventlocator.eventlocatororganizers.data.Event
+import com.eventlocator.eventlocatororganizers.data.LocatedEventData
+import com.eventlocator.eventlocatororganizers.data.Session
 import com.eventlocator.eventlocatororganizers.databinding.ActivityCreateEventBinding
-import com.eventlocator.eventlocatororganizers.utilities.TimeStamp
-import com.eventlocator.eventlocatororganizers.utilities.Utils
+import com.eventlocator.eventlocatororganizers.utilities.*
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class CreateEventActivity : AppCompatActivity() {
@@ -35,6 +39,8 @@ class CreateEventActivity : AppCompatActivity() {
     val DATE_PERIOD_LIMIT = 6
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
+
+
 
     lateinit var startDate: LocalDate
     lateinit var endDate: LocalDate
@@ -47,17 +53,14 @@ class CreateEventActivity : AppCompatActivity() {
     var firstSessionEndTime = TimeStamp(-1,-1)
     var firstSessionCheckInTime = TimeStamp(-1,-1)
 
+    //location for located events
+    lateinit var locationLatLng: LatLng
+    lateinit var locationName: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-        binding.btnRegistrationCloseDate.isEnabled = false
-        binding.btnRegistrationCloseTime.isEnabled = false
-        binding.loFirstSession.visibility = View.INVISIBLE
-        setClickListenersForFirstSession()
-        setDateError()
 
         if (savedInstanceState != null) {
             image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
@@ -66,9 +69,74 @@ class CreateEventActivity : AppCompatActivity() {
                 updateCreateEventButton()
             }
         }
+
+        binding.btnRegistrationCloseDate.isEnabled = false
+        binding.btnRegistrationCloseTime.isEnabled = false
+        binding.loFirstSession.visibility = View.INVISIBLE
+        setClickListenersForFirstSession()
+        setDateError()
         alterCityAndLocationStatus(true)
         if (image == null)
             binding.btnRemoveImage.isEnabled = false
+
+        binding.btnCreateEvent.setOnClickListener{
+            val categories = ArrayList<EventCategory>()
+            if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL)
+            if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT)
+            if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING)
+            if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS)
+
+            val sessions = ArrayList<Session>()
+            sessions.add(Session(1,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
+                firstSessionStartTime.format24H(),
+                firstSessionEndTime.format24H(),
+                startDate.dayOfWeek,
+                if(isLimited()) if (firstSessionCheckInTime.hour>=0) firstSessionCheckInTime.format24H() else
+                firstSessionStartTime.format24H() else "No"))
+
+            //TODO: Add all sessions
+
+            val temp = if (this::registrationCloseDate.isInitialized)
+                registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
+            else
+                startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+
+            val eventBuilder = Event.EventBuilder(
+                binding.etEventName.text.toString().trim(),
+                binding.etEventDescription.text.toString(),
+                categories,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(endDate),
+                sessions,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT).format(temp)
+            )
+
+            if (binding.etNumberOfParticipants.text.toString().trim()!="")
+                eventBuilder.setMaxParticipants(binding.etNumberOfParticipants.text.toString().trim().toInt())
+
+
+            val locatedEventData = if (binding.rbLocated.isChecked) {
+                LocatedEventData(City.valueOf(binding.acCityMenu.text.toString()), locationLatLng)
+            }
+            else null
+            //TODO: Check if there is a whatsapp link and add it
+
+            eventBuilder.setLocatedEventData(locatedEventData)
+
+            val event = eventBuilder.build()
+
+            //TODO: Check if there is a whatsapp link and add it
+
+            //TODO: Send to backend
+
+
+
+
+
+
+        }
+
         val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
@@ -80,6 +148,16 @@ class CreateEventActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val locationActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
+            if (result.resultCode == Activity.RESULT_OK) {
+                locationLatLng = result.data?.getParcelableExtra("latlng")!!
+                locationName = result.data?.getStringExtra("name")!!
+                binding.tvSelectedLocation.text = locationName
+                updateCreateEventButton()
+            }
+        }
+
         binding.etEventName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -102,7 +180,8 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.etEventName.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                binding.etEventName.setText(binding.etEventName.text.toString().trim(), TextView.BufferType.EDITABLE)
+                binding.etEventName.setText(binding.etEventName.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateCreateEventButton()
             }
         }
@@ -201,7 +280,8 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.etNumberOfParticipants.setOnFocusChangeListener { v, hasFocus ->
             if(!hasFocus) {
-                binding.etNumberOfParticipants.setText(binding.etNumberOfParticipants.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etNumberOfParticipants.setText(binding.etNumberOfParticipants.text.toString().trim(),
+                    TextView.BufferType.EDITABLE)
                 updateCreateEventButton()
             }
         }
@@ -212,15 +292,18 @@ class CreateEventActivity : AppCompatActivity() {
 
             val calendarConstraints = CalendarConstraints.Builder()
             val startConstraint = LocalDate.now()
-            val min = startConstraint.plusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val min = startConstraint.plusDays(2).atStartOfDay(ZoneId.systemDefault())
+                .toInstant().toEpochMilli()
             calendarConstraints.setStart(min)
             calendarConstraints.setValidator(DateValidatorPointForward.from(min))
             builder.setCalendarConstraints(calendarConstraints.build())
             builder.setTitleText(getString(R.string.select_start_end_dates))
             val picker = builder.build()
             picker.addOnPositiveButtonClickListener {
-                val from: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.first!!), ZoneId.systemDefault()).toLocalDate()
-                val to: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.second!!), ZoneId.systemDefault()).toLocalDate()
+                val from: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.first!!),
+                    ZoneId.systemDefault()).toLocalDate()
+                val to: LocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.second!!),
+                    ZoneId.systemDefault()).toLocalDate()
                 val diff: Int = Duration.between(from.atStartOfDay(), to.atStartOfDay()).toDays().toInt()
                 if (diff > DATE_PERIOD_LIMIT){
                     AlertDialog.Builder(this)
@@ -247,9 +330,9 @@ class CreateEventActivity : AppCompatActivity() {
         }
 
         val cities = listOf(getString(R.string.Amman),getString(R.string.Zarqa),getString(R.string.Balqa)
-                ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
-                ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
-                ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
+            ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
+            ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
+            ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
 
         val cityAdapter = ArrayAdapter(this, R.layout.city_list_item, cities)
         binding.acCityMenu.setAdapter(cityAdapter)
@@ -299,6 +382,8 @@ class CreateEventActivity : AppCompatActivity() {
                 registrationCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it!!), ZoneId.systemDefault()).toLocalDate()
                 binding.tvRegistrationCloseDate.text = registrationCloseDate.toString()
                 binding.btnRegistrationCloseTime.isEnabled = true
+                registrationCloseTime = TimeStamp(firstSessionStartTime.hour,firstSessionStartTime.minute)
+                binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
             }
 
             picker.show(supportFragmentManager, builder.build().toString())
@@ -339,8 +424,7 @@ class CreateEventActivity : AppCompatActivity() {
 
 
         binding.btnSelectLocation.setOnClickListener {
-            //TODO: Create a map activity
-            updateCreateEventButton()
+            locationActivityResult.launch(Intent(this, SelectLocationActivity::class.java))
         }
 
 
@@ -356,7 +440,8 @@ class CreateEventActivity : AppCompatActivity() {
         enabled = enabled && binding.tvEventCategoryError.visibility == View.INVISIBLE
                 && binding.tvDateError.text == ""
         if (binding.rbLocated.isChecked){
-            enabled = enabled && binding.acCityMenu.text.toString() != "" /* TODO: && LOCATION */
+            enabled = enabled && binding.acCityMenu.text.toString() != ""
+                    && this::locationLatLng.isInitialized
         }
 
         binding.btnCreateEvent.isEnabled = enabled

@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eventlocator.eventlocatororganizers">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.CheckInParticipantActivity"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDplPLPkGMXu35fWIZlG4n_x7xzarQjhMk" />
+        <activity android:name=".ui.SelectLocationActivity" android:label="Long tap to select a location"></activity>
+        <activity android:name=".ui.CheckInParticipantActivity" />
         <activity android:name=".ui.EventFeedbackActivity" />
         <activity android:name=".ui.EmailParticipantsOfAnEvent" />
         <activity android:name=".ui.ViewFollowersActivity" />
@@ -29,22 +34,16 @@
         </activity>
         <activity
             android:name=".ui.EventsActivity"
-            android:label="Events">
-
-        </activity>
+            android:label="Events"></activity>
         <activity
             android:name=".ui.ChangePasswordActivity"
             android:label="Change Password" />
         <activity
             android:name=".ui.UpdateEmailActivity"
-            android:label="Update Email">
-
-        </activity>
+            android:label="Update Email"></activity>
         <activity
             android:name=".ui.IndividualEditProfileActivity"
-            android:label="Edit Profile">
-
-        </activity>
+            android:label="Edit Profile"></activity>
         <activity
             android:name=".ui.OrganizationEditProfileActivity"
             android:label="Edit Profile" />
@@ -53,23 +52,17 @@
             android:label="Profile" />
         <activity
             android:name=".ui.IndividualSetUpProfileActivity"
-            android:label="Setup Your Profile" >
-
-        </activity>
+            android:label="Setup Your Profile"></activity>
         <activity
             android:name=".ui.OrganizationSetUpProfileActivity"
             android:label="Setup Your Profile" />
         <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.SignUpActivity"
-            android:label="Sign Up" >
-
-        </activity>
+            android:label="Sign Up"></activity>
         <activity
             android:name=".ui.WelcomeActivity"
-            android:label="Welcome" >
-
-        </activity>
+            android:label="Welcome"></activity>
     </application>
 
 </manifest>
