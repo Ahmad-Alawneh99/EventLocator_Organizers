@@ -26,15 +26,17 @@
         <activity
             android:name=".ui.CreateEventActivity"
             android:label="Create Event">
+
+        </activity>
+        <activity
+            android:name=".ui.EventsActivity"
+            android:label="Events">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.EventsActivity"
-            android:label="Events"></activity>
         <activity
             android:name=".ui.ChangePasswordActivity"
             android:label="Change Password" />
@@ -59,7 +61,9 @@
         <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.SignUpActivity"
-            android:label="Sign Up"></activity>
+            android:label="Sign Up">
+
+        </activity>
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="Welcome"></activity>

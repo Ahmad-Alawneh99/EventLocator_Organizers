@@ -126,8 +126,6 @@ class CreateEventActivity : AppCompatActivity() {
 
             val event = eventBuilder.build()
 
-            //TODO: Check if there is a whatsapp link and add it
-
             //TODO: Send to backend
 
 

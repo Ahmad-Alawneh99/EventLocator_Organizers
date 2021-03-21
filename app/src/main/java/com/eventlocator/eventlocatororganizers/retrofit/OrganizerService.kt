@@ -9,14 +9,20 @@ import retrofit2.http.*
 interface OrganizerService {
 
     @Multipart
-    @POST("/createOrganizer")
+    @POST("/organizers/signup")
     fun createOrganizer(@Part proofImage: MultipartBody.Part, @Part profilePicture: MultipartBody.Part?,
                         @Part("organizer") organizer: Organizer): Call<ResponseBody>
 
-    @POST("/organizerLogin")
+    @POST("/organizers/signup/partial")
+    fun checkIfExists(@Body data: ArrayList<String>): Call<ResponseBody>
+
+    @POST("/organizers/login")
     fun login(@Body credentials: ArrayList<String>): Call<String>
 
-    @GET("/organizerInfo")
+    @GET("/organizers/profile")
     fun getOrganizerInfo(): Call<Organizer>
+
+    @GET("/organizers/profile/type")
+    fun getOrganizerType(): Call<Int>
 
 }

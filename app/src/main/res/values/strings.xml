@@ -155,4 +155,10 @@
     <string name="select_registration_close_date">Select registration close date</string>
     <string name="registration_close_time_error">Registration must close at most 48 hours before the event starts (selected date and time are more than 48 hours)</string>
     <string name="city_and_location_warning">City and location are only available for located events</string>
+    <string name="pending">Pending</string>
+    <string name="registration_ongoing">Registration ongoing</string>
+    <string name="registration_closed">Registration closed</string>
+    <string name="session_happening_right_now">A session is happening right now!</string>
+    <string name="active">Active</string>
+    <string name="no_limit">No limit</string>
 </resources>
