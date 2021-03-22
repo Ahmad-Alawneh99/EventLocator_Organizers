@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.widget.TextView
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityEmailParticipantsOfAnEventBinding
+import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 
 class EmailParticipantsOfAnEvent : AppCompatActivity() {
@@ -17,7 +18,12 @@ class EmailParticipantsOfAnEvent : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnSendEmail.isEnabled = false
         binding.btnSendEmail.setOnClickListener {
-            //TODO: Handle email sending
+            //TODO: add confirmation box
+            val eventID = intent.getIntExtra("eventID", -1)
+            val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+
+            //TODO: add call to backend
         }
 
         binding.etTitle.addTextChangedListener(object : TextWatcher {

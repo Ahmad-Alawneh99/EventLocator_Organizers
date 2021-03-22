@@ -72,6 +72,7 @@ class ProfileActivity : AppCompatActivity() {
                         val organizer = response.body()!!
                         binding.tvOrgName.text = organizer.name
                         binding.tvAbout.text = organizer.about
+                        //TODO: Set click listener to view followers
                         binding.tvFollowers.text = organizer.numberOfFollowers.toString()
                         binding.tvEmail.text = organizer.email
                         binding.tvPhoneNumber.text = organizer.phoneNumber

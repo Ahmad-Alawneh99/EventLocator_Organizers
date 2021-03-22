@@ -72,7 +72,7 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.btnRegistrationCloseDate.isEnabled = false
         binding.btnRegistrationCloseTime.isEnabled = false
-        binding.loFirstSession.visibility = View.INVISIBLE
+        binding.loFirstSession.visibility = View.GONE
         setClickListenersForFirstSession()
         setDateError()
         alterCityAndLocationStatus(true)
@@ -117,7 +117,10 @@ class CreateEventActivity : AppCompatActivity() {
 
 
             val locatedEventData = if (binding.rbLocated.isChecked) {
-                LocatedEventData(City.valueOf(binding.acCityMenu.text.toString()), locationLatLng)
+                val location = ArrayList<Double>()
+                location.add(locationLatLng.latitude)
+                location.add(locationLatLng.longitude)
+                LocatedEventData(City.valueOf(binding.acCityMenu.text.toString()), location)
             }
             else null
             //TODO: Check if there is a whatsapp link and add it

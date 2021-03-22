@@ -247,6 +247,17 @@
                 android:layout_marginBottom="16dp"/>
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label"
+                android:text="@string/whatsapp_group"/>
+            <TextView
+                android:id="@+id/tvWhatsAppGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="www.google.com"
+                android:layout_marginBottom="16dp"/>
 
 
         </LinearLayout>

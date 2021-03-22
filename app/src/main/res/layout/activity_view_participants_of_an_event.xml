@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.ViewParticipantsOfAnEventActivity">
 
+    <!-- TODO: view avg rating and total number -->
+
     <ListView
         android:id="@+id/lvParticipants"
         android:layout_width="match_parent"

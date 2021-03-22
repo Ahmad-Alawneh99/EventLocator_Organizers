@@ -161,4 +161,5 @@
     <string name="session_happening_right_now">A session is happening right now!</string>
     <string name="active">Active</string>
     <string name="no_limit">No limit</string>
+    <string name="whatsapp_group">WhatsApp group</string>
 </resources>

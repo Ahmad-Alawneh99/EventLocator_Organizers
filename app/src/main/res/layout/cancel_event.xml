@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/llCancel"
+    android:padding="24dp">
+
+    <!--TODO: change color -->
+    <TextView
+        android:id="@+id/tvCancelWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your rating will drop if you cancel the event, because there are less than 24 hours before its start"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/black"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tlCancellationReason"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCancellationReason"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:hint="Why are you cancelling the event?"
+            android:inputType="textMultiLine"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
