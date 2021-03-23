@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.EditPendingEventActivity"></activity>
         <activity android:name=".ui.ViewParticipantsDuringALimitedLocatedSession" />
         <activity android:name=".ui.EventStatisticsActivity" />
         <activity android:name=".ui.ViewEventFeedbackActivity" />

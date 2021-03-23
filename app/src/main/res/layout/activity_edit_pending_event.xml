@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.CreateEventActivity">
+    tools:context=".ui.EditPendingEventActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -419,10 +419,10 @@
         </LinearLayout>
     </ScrollView>
     <Button
-        android:id="@+id/btnCreateEvent"
+        android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="@dimen/main_button_height"
-        android:text="@string/create_event"
+        android:text="@string/save_changes"
         android:textSize="@dimen/button_size"
         android:minHeight="0dp"
         android:insetTop="0dp"

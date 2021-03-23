@@ -30,6 +30,34 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent(this,LoginActivity::class.java))
         }
         getAndLoadOrganizerInfo()
+
+        binding.btnCreateEvent.setOnClickListener {
+            //TODO: open create event activity
+        }
+
+        binding.btnViewEvents.setOnClickListener {
+            //TODO: open events activity
+        }
+
+        binding.btnEditProfile.setOnClickListener {
+            val token = sharedPreference.getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+            RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
+                    .getOrganizerType().enqueue(object: Callback<Int>{
+                        override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                            //TODO: Check if successful
+                            if (response.body()!! == 0){
+                                //TODO: open organization edit profile
+                            }
+                            else{
+                                //TODO: open individual edit profile
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Int>, t: Throwable) {
+                        }
+
+                    })
+        }
     }
 
 

@@ -2,6 +2,7 @@ package com.eventlocator.eventlocatororganizers.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -13,19 +14,30 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.eventlocator.eventlocatororganizers.R
+import com.eventlocator.eventlocatororganizers.data.Organizer
 import com.eventlocator.eventlocatororganizers.databinding.ActivityOrganizationEditProfileBinding
+import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
+import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.textfield.TextInputLayout
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class OrganizationEditProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityOrganizationEditProfileBinding
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
+    lateinit var organizer: Organizer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrganizationEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        getAndLoadOrganizerInfo()
+
         if (savedInstanceState!=null){
             image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
             if (image!=null){
@@ -33,6 +45,7 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
                 updateSaveButton()
             }
         }
+
         binding.btnSave.isEnabled = false
         if (image==null)
             binding.btnRemoveImage.isEnabled = false
@@ -222,14 +235,23 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
                 && binding.tlTwitterName.error == null && binding.tlTwitterURL.error == null
                 && binding.etPhoneNumber.text.toString().trim()!="" && binding.tlPhoneNumber.error == null && image!=null)
 
-//        val btd: BitmapDrawable? = if (binding.ivLogoPreview.drawable is BitmapDrawable)
-//            binding.ivLogoPreview.drawable as BitmapDrawable else null
-//
-//        binding.btnSave.isEnabled = binding.btnSave.isEnabled  && !(btd == null || btd.bitmap == null)
+        val noChanges = (binding.etAbout.text.toString() == organizer.about
+                && binding.etPhoneNumber.text.toString() == organizer.phoneNumber
+                && binding.etFacebookName.text.toString() == organizer.socialMediaAccounts[0].accountName
+                && binding.etFacebookURL.text.toString() == organizer.socialMediaAccounts[0].url
+                && binding.etYoutubeName.text.toString() == organizer.socialMediaAccounts[1].accountName
+                && binding.etYoutubeURL.text.toString() == organizer.socialMediaAccounts[1].url
+                && binding.etInstagramName.text.toString() == organizer.socialMediaAccounts[2].accountName
+                && binding.etInstagramURL.text.toString() == organizer.socialMediaAccounts[2].url
+                && binding.etTwitterName.text.toString() == organizer.socialMediaAccounts[3].accountName
+                && binding.etTwitterURL.text.toString() == organizer.socialMediaAccounts[3].url
+                && image == Uri.parse(organizer.image))
+
+        binding.btnSave.isEnabled = binding.btnSave.isEnabled && !noChanges
     }
 
 
-    fun createTextWatcherForAccountNames(etName: EditText, tl: TextInputLayout, etURL: EditText): TextWatcher {
+    private fun createTextWatcherForAccountNames(etName: EditText, tl: TextInputLayout, etURL: EditText): TextWatcher {
         return object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -253,7 +275,7 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
         }
     }
 
-    fun createTextWatcherForAccountURLs(etURL: EditText, tl: TextInputLayout, tlName: TextInputLayout, etName: EditText): TextWatcher {
+    private fun createTextWatcherForAccountURLs(etURL: EditText, tl: TextInputLayout, tlName: TextInputLayout, etName: EditText): TextWatcher {
         return object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -289,5 +311,43 @@ class OrganizationEditProfileActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(INSTANCE_STATE_IMAGE, image)
+    }
+
+    private fun getAndLoadOrganizerInfo(){
+        val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+
+        RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
+                .getOrganizerInfo().enqueue(object: Callback<Organizer> {
+                    override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
+                        //TODO: check http code
+                        organizer = response.body()!!
+                        binding.etAbout.setText (organizer.about, TextView.BufferType.EDITABLE)
+
+                        binding.etPhoneNumber.setText(organizer.phoneNumber, TextView.BufferType.EDITABLE)
+
+                        binding.etFacebookName.setText(organizer.socialMediaAccounts[0].accountName, TextView.BufferType.EDITABLE)
+                        binding.etFacebookURL.setText(organizer.socialMediaAccounts[0].url, TextView.BufferType.EDITABLE)
+
+                        binding.etYoutubeName.setText(organizer.socialMediaAccounts[1].accountName, TextView.BufferType.EDITABLE)
+                        binding.etYoutubeURL.setText(organizer.socialMediaAccounts[1].url, TextView.BufferType.EDITABLE)
+
+                        binding.etInstagramName.setText(organizer.socialMediaAccounts[2].accountName, TextView.BufferType.EDITABLE)
+                        binding.etInstagramURL.setText(organizer.socialMediaAccounts[2].url, TextView.BufferType.EDITABLE)
+
+                        binding.etTwitterName.setText(organizer.socialMediaAccounts[3].accountName, TextView.BufferType.EDITABLE)
+                        binding.etTwitterURL.setText(organizer.socialMediaAccounts[3].url, TextView.BufferType.EDITABLE)
+                        //TODO: Test Bitmaps
+                        binding.ivLogoPreview.setImageBitmap(BitmapFactory.
+                        decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(organizer.image))))
+                        image = Uri.parse(organizer.image)
+                    }
+
+                    override fun onFailure(call: Call<Organizer>, t: Throwable) {
+
+                    }
+
+                })
+
     }
 }
