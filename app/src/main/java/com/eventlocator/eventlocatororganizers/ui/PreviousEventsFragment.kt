@@ -9,7 +9,7 @@ import com.eventlocator.eventlocatororganizers.adapters.PreviousEventAdapter
 import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.databinding.FragmentPreviousEventsBinding
 
-class PreviousEventsFragment(var events: ArrayList<Event>): Fragment() {
+class PreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPreviousEventsReadyListener {
 
     lateinit var binding: FragmentPreviousEventsBinding
 
@@ -22,5 +22,13 @@ class PreviousEventsFragment(var events: ArrayList<Event>): Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = PreviousEventAdapter(events)
         binding.rvPreviousEvents.adapter = adapter
+        (activity as EventsActivity).onPreviousEventsReadyListener = this
+    }
+
+    override fun getResult(events: ArrayList<Event>) {
+        this.events = events
+        val adapter = PreviousEventAdapter(events)
+        binding.rvPreviousEvents.adapter = adapter
+        binding.rvPreviousEvents.adapter!!.notifyDataSetChanged()
     }
 }

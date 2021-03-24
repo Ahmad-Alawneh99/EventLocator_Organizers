@@ -9,9 +9,10 @@ import retrofit2.http.*
 interface OrganizerService {
 
     @Multipart
-    @POST("/organizers/signup")
+    @POST("/organizers/signup/{type}")
     fun createOrganizer(@Part proofImage: MultipartBody.Part, @Part profilePicture: MultipartBody.Part?,
-                        @Part("organizer") organizer: Organizer): Call<ResponseBody>
+                        @Part("organizer") organizer: Organizer,
+                        @Path("type") type: Int): Call<ResponseBody>
 
     @POST("/organizers/signup/partial")
     fun checkIfExists(@Body data: ArrayList<String>): Call<ResponseBody>

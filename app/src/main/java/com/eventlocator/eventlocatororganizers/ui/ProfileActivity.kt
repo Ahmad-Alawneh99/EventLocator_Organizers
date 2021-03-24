@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.data.Organizer
 import com.eventlocator.eventlocatororganizers.databinding.ActivityProfileBinding
@@ -77,7 +78,7 @@ class ProfileActivity : AppCompatActivity() {
             R.id.miLogout -> {
                 val sharedPreferenceEditor =
                         getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
-                sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, "")
+                sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, null)
                 sharedPreferenceEditor.apply()
                 //TODO: add confirmation box for logout
                 startActivity(Intent(this, LoginActivity::class.java))
@@ -96,26 +97,38 @@ class ProfileActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token)
                 .getOrganizerInfo().enqueue(object: Callback<Organizer> {
                     override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
-                        //TODO: Check status code
-                        val organizer = response.body()!!
-                        binding.tvOrgName.text = organizer.name
-                        binding.tvAbout.text = organizer.about
-                        //TODO: Set click listener to view followers
-                        binding.tvFollowers.text = organizer.numberOfFollowers.toString()
-                        binding.tvEmail.text = organizer.email
-                        binding.tvPhoneNumber.text = organizer.phoneNumber
-                        binding.tvRating.text = organizer.rating.toString()
-                        //TODO: Social media accounts
-                        //TODO: Test Bitmaps
-                        binding.ivOrgImage.setImageBitmap(BitmapFactory.
-                        decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(organizer.image))))
+                        if (response.code()==202) {
+                            val organizer = response.body()!!
+                            binding.tvOrgName.text = organizer.name
+                            binding.tvAbout.text = organizer.about
+                            //TODO: Set click listener to view followers
+                            binding.tvFollowers.text = organizer.numberOfFollowers.toString()
+                            binding.tvEmail.text = organizer.email
+                            binding.tvPhoneNumber.text = organizer.phoneNumber
+                            binding.tvRating.text = organizer.rating.toString()
+                            //TODO: Social media accounts
+                            //TODO: Test Bitmaps
+                            binding.ivOrgImage.setImageBitmap(BitmapFactory.
+                            decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(organizer.image))))
+                        }
+                        else{
+                            //TODO: Handle not found
+                        }
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
-                        //TODO: Handle failure
+                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
                     }
 
                 })
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val a = Intent(Intent.ACTION_MAIN)
+        a.addCategory(Intent.CATEGORY_HOME)
+        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(a)
     }
 
 

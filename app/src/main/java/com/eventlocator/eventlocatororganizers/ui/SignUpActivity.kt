@@ -261,17 +261,19 @@ class SignUpActivity : AppCompatActivity() {
                 && binding.etPassword.text.toString().trim() != ""
                 && binding.etPassword.text.toString().trim() == binding.etConfirmPassword.text.toString().trim()
                 && binding.tlPassword.error == null && image!=null)
-
-        //done like this because after the first bitmap is removed the drawable is not set to null, even if there is no bitmap
-//        var btd: BitmapDrawable? = if (binding.ivImagePreview.drawable is BitmapDrawable)
-//            binding.ivImagePreview.drawable as BitmapDrawable else null
-
-        //binding.btnNext.isEnabled = binding.btnNext.isEnabled && !(btd == null || btd.bitmap == null)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(INSTANCE_STATE_IMAGE, image)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val a = Intent(Intent.ACTION_MAIN)
+        a.addCategory(Intent.CATEGORY_HOME)
+        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(a)
     }
 
 }

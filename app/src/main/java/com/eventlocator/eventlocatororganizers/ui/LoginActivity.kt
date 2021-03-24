@@ -1,14 +1,12 @@
 package com.eventlocator.eventlocatororganizers.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivityLoginBinding
 import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
@@ -32,26 +30,32 @@ class LoginActivity : AppCompatActivity() {
             credentials.add(binding.etPassword.text.toString())
 
             RetrofitServiceFactory.createService(OrganizerService::class.java).login(credentials)
-                    .enqueue(object: Callback<String>{
+                    .enqueue(object : Callback<String> {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
-                            if (response.code() == 200) { //TODO: Make sure code is correct
-                                val sharedPreferenceEditor =
-                                        getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
-                                sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, response.body())
+                            Toast.makeText(applicationContext, response.code().toString(), Toast.LENGTH_SHORT).show()
+                            if (response.code() == 202) {
+                                val sharedPreferenceEditor = getSharedPreferences(
+                                    SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                sharedPreferenceEditor.putString(
+                                    SharedPreferenceManager.instance.TOKEN_KEY,
+                                    response.body()
+                                )
                                 sharedPreferenceEditor.apply()
                                 startActivity(Intent(applicationContext, ProfileActivity::class.java))
+                            } else {
+                                Toast.makeText(applicationContext, "Fail", Toast.LENGTH_SHORT).show()
+                                //TODO: Handle other request codes (for incorrect credentials or not account suspended or not accepted yet)
                             }
-                            //TODO: Handle other request codes (for incorrect credentials or not account suspended or not accepted yet)
                         }
 
                         override fun onFailure(call: Call<String>, t: Throwable) {
-                            //TODO: Display error message
+                            Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
                         }
 
                     })
         }
 
-        binding.etEmail.addTextChangedListener(object: TextWatcher{
+        binding.etEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -61,14 +65,12 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.etEmail.text.toString().trim() == ""){
+                if (binding.etEmail.text.toString().trim() == "") {
                     binding.tlEmail.error = getString(R.string.email_cant_be_empty_error)
-                }
-                else if (Utils.instance.isEmail(binding.etEmail.text.toString().trim())){
+                } else if (Utils.instance.isEmail(binding.etEmail.text.toString().trim())) {
                     binding.tlEmail.error = null
 
-                }
-                else{
+                } else {
                     binding.tlEmail.error = getString(R.string.invalid_email_error)
                 }
                 updateLoginButton()
@@ -78,12 +80,15 @@ class LoginActivity : AppCompatActivity() {
 
         binding.etEmail.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                binding.etEmail.setText(binding.etEmail.text.toString().trim(), TextView.BufferType.EDITABLE)
+                binding.etEmail.setText(
+                    binding.etEmail.text.toString().trim(),
+                    TextView.BufferType.EDITABLE
+                )
                 updateLoginButton()
             }
         }
 
-        binding.etPassword.addTextChangedListener(object: TextWatcher{
+        binding.etPassword.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -93,10 +98,9 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.etPassword.text.toString().trim() == ""){
+                if (binding.etPassword.text.toString().trim() == "") {
                     binding.tlPassword.error = getString(R.string.password_cant_be_empty_error)
-                }
-                else{
+                } else {
                     binding.tlPassword.error = null
                 }
                 updateLoginButton()
@@ -106,7 +110,10 @@ class LoginActivity : AppCompatActivity() {
 
         binding.etPassword.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                binding.etPassword.setText(binding.etPassword.text.toString().trim(),TextView.BufferType.EDITABLE)
+                binding.etPassword.setText(
+                    binding.etPassword.text.toString().trim(),
+                    TextView.BufferType.EDITABLE
+                )
                 updateLoginButton()
             }
         }
@@ -117,6 +124,14 @@ class LoginActivity : AppCompatActivity() {
                 && binding.tlEmail.error == null
                 && binding.etPassword.text.toString().trim() != ""
                 && binding.tlPassword.error == null)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val a = Intent(Intent.ACTION_MAIN)
+        a.addCategory(Intent.CATEGORY_HOME)
+        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(a)
     }
 
 }

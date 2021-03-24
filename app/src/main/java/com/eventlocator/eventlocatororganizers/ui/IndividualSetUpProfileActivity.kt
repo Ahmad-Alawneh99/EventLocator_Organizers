@@ -41,10 +41,7 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
             image = savedInstanceState.getParcelable(INSTANCE_STATE_IMAGE)
             if (image!=null){
                 binding.ivProfilePicturePreview.setImageBitmap(
-                    Utils.instance.uriToBitmap(
-                        image!!,
-                        this
-                    )
+                    Utils.instance.uriToBitmap(image!!, this)
                 )
                 updateSignUpButton()
             }
@@ -125,15 +122,18 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
             val organizer = organizerBuilder.build()
 
            RetrofitServiceFactory.createService(OrganizerService::class.java).createOrganizer(proofImageMultipartBody,
-               profilePictureMultipartBody, organizer)
+               profilePictureMultipartBody, organizer,1)
                 .enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(
-                        call: Call<ResponseBody>,
-                        response: Response<ResponseBody>
-                    ) {
-                        Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
-                        //TODO: Handle success (Take to login)
-                        //TODO: Check status code
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        if (response.code() == 201){
+                            Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(applicationContext, LoginActivity::class.java))
+                        }
+                        else{
+                            //TODO: Display alert that server is facing issues (code 503)
+                        }
+
+
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -447,5 +447,6 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putParcelable(INSTANCE_STATE_IMAGE, image)
     }
+
 
 }

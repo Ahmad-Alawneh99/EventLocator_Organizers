@@ -1,5 +1,7 @@
 package com.eventlocator.eventlocatororganizers.retrofit
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -9,9 +11,10 @@ class RetrofitServiceFactory {
 
     companion object{
         private val httpClient = OkHttpClient.Builder()
+        private val gson = GsonBuilder().setLenient().create()
         private val retrofitBuilder: Retrofit.Builder = Retrofit.Builder()
             .baseUrl("http://10.0.2.2:3000/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient.build())
 
         private var retrofit = retrofitBuilder.build()

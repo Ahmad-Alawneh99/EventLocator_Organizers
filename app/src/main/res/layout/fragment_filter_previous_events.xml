@@ -15,6 +15,7 @@
         android:text="@string/event_type"/>
 
     <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cgType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:singleSelection="false"
@@ -107,6 +108,7 @@
         android:text="@string/event_categories"/>
 
     <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cgCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:singleSelection="false"
@@ -158,17 +160,118 @@
         android:text="@string/city"/>
 
     <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cgCity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:singleSelection="false"
         app:selectionRequired="true">
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/ctemp"
+            android:id="@+id/cAmman"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add later"
+            android:text="@string/Amman"
             android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cZarqa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Zarqa"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cBalqa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Balqa"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cMadaba"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Madaba"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cIrbid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Irbid"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cJerash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Jerash"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cMafraq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Mafraq"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cAjloun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Ajloun"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cKarak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Karak"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cAqaba"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Aqaba"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cMaan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Maan"
+            android:checkable="true"
+            android:checked="true"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/cTafila"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Tafila"
+            android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
     </com.google.android.material.chip.ChipGroup>

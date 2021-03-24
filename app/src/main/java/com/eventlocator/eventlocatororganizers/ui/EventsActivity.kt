@@ -21,12 +21,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EventsActivity : AppCompatActivity(){
+class EventsActivity : AppCompatActivity(), OnEventsFiltered{
     lateinit var binding: ActivityEventsBinding
     var filterFragment: FilterPreviousEventsFragment? = null
     lateinit var pagerAdapter: EventPagerAdapter
     var currentPosition = 0
     val that = this
+    lateinit var onPreviousEventsReadyListener: OnPreviousEventsReadyListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
@@ -141,4 +142,17 @@ class EventsActivity : AppCompatActivity(){
 
                 })
     }
+
+    override fun getFilteredResult(events: ArrayList<Event>) {
+        onPreviousEventsReadyListener.getResult(events)
+    }
+
+    override fun onNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+}
+
+interface OnPreviousEventsReadyListener{
+    fun getResult(events: ArrayList<Event>)
 }

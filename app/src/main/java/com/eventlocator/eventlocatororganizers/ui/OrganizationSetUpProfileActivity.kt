@@ -113,15 +113,17 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             val organizer = organizerBuilder.build()
 
             RetrofitServiceFactory.createService(OrganizerService::class.java).createOrganizer(proofImageMultipartBody,
-                profilePictureMultipartBody, organizer)
+                profilePictureMultipartBody, organizer, 0)
                 .enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(
-                        call: Call<ResponseBody>,
-                        response: Response<ResponseBody>
-                    ) {
-                        Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
-                        //TODO: Handle success (Take to login)
-                        //TODO: Check status code
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        if (response.code() == 201){
+                            Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(applicationContext, LoginActivity::class.java))
+                        }
+                        else{
+                            Toast.makeText(applicationContext, "Not", Toast.LENGTH_SHORT).show()
+                            //TODO: Display alert that server is facing issues (code 503)
+                        }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -338,5 +340,6 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putParcelable(INSTANCE_STATE_IMAGE, image)
     }
+
 
 }
