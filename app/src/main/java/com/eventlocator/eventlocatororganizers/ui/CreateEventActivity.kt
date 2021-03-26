@@ -23,6 +23,8 @@ import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.data.LocatedEventData
 import com.eventlocator.eventlocatororganizers.data.Session
 import com.eventlocator.eventlocatororganizers.databinding.ActivityCreateEventBinding
+import com.eventlocator.eventlocatororganizers.retrofit.EventService
+import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocatororganizers.utilities.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.datepicker.CalendarConstraints
@@ -30,6 +32,14 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -40,7 +50,7 @@ class CreateEventActivity : AppCompatActivity() {
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
 
-
+    lateinit var cities: List<String>
     lateinit var startDate: LocalDate
     lateinit var endDate: LocalDate
 
@@ -80,22 +90,33 @@ class CreateEventActivity : AppCompatActivity() {
             binding.btnRemoveImage.isEnabled = false
 
         binding.btnCreateEvent.setOnClickListener{
-            val categories = ArrayList<EventCategory>()
-            if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL)
-            if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT)
-            if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING)
-            if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS)
+            val categories = ArrayList<Int>()
+            if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
+            if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
+            if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING.ordinal)
+            if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS.ordinal)
 
             val sessions = ArrayList<Session>()
             sessions.add(Session(1,
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
                 firstSessionStartTime.format24H(),
                 firstSessionEndTime.format24H(),
-                startDate.dayOfWeek,
+                startDate.dayOfWeek.ordinal,
                 if(isLimited()) if (firstSessionCheckInTime.hour>=0) firstSessionCheckInTime.format24H() else
-                firstSessionStartTime.format24H() else "No"))
+                firstSessionStartTime.format24H() else ""))
 
-            //TODO: Add all sessions
+            for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString(),
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+                sessions.add(Session(i+2,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(sessionStartDate),
+                        holder.startTime.format24H(),
+                        holder.endTime.format24H(),
+                        sessionStartDate.dayOfWeek.ordinal,
+                        if (isLimited()) if(holder.checkInTime.hour>=0) holder.checkInTime.format24H() else
+                            holder.startTime.format24H() else ""))
+            }
 
             val temp = if (this::registrationCloseDate.isInitialized)
                 registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
@@ -120,16 +141,37 @@ class CreateEventActivity : AppCompatActivity() {
                 val location = ArrayList<Double>()
                 location.add(locationLatLng.latitude)
                 location.add(locationLatLng.longitude)
-                LocatedEventData(City.valueOf(binding.acCityMenu.text.toString()), location)
+                LocatedEventData(cities.indexOf(binding.acCityMenu.text.toString()), location)
             }
             else null
-            //TODO: Check if there is a whatsapp link and add it
-
             eventBuilder.setLocatedEventData(locatedEventData)
 
-            val event = eventBuilder.build()
+            eventBuilder.setWhatsAppLink(binding.etWhatAppLink.text.toString().trim())
 
-            //TODO: Send to backend
+            val event = eventBuilder.build()
+            val inputStream = contentResolver.openInputStream(image!!)
+            val eventImagePart: RequestBody = RequestBody.create(
+                    MediaType.parse("image/*"), inputStream?.readBytes()!!
+            )
+            val eventImageMultipartBody = MultipartBody.Part.createFormData("image","image", eventImagePart)
+
+            val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                    .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+
+            RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
+                    .createEvent(eventImageMultipartBody, event).enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            if (response.code() == 201) {
+                                Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                        }
+
+                    })
 
 
 
@@ -330,7 +372,7 @@ class CreateEventActivity : AppCompatActivity() {
             picker.show(supportFragmentManager, builder.build().toString())
         }
 
-        val cities = listOf(getString(R.string.Amman),getString(R.string.Zarqa),getString(R.string.Balqa)
+        cities = listOf(getString(R.string.Amman),getString(R.string.Zarqa),getString(R.string.Balqa)
             ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
             ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
             ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
@@ -357,8 +399,8 @@ class CreateEventActivity : AppCompatActivity() {
         binding.btnRegistrationCloseDate.setOnClickListener {
             val builder: MaterialDatePicker.Builder<Long> = MaterialDatePicker.Builder.datePicker()
             val calendarConstraints = CalendarConstraints.Builder()
-            val startConstraint = LocalDate.now().minusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val endConstraint = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val startConstraint = startDate.minusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val endConstraint = startDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             calendarConstraints.setStart(startConstraint)
             calendarConstraints.setEnd(endConstraint)
             calendarConstraints.setValidator(object: CalendarConstraints.DateValidator{

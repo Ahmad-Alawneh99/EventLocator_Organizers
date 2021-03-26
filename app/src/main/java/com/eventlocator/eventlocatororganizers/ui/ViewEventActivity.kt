@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
@@ -27,6 +29,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayInputStream
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -56,7 +59,10 @@ class ViewEventActivity : AppCompatActivity() {
                 ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
                 ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
                 ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
-        //getAndLoadEvent()
+        getAndLoadEvent()
+
+
+
 
 
     }
@@ -67,9 +73,8 @@ class ViewEventActivity : AppCompatActivity() {
     }
 
     fun loadEvent(){
-        binding.ivEventImage.setImageBitmap(
-            BitmapFactory.
-        decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(event.image))))
+        binding.ivEventImage.setImageBitmap(BitmapFactory.
+        decodeStream(ByteArrayInputStream(Base64.decode(event.image, Base64.DEFAULT))))
         val startDateFormatted = LocalDate.parse(event.startDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
         val endDateFormatted = LocalDate.parse(event.endDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
 
@@ -90,12 +95,19 @@ class ViewEventActivity : AppCompatActivity() {
 
         binding.tvNumOfParticipants.text = event.participants.size.toString()
 
-        //TODO: Check if located
-        binding.tvCity.text = cities[event.locatedEventData!!.city.ordinal]
-        binding.tvLocation.text =  Geocoder(this).getFromLocation(
-            event.locatedEventData!!.location[0],
-        event.locatedEventData!!.location[1], 1)[0].getAddressLine(0)
-        //TODO: Set click listener to show location on map
+        //TODO: surround optional data with card views and hide them when there is no data
+
+        if (event.locatedEventData!=null) {
+            binding.tvCity.text = cities[event.locatedEventData!!.city]
+            val location = Geocoder(this).getFromLocation(
+                    event.locatedEventData!!.location[0],
+                    event.locatedEventData!!.location[1], 1)
+
+            binding.tvLocation.text = if (location.size == 0) "Unnamed location" else location[0].getAddressLine(0)
+            //TODO: Set click listener to show location on map
+        }
+
+
         val registrationCloseDateTime = LocalDateTime.parse(event.registrationCloseDateTime,
             DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
         binding.tvRegistrationCloseDateTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
@@ -105,23 +117,25 @@ class ViewEventActivity : AppCompatActivity() {
         var categories = ""
         for(i in 0 until event.categories.size){
             categories+= when(event.categories[i]){
-                EventCategory.EDUCATIONAL -> getString(R.string.educational)
-                EventCategory.ENTERTAINMENT -> getString(R.string.entertainment)
-                EventCategory.VOLUNTEERING -> getString(R.string.volunteering)
-                EventCategory.SPORTS -> getString(R.string.sports)
+                EventCategory.EDUCATIONAL.ordinal -> getString(R.string.educational)
+                EventCategory.ENTERTAINMENT.ordinal -> getString(R.string.entertainment)
+                EventCategory.VOLUNTEERING.ordinal -> getString(R.string.volunteering)
+                EventCategory.SPORTS.ordinal -> getString(R.string.sports)
+                else -> ""
             }
             if (i!=event.categories.size-1)categories+=','
         }
 
         binding.tvCategories.text = categories
 
-        //TODO: Handle cancellation (surround with a view and hide it when its not canceled)
-        val cancellationDateTime = LocalDateTime.parse(event.canceledEventData!!.cancellationDateTime,
-            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
+        if (event.canceledEventData!=null) {
+            val cancellationDateTime = LocalDateTime.parse(event.canceledEventData!!.cancellationDateTime,
+                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
 
-        binding.tvCancellationDateTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
-            .format(cancellationDateTime)
-        binding.tvCancellationReason.text = event.canceledEventData!!.cancellationReason
+            binding.tvCancellationDateTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
+                    .format(cancellationDateTime)
+            binding.tvCancellationReason.text = event.canceledEventData!!.cancellationReason
+        }
 
         //TODO: Handle when not available
         binding.tvWhatsAppGroup.text = event.whatsAppLink
@@ -136,14 +150,16 @@ class ViewEventActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
                 .getEvent(eventID).enqueue(object : Callback<Event> {
                     override fun onResponse(call: Call<Event>, response: Response<Event>) {
-                        //TODO: Check for http codes
-                        event = response.body()!!
-                        loadEvent()
-                        loadMenuItems()
+                        if (response.code()==200) {
+                            event = response.body()!!
+                            loadEvent()
+                            loadMenuItems()
+                        }
+                        Toast.makeText(applicationContext, "Here", Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onFailure(call: Call<Event>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                        Log.e("MY",t.message!!)
                     }
 
                 })
@@ -163,7 +179,7 @@ class ViewEventActivity : AppCompatActivity() {
         else if (getCurrentSession()!=null){
             return "Session #"+getCurrentSession()!!.id+" is happening now"
         }
-        else if (event.status == EventStatus.PENDING){
+        else if (event.status == EventStatus.PENDING.ordinal){
             return "This event is pending and is not visible to the public yet"
         }
         else{
@@ -199,7 +215,6 @@ class ViewEventActivity : AppCompatActivity() {
     }
 
     private fun isLimitedLocated():Boolean{
-        //TODO: Make sure that the default max number of participants is -1
         return event.maxParticipants!=-1 && event.locatedEventData!=null
     }
 
@@ -236,7 +251,6 @@ class ViewEventActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         this.menu = menu
-        loadMenuItems()
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -282,47 +296,46 @@ class ViewEventActivity : AppCompatActivity() {
     fun loadMenuItems(){
         //TODO: string resource
         if (menu == null) return
-//        if (!isCanceled()){
-//            if (isFinished()){
-//                menu!!.add(menu_group_id, view_feedback_id,1, "View feedback")
-//                menu!!.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
-//                if (isLimitedLocated()){
-//                    menu!!.add(menu_group_id, view_statistics_id, 6, "View statistics")
-//                }
-//            }
-//            else{
-//                if (!hasStarted()){
-//                    menu!!.add(menu_group_id, cancel_event_id, 10, "Cancel event")
-//                }
-//                val eventStartDate = LocalDate.parse(event.startDate,
-//                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-//                val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
-//                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-//                if (LocalDateTime.now().isBefore(eventStartDateTime.minusHours(24))){
-//                    menu!!.add(menu_group_id, edit_event_id, 4, "Edit event")
-//                }
-//                else if (event.status == EventStatus.PENDING){
-//                    menu!!.add(menu_group_id, edit_whole_event_id, 4, "Edit event")
-//                }
-//            }
-//            menu!!.add(menu_group_id, view_participants_id,2,"View participants")
-//        }
+        if (!isCanceled()){
+            if (isFinished()){
+                menu!!.add(menu_group_id, view_feedback_id,1, "View feedback")
+                menu!!.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
+                if (isLimitedLocated()){
+                    menu!!.add(menu_group_id, view_statistics_id, 6, "View statistics")
+                }
+            }
+            else{
+                if (!hasStarted()){
+                    menu!!.add(menu_group_id, cancel_event_id, 10, "Cancel event")
+                }
+                val eventStartDate = LocalDate.parse(event.startDate,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+                val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
+                if (LocalDateTime.now().isBefore(eventStartDateTime.minusHours(24))){
+                    menu!!.add(menu_group_id, edit_event_id, 4, "Edit event")
+                }
+                else if (event.status == EventStatus.PENDING.ordinal){
+                    menu!!.add(menu_group_id, edit_whole_event_id, 4, "Edit event")
+                }
+            }
+            menu!!.add(menu_group_id, view_participants_id,2,"View participants")
+        }
 
-        menu!!.add(menu_group_id, cancel_event_id, 10, "Cancel event")
+
     }
 
     private fun promptCancelEvent(){
         val layout = layoutInflater.inflate(R.layout.cancel_event,binding.root, false)
         val builder = AlertDialog.Builder(this).setTitle("Are you sure you want to cancel the event?")
         var warningEnabled = false
-        //TODO: remove comments when done testing
-//        val eventStartDate = LocalDate.parse(event.startDate,
-//            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-//        val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
-//            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-//        if (LocalDateTime.now().isAfter(eventStartDateTime.minusHours(24))){
-//            warningEnabled = true
-//        }
+        val eventStartDate = LocalDate.parse(event.startDate,
+            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+        val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
+            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
+        if (LocalDateTime.now().isAfter(eventStartDateTime.minusHours(24))){
+            warningEnabled = true
+        }
         layout.findViewById<TextView>(R.id.tvCancelWarning).isEnabled = warningEnabled
 
         val etCancellationReason = layout.findViewById<EditText>(R.id.etCancellationReason)
@@ -370,11 +383,16 @@ class ViewEventActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
             .cancelEvent(eventID, data).enqueue(object: Callback<ResponseBody>{
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    //TODO: Handle what happens (mostly return to prev screen)
+                    if (response.code() == 200){
+                        finish()
+                    }
+                    else{
+                        Toast.makeText(applicationContext, "Nope", Toast.LENGTH_LONG).show()
+                    }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    //TODO: Handle failure
+                    Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
                 }
 
             })

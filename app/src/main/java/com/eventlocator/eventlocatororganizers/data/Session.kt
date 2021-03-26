@@ -7,13 +7,13 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-data class Session(var id: Int, var date: String, var startTime: String, var endTime: String, var dayOfWeek: DayOfWeek, var checkInTime: String) {
+data class Session(var id: Int, var date: String, var startTime: String, var endTime: String, var dayOfWeek: Int, var checkInTime: String) {
     //TODO: Modify to support arabic
     override fun toString(): String {
         val date = LocalDate.parse(date, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-        val startTime = LocalDate.parse(startTime, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT))
-        val endTime = LocalDate.parse(endTime, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT))
-        val checkInTime = if (checkInTime!="") LocalDate.parse(checkInTime,
+        val startTime = LocalTime.parse(startTime, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT))
+        val endTime = LocalTime.parse(endTime, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT))
+        val checkInTime = if (checkInTime!="") LocalTime.parse(checkInTime,
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT))
                 else null
         val timeFormatter = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DISPLAY)

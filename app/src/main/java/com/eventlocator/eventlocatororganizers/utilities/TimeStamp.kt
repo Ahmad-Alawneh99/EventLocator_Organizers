@@ -26,7 +26,7 @@ class TimeStamp(var hour: Int, var minute: Int) {
 
     fun format24H(): String{
         val h = if (this.hour<10) "0"+hour.toString() else hour.toString()
-        val m = if (this.minute < 10) "0"+minute.toString() else hour.toString()
+        val m = if (this.minute < 10) "0"+minute.toString() else minute.toString()
 
         return h+':'+m
 

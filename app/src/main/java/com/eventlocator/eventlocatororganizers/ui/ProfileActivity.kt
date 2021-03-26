@@ -6,9 +6,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
+import androidx.core.view.get
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.data.Organizer
 import com.eventlocator.eventlocatororganizers.databinding.ActivityProfileBinding
@@ -19,9 +22,12 @@ import com.eventlocator.eventlocatororganizers.utilities.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayInputStream
+import java.net.URLEncoder
 
 class ProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityProfileBinding
+    lateinit var organizer: Organizer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
@@ -33,11 +39,11 @@ class ProfileActivity : AppCompatActivity() {
         getAndLoadOrganizerInfo()
 
         binding.btnCreateEvent.setOnClickListener {
-            //TODO: open create event activity
+            startActivity(Intent(this, CreateEventActivity::class.java))
         }
 
         binding.btnViewEvents.setOnClickListener {
-            //TODO: open events activity
+            startActivity(Intent(this, EventsActivity::class.java))
         }
 
         binding.btnEditProfile.setOnClickListener {
@@ -98,7 +104,7 @@ class ProfileActivity : AppCompatActivity() {
                 .getOrganizerInfo().enqueue(object: Callback<Organizer> {
                     override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
                         if (response.code()==202) {
-                            val organizer = response.body()!!
+                            organizer = response.body()!!
                             binding.tvOrgName.text = organizer.name
                             binding.tvAbout.text = organizer.about
                             //TODO: Set click listener to view followers
@@ -106,10 +112,9 @@ class ProfileActivity : AppCompatActivity() {
                             binding.tvEmail.text = organizer.email
                             binding.tvPhoneNumber.text = organizer.phoneNumber
                             binding.tvRating.text = organizer.rating.toString()
-                            //TODO: Social media accounts
-                            //TODO: Test Bitmaps
+                            setSocialMediaAccounts()
                             binding.ivOrgImage.setImageBitmap(BitmapFactory.
-                            decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(organizer.image))))
+                            decodeStream(ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
                         }
                         else{
                             //TODO: Handle not found
@@ -131,6 +136,92 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(a)
     }
 
-
+    fun setSocialMediaAccounts(){
+        for(i in 0 until organizer.socialMediaAccounts.size){
+            if (organizer.socialMediaAccounts[i].accountName=="" && organizer.socialMediaAccounts[i].url==""){
+                binding.llSocialMedia[i].visibility = View.GONE
+            }
+            else{
+                when (i){
+                    0 -> {
+                        binding.llSocialMedia[i].setOnClickListener {
+                            if (organizer.socialMediaAccounts[i].url!=""){
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                Uri.parse(organizer.socialMediaAccounts[i].url))
+                                startActivity(intent)
+                            }
+                            else if (organizer.socialMediaAccounts[i].accountName!=""){
+                                val url = "https://www.facebook.com/search/top?q="+
+                                        URLEncoder.encode(organizer.socialMediaAccounts[i].accountName, "UTF-8")
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                    1 -> {
+                        binding.llSocialMedia[i].setOnClickListener {
+                            if (organizer.socialMediaAccounts[i].url!=""){
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                startActivity(intent)
+                            }
+                            else if (organizer.socialMediaAccounts[i].accountName!=""){
+                                val url = "https://www.youtube.com/results?search_query="+
+                                        URLEncoder.encode(organizer.socialMediaAccounts[i].accountName, "UTF-8")
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                    2 -> {
+                        binding.llSocialMedia[i].setOnClickListener {
+                            if (organizer.socialMediaAccounts[i].url!=""){
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                startActivity(intent)
+                            }
+                            else if (organizer.socialMediaAccounts[i].accountName!=""){
+                                val url = "https://www.instagram.com/"+
+                                        organizer.socialMediaAccounts[i].accountName
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                    3 -> {
+                        binding.llSocialMedia[i].setOnClickListener {
+                            if (organizer.socialMediaAccounts[i].url!=""){
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                startActivity(intent)
+                            }
+                            else if (organizer.socialMediaAccounts[i].accountName!=""){
+                                val url = "https://twitter.com/search?q="+
+                                        URLEncoder.encode(organizer.socialMediaAccounts[i].accountName, "UTF-8")
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                    4 -> {
+                        binding.llSocialMedia[i].setOnClickListener {
+                            if (organizer.socialMediaAccounts[i].url!=""){
+                                val intent = Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                startActivity(intent)
+                            }
+                            else if (organizer.socialMediaAccounts[i].accountName!=""){
+                                val url = "https://www.linkedin.com/search/results/all/?keywords="+
+                                        URLEncoder.encode(organizer.socialMediaAccounts[i].accountName, "UTF-8")
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (organizer.socialMediaAccounts.size<5) binding.ivLinkedIn.visibility = View.GONE
+    }
 
 }

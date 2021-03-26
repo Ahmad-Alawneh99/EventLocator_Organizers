@@ -422,7 +422,7 @@ class EditPendingEventActivity : AppCompatActivity() {
         alterCityAndLocationStatus(event.locatedEventData==null)
         alterLimitedLocatedSessions(isLimited())
         if (event.locatedEventData!=null){
-            binding.acCityMenu.setText(cities[event.locatedEventData!!.city.ordinal], TextView.BufferType.EDITABLE)
+            binding.acCityMenu.setText(cities[event.locatedEventData!!.city], TextView.BufferType.EDITABLE)
             binding.tvSelectedLocation.text = Geocoder(this).getFromLocation(
                 event.locatedEventData!!.location[0],
                 event.locatedEventData!!.location[1], 1)[0].getAddressLine(0)

@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.adapters.UpcomingEventAdapter
 import com.eventlocator.eventlocatororganizers.data.Event
@@ -29,7 +32,7 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val status = ArrayList<String>()
         for(i in 0 until events.size){
-            if (events[i].status == EventStatus.PENDING){
+            if (events[i].status == EventStatus.PENDING.ordinal){
                 status.add(getString(R.string.pending))
             }
             else{
@@ -70,8 +73,12 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
                 }
             }
         }
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvUpcomingEvents.layoutManager = layoutManager
+        binding.rvUpcomingEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
 
         val adapter = UpcomingEventAdapter(events, status)
         binding.rvUpcomingEvents.adapter = adapter
+        binding.rvUpcomingEvents.adapter!!.notifyDataSetChanged()
     }
 }

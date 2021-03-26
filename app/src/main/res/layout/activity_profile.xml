@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/ivOrgImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:adjustViewBounds="true"
@@ -18,9 +18,10 @@
         android:maxHeight="128dp"
         android:minWidth="128dp"
         android:minHeight="128dp"
+        android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bomber" />
+        app:srcCompat="@drawable/avatar" />
 
     <Button
         android:id="@+id/btnEditProfile"
@@ -48,7 +49,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Name"
         android:textSize="@dimen/larger_label"
         app:layout_constraintStart_toEndOf="@+id/ivOrgImage"
         app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +59,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="1234"
         android:textSize="@dimen/large_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivOrgImage" />
@@ -97,7 +96,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,7 +107,6 @@
                 android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="email@email.com (sample)"
                 android:layout_marginBottom="16dp"/>
 
             <TextView
@@ -119,7 +118,6 @@
                 android:id="@+id/tvPhoneNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0778846130 (sample)"
                 android:layout_marginBottom="16dp"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -131,7 +129,6 @@
                 android:id="@+id/tvAbout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sample text Sample text Sample text Sample text Sample text Sample text Sample text Sample text Sample text"
                 android:layout_marginBottom="16dp"/>
 
             <TextView
@@ -139,8 +136,54 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/large_label"
                 android:text="@string/social_media_accounts"/>
-            <!-- TODO: add icons representing all platforms -->
 
+            <LinearLayout
+                android:id="@+id/llSocialMedia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivFacebook"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/facebook"/>
+
+                <ImageView
+                    android:id="@+id/ivYoutube"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/youtube"/>
+
+                <ImageView
+                    android:id="@+id/ivInstagram"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/instagram"/>
+
+                <ImageView
+                    android:id="@+id/ivTwitter"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/twitter"/>
+
+                <ImageView
+                    android:id="@+id/ivLinkedIn"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/linkedin"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
@@ -151,7 +194,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:text="Rating"
         app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@+id/ivOrgImage" />
 

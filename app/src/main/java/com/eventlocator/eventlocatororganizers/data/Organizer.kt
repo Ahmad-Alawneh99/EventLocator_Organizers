@@ -1,5 +1,8 @@
 package com.eventlocator.eventlocatororganizers.data
 
+import okhttp3.ResponseBody
+import java.io.InputStream
+//TODO: ADD STATUS
 class Organizer (var id: Long, var name: String, var email: String, var about: String,
                  var rating: Double, var followers: List<Participant>, var socialMediaAccounts: List<SocialMediaAccount>,
                  var upcomingEvents: List<Event>, var previousEvents: List<Event>, var canceledEvents: List<Event>,

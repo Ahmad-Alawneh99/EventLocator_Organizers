@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.TextView
@@ -25,6 +26,7 @@ import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayInputStream
 
 class IndividualEditProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityIndividualEditProfileBinding
@@ -264,8 +266,8 @@ class IndividualEditProfileActivity : AppCompatActivity() {
                 && binding.etTwitterName.text.toString() == organizer.socialMediaAccounts[3].accountName
                 && binding.etTwitterURL.text.toString() == organizer.socialMediaAccounts[3].url
                 && binding.etLinkedInName.text.toString() == organizer.socialMediaAccounts[4].accountName
-                && binding.etLinkedInURL.text.toString() == organizer.socialMediaAccounts[4].url
-                && image == Uri.parse(organizer.image))
+                && binding.etLinkedInURL.text.toString() == organizer.socialMediaAccounts[4].url)
+                //&& image == Uri.parse(organizer.image))
 
         binding.btnSave.isEnabled = binding.btnSave.isEnabled && !noChanges
 
@@ -365,8 +367,8 @@ class IndividualEditProfileActivity : AppCompatActivity() {
 
                         //TODO: Test Bitmaps
                         binding.ivProfilePicturePreview.setImageBitmap(BitmapFactory.
-                        decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(organizer.image))))
-                        image = Uri.parse(organizer.image)
+                        decodeStream(ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                        //image = Uri.parse(organizer.image)
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {

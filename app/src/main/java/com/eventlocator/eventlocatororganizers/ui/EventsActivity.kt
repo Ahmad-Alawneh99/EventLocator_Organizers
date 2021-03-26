@@ -34,10 +34,10 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
         setContentView(binding.root)
 
         //TODO: enable when done with testing
-        //getAndLoadEvents()
+        getAndLoadEvents()
 
         //For testing:
-        pagerAdapter = EventPagerAdapter(that, 3, ArrayList())
+        /*pagerAdapter = EventPagerAdapter(that, 3, ArrayList())
         binding.pagerEvents.adapter = pagerAdapter
         TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
             when (position){
@@ -61,13 +61,12 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
                 }
             }
         })
-
+    */
     }
 
     override fun onResume() {
         super.onResume()
-        //TODO: Enable when done with testing
-        //getAndLoadEvents()
+        getAndLoadEvents()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -109,35 +108,40 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token)
                 .getEvents().enqueue(object: Callback<ArrayList<Event>>{
                     override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
-                        //TODO: Check response code
-                        pagerAdapter = EventPagerAdapter(that, 3, response.body()!!)
-                        binding.pagerEvents.adapter = pagerAdapter
-                        TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
-                            when (position){
-                                0 -> tab.text = getString(R.string.upcoming_events)
-                                1 -> tab.text = getString(R.string.previous_events)
-                                2 -> tab.text = getString(R.string.canceled_events)
-                            }
+                        if (response.code()==200) {
+                            pagerAdapter = EventPagerAdapter(that, 3, response.body()!!)
+                            binding.pagerEvents.adapter = pagerAdapter
+                            TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
+                                when (position) {
+                                    0 -> tab.text = getString(R.string.upcoming_events)
+                                    1 -> tab.text = getString(R.string.previous_events)
+                                    2 -> tab.text = getString(R.string.canceled_events)
+                                }
 
-                        }.attach()
+                            }.attach()
 
-                        binding.pagerEvents.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
-                            override fun onPageSelected(position: Int) {
-                                super.onPageSelected(position)
-                                //TODO: make the color of the filter button blurred
-                                currentPosition = position
-                                if (currentPosition!= 1 && filterFragment!=null){
-                                    supportFragmentManager.commit {
-                                        remove(filterFragment!!)
-                                        filterFragment = null
+                            binding.pagerEvents.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                                override fun onPageSelected(position: Int) {
+                                    super.onPageSelected(position)
+                                    //TODO: make the color of the filter button blurred
+                                    currentPosition = position
+                                    if (currentPosition != 1 && filterFragment != null) {
+                                        supportFragmentManager.commit {
+                                            remove(filterFragment!!)
+                                            filterFragment = null
+                                        }
                                     }
                                 }
-                            }
-                        })
+                            })
+                        }
+                        else{
+                            //TODO: Handle other http codes
+                            Toast.makeText(applicationContext, "E", Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                     override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
                     }
 
                 })
@@ -147,10 +151,6 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
         onPreviousEventsReadyListener.getResult(events)
     }
 
-    override fun onNavigateUp(): Boolean {
-        finish()
-        return true
-    }
 }
 
 interface OnPreviousEventsReadyListener{

@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.adapters.PreviousEventAdapter
 import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.databinding.FragmentPreviousEventsBinding
@@ -27,6 +29,9 @@ class PreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPrevio
 
     override fun getResult(events: ArrayList<Event>) {
         this.events = events
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvPreviousEvents.layoutManager = layoutManager
+        binding.rvPreviousEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = PreviousEventAdapter(events)
         binding.rvPreviousEvents.adapter = adapter
         binding.rvPreviousEvents.adapter!!.notifyDataSetChanged()

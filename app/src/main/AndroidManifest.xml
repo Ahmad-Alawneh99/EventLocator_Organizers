@@ -125,8 +125,13 @@
         </activity>
         <activity
             android:name=".ui.ProfileActivity"
-            android:label="Profile">
+            android:label="Profile"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.IndividualSetUpProfileActivity"
@@ -151,11 +156,7 @@
             android:name=".ui.SignUpActivity"
             android:label="Sign Up"
             android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.WelcomeActivity"

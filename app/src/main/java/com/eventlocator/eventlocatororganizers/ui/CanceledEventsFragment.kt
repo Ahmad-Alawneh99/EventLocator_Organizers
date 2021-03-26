@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.adapters.CanceledEventAdapter
 import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.databinding.FragmentCanceledEventsBinding
@@ -19,6 +21,9 @@ class CanceledEventsFragment(var events: ArrayList<Event>): Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvCanceledEvents.layoutManager = layoutManager
+        binding.rvCanceledEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = CanceledEventAdapter(events)
         binding.rvCanceledEvents.adapter = adapter
 
