@@ -15,7 +15,7 @@ import com.eventlocator.eventlocatororganizers.utilities.DateTimeFormatterFactor
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class CanceledEventAdapter(private val cacneledEvents: ArrayList<Event>):
+class CanceledEventAdapter(private val canceledEvents: ArrayList<Event>):
         RecyclerView.Adapter<CanceledEventAdapter.CanceledEventHolder>() {
     lateinit var context: Context
     inner class CanceledEventHolder(var binding: CanceledEventBinding): RecyclerView.ViewHolder(binding.root){
@@ -37,17 +37,17 @@ class CanceledEventAdapter(private val cacneledEvents: ArrayList<Event>):
     }
 
     override fun onBindViewHolder(holder: CanceledEventHolder, position: Int) {
-        holder.binding.tvEventID.text = cacneledEvents[position].id.toString()
-        holder.binding.tvEventName.text = cacneledEvents[position].name
-        val startDate = LocalDate.parse(cacneledEvents[position].startDate,
+        holder.binding.tvEventID.text = canceledEvents[position].id.toString()
+        holder.binding.tvEventName.text = canceledEvents[position].name
+        val startDate = LocalDate.parse(canceledEvents[position].startDate,
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-        val endDate = LocalDate.parse(cacneledEvents[position].endDate,
+        val endDate = LocalDate.parse(canceledEvents[position].endDate,
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
         holder.binding.tvEventDates.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
 
-        val cancellationDateTime = LocalDateTime.parse(cacneledEvents[position].canceledEventData!!.cancellationDateTime,
+        val cancellationDateTime: LocalDateTime = LocalDateTime.parse(canceledEvents[position].canceledEventData!!.cancellationDateTime,
             DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
         holder.binding.tvCancellationDateTime.text =
                 "Canceled on: " + DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
@@ -56,5 +56,5 @@ class CanceledEventAdapter(private val cacneledEvents: ArrayList<Event>):
 
     }
 
-    override fun getItemCount(): Int  = cacneledEvents.size
+    override fun getItemCount(): Int  = canceledEvents.size
 }

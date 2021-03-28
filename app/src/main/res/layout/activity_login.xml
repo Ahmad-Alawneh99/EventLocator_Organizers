@@ -83,4 +83,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvLogin" />
 
+    <TextView
+        android:id="@+id/tvNeedAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Need an account? click here to sign up"
+        android:textSize="@dimen/large_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tlPassword" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

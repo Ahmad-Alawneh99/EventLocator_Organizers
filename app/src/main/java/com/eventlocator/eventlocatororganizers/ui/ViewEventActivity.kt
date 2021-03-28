@@ -39,7 +39,6 @@ import java.time.format.DateTimeFormatter
 class ViewEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewEventBinding
     lateinit var event: Event
-    var menu: Menu? = null
     var eventID = 0
 
     private val menu_group_id = 1
@@ -59,17 +58,14 @@ class ViewEventActivity : AppCompatActivity() {
                 ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
                 ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
                 ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
+
         getAndLoadEvent()
-
-
-
-
 
     }
 
     override fun onResume() {
         super.onResume()
-        //getAndLoadEvent()
+        getAndLoadEvent()
     }
 
     fun loadEvent(){
@@ -153,7 +149,7 @@ class ViewEventActivity : AppCompatActivity() {
                         if (response.code()==200) {
                             event = response.body()!!
                             loadEvent()
-                            loadMenuItems()
+                            invalidateOptionsMenu()
                         }
                         Toast.makeText(applicationContext, "Here", Toast.LENGTH_SHORT).show()
                     }
@@ -250,10 +246,10 @@ class ViewEventActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        this.menu = menu
+        if (this::event.isInitialized)
+            loadMenuItems(menu)
         return super.onCreateOptionsMenu(menu)
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -293,33 +289,33 @@ class ViewEventActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun loadMenuItems(){
+    fun loadMenuItems(menu: Menu?){
         //TODO: string resource
         if (menu == null) return
         if (!isCanceled()){
             if (isFinished()){
-                menu!!.add(menu_group_id, view_feedback_id,1, "View feedback")
-                menu!!.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
+                menu.add(menu_group_id, view_feedback_id,1, "View feedback")
                 if (isLimitedLocated()){
-                    menu!!.add(menu_group_id, view_statistics_id, 6, "View statistics")
+                    menu.add(menu_group_id, view_statistics_id, 6, "View statistics")
                 }
             }
             else{
                 if (!hasStarted()){
-                    menu!!.add(menu_group_id, cancel_event_id, 10, "Cancel event")
+                    menu.add(menu_group_id, cancel_event_id, 10, "Cancel event")
                 }
                 val eventStartDate = LocalDate.parse(event.startDate,
                         DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
                 val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
                         DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
                 if (LocalDateTime.now().isBefore(eventStartDateTime.minusHours(24))){
-                    menu!!.add(menu_group_id, edit_event_id, 4, "Edit event")
+                    menu.add(menu_group_id, edit_event_id, 4, "Edit event")
                 }
                 else if (event.status == EventStatus.PENDING.ordinal){
-                    menu!!.add(menu_group_id, edit_whole_event_id, 4, "Edit event")
+                    menu.add(menu_group_id, edit_whole_event_id, 4, "Edit event")
                 }
+                menu.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
             }
-            menu!!.add(menu_group_id, view_participants_id,2,"View participants")
+            menu.add(menu_group_id, view_participants_id,2,"View participants")
         }
 
 

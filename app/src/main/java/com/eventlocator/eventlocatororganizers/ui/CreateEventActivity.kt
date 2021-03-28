@@ -172,12 +172,6 @@ class CreateEventActivity : AppCompatActivity() {
                         }
 
                     })
-
-
-
-
-
-
         }
 
         val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
@@ -426,7 +420,9 @@ class CreateEventActivity : AppCompatActivity() {
                 binding.tvRegistrationCloseDate.text = registrationCloseDate.toString()
                 binding.btnRegistrationCloseTime.isEnabled = true
                 registrationCloseTime = TimeStamp(firstSessionStartTime.hour,firstSessionStartTime.minute)
-                binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
+                if (registrationCloseTime.hour>-1) {
+                    binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
+                }
             }
 
             picker.show(supportFragmentManager, builder.build().toString())

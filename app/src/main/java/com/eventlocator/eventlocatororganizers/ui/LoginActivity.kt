@@ -117,6 +117,11 @@ class LoginActivity : AppCompatActivity() {
                 updateLoginButton()
             }
         }
+
+        binding.tvNeedAccount.setOnClickListener{
+            startActivity(Intent(this, SignUpActivity::class.java))
+        }
+
     }
 
     fun updateLoginButton(){

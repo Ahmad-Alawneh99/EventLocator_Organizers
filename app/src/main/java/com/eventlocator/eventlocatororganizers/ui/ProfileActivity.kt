@@ -113,8 +113,10 @@ class ProfileActivity : AppCompatActivity() {
                             binding.tvPhoneNumber.text = organizer.phoneNumber
                             binding.tvRating.text = organizer.rating.toString()
                             setSocialMediaAccounts()
-                            binding.ivOrgImage.setImageBitmap(BitmapFactory.
-                            decodeStream(ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                            if (organizer.image!="") {
+                                binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
+                                        ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                            }
                         }
                         else{
                             //TODO: Handle not found
