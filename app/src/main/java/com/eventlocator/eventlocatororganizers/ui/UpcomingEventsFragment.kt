@@ -70,6 +70,7 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
                     if (!found){
                         status.add(getString(R.string.active))
                     }
+                    //TODO: Add full
                 }
             }
         }
