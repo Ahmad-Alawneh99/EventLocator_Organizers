@@ -39,7 +39,7 @@ import java.time.format.DateTimeFormatter
 class ViewEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewEventBinding
     lateinit var event: Event
-    var eventID = 0
+    var eventID:Long = 0
 
     private val menu_group_id = 1
     private val view_feedback_id = 1
@@ -58,7 +58,7 @@ class ViewEventActivity : AppCompatActivity() {
                 ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
                 ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
                 ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
-
+        eventID = intent.getLongExtra("eventID", -1)
         getAndLoadEvent()
 
     }
@@ -140,7 +140,6 @@ class ViewEventActivity : AppCompatActivity() {
     }
 
     private fun getAndLoadEvent(){
-        eventID = intent.getIntExtra("eventID", -1)
         val sharedPreference = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
         val token = sharedPreference.getString(SharedPreferenceManager.instance.TOKEN_KEY,"EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)

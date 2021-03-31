@@ -83,7 +83,7 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
             1-> {
                 if (currentPosition == 1) {
                     if (filterFragment == null) {
-                        filterFragment = FilterPreviousEventsFragment(ArrayList())
+                        filterFragment = FilterPreviousEventsFragment(pagerAdapter.previousEvents)
                         supportFragmentManager.commit {
                             setReorderingAllowed(true)
                             add(R.id.fvFilter, filterFragment!!)

@@ -18,13 +18,13 @@ interface EventService {
     fun getEvents(): Call<ArrayList<Event>>
 
     @GET("/organizers/events/{id}")
-    fun getEvent(@Path("id") eventID: Int): Call<Event>
+    fun getEvent(@Path("id") eventID: Long): Call<Event>
 
     @GET("/organizers/events/{id}/participants")
-    fun getParticipantsOfAnEvent(@Path("id") eventID: Int): Call<ArrayList<Participant>>
+    fun getParticipantsOfAnEvent(@Path("id") eventID: Long): Call<ArrayList<Participant>>
 
     @POST("/organizers/events/{id}/cancel")
-    fun cancelEvent(@Path("id") eventID: Int, @Body cancelledEventData: CanceledEventData): Call<ResponseBody>
+    fun cancelEvent(@Path("id") eventID: Long, @Body cancelledEventData: CanceledEventData): Call<ResponseBody>
 
     @GET("/organizers/events/limited/{id}/participants")
     fun getParticipantsOfALimitedEvent(@Path("id") eventID: Int): Call<ArrayList<Participant>>

@@ -12,9 +12,7 @@ import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.databinding.FragmentPreviousEventsBinding
 
 class PreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPreviousEventsReadyListener {
-
     lateinit var binding: FragmentPreviousEventsBinding
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentPreviousEventsBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -22,6 +20,9 @@ class PreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPrevio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvPreviousEvents.layoutManager = layoutManager
+        binding.rvPreviousEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = PreviousEventAdapter(events)
         binding.rvPreviousEvents.adapter = adapter
         (activity as EventsActivity).onPreviousEventsReadyListener = this
@@ -29,9 +30,6 @@ class PreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPrevio
 
     override fun getResult(events: ArrayList<Event>) {
         this.events = events
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.rvPreviousEvents.layoutManager = layoutManager
-        binding.rvPreviousEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = PreviousEventAdapter(events)
         binding.rvPreviousEvents.adapter = adapter
         binding.rvPreviousEvents.adapter!!.notifyDataSetChanged()

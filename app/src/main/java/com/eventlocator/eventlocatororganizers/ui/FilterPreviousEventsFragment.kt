@@ -92,7 +92,7 @@ class FilterPreviousEventsFragment(var events: ArrayList<Event>): Fragment() {
             calendarConstraints.setStart(endConstraint)
             calendarConstraints.setValidator(DateValidatorPointBackward.before(endConstraint))
             builder.setCalendarConstraints(calendarConstraints.build())
-            builder.setTitleText(getString(R.string.select_start_end_dates))
+            builder.setTitleText("Select start and end dates")
             val picker = builder.build()
             picker.addOnPositiveButtonClickListener {
                 val from: LocalDate = LocalDateTime.ofInstant(
@@ -115,7 +115,7 @@ class FilterPreviousEventsFragment(var events: ArrayList<Event>): Fragment() {
             picker.show(parentFragmentManager, builder.build().toString())
         }
 
-        binding.btnSelectDates.setOnClickListener {
+        binding.btnRemoveDates.setOnClickListener {
             startDate = null
             endDate = null
             binding.tvStartDate.text = getString(R.string.select_date)
