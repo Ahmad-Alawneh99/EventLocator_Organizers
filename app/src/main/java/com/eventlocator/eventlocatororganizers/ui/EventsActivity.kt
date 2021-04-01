@@ -69,8 +69,10 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
         getAndLoadEvents()
     }
 
+
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.clear()
+        if (!this::pagerAdapter.isInitialized || currentPosition!=1)return false
         menu?.add(1,1, Menu.NONE, "Filter").also { item ->
             item?.icon = ContextCompat.getDrawable(this,R.drawable.ic_temp)
             item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -125,6 +127,7 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
                                     super.onPageSelected(position)
                                     //TODO: make the color of the filter button blurred
                                     currentPosition = position
+                                    invalidateOptionsMenu()
                                     if (currentPosition != 1 && filterFragment != null) {
                                         supportFragmentManager.commit {
                                             remove(filterFragment!!)
