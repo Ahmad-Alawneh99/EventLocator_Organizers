@@ -31,7 +31,7 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val status = ArrayList<String>()
-        for(i in 0 until events.size){
+        /*for(i in 0 until events.size){
             if (events[i].status == EventStatus.PENDING.ordinal){
                 status.add(getString(R.string.pending))
             }
@@ -70,15 +70,14 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
                     if (!found){
                         status.add(getString(R.string.active))
                     }
-                    //TODO: Add full
                 }
             }
-        }
+        }*/
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvUpcomingEvents.layoutManager = layoutManager
         binding.rvUpcomingEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
 
-        val adapter = UpcomingEventAdapter(events, status)
+        val adapter = UpcomingEventAdapter(events)
         binding.rvUpcomingEvents.adapter = adapter
         binding.rvUpcomingEvents.adapter!!.notifyDataSetChanged()
     }

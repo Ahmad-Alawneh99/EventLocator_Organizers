@@ -21,7 +21,7 @@ class PreviousEventAdapter(private val previousEvents: ArrayList<Event>):
         init{
             binding.root.setOnClickListener {
                 val intent = Intent(context, ViewEventActivity::class.java)
-                intent.putExtra("eventID", binding.tvEventID.text.toString().toInt())
+                intent.putExtra("eventID", binding.tvEventID.text.toString().toLong())
                 context.startActivity(intent)
             }
         }

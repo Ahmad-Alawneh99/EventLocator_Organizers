@@ -32,11 +32,14 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sharedPreference = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-        if (sharedPreference.getString(SharedPreferenceManager.instance.TOKEN_KEY,"") ==""){
+        val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+        if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
+            startActivity(Intent(this, WelcomeActivity::class.java))
+        }
+        if (sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY,"") ==""){
             startActivity(Intent(this,LoginActivity::class.java))
         }
-        getAndLoadOrganizerInfo()
+        //getAndLoadOrganizerInfo()
 
         binding.btnCreateEvent.setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
@@ -47,7 +50,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.btnEditProfile.setOnClickListener {
-            val token = sharedPreference.getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+            val token = sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
             RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
                     .getOrganizerType().enqueue(object: Callback<Int>{
                         override fun onResponse(call: Call<Int>, response: Response<Int>) {
@@ -118,13 +121,23 @@ class ProfileActivity : AppCompatActivity() {
                                         ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
                             }
                         }
-                        else{
-                            //TODO: Handle not found
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
+                                    "401: Unauthorized access",true)
+                        }
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@ProfileActivity,
+                                    "Error", "404: Organizer not found", true)
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@ProfileActivity,
+                                    "Error", "Server issue, please try again later", true)
                         }
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                        Utils.instance.displayInformationalDialog(this@ProfileActivity,
+                                "Error", "Can't connect to server", true)
                     }
 
                 })

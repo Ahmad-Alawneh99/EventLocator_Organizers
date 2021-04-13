@@ -15,11 +15,6 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-
-        if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
-            startActivity(Intent(this, ProfileActivity::class.java))
-        }
-
         val editor = sharedPreferences.edit()
         editor.putBoolean(SharedPreferenceManager.instance.FIRST_TIME_KEY, false)
         editor.apply()

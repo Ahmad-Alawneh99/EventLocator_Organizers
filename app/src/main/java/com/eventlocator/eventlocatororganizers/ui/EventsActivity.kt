@@ -15,8 +15,10 @@ import com.eventlocator.eventlocatororganizers.databinding.ActivityEventsBinding
 import com.eventlocator.eventlocatororganizers.retrofit.EventService
 import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
+import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,7 +28,6 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
     var filterFragment: FilterPreviousEventsFragment? = null
     lateinit var pagerAdapter: EventPagerAdapter
     var currentPosition = 0
-    val that = this
     lateinit var onPreviousEventsReadyListener: OnPreviousEventsReadyListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,7 +112,7 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
                 .getEvents().enqueue(object: Callback<ArrayList<Event>>{
                     override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
                         if (response.code()==200) {
-                            pagerAdapter = EventPagerAdapter(that, 3, response.body()!!)
+                            pagerAdapter = EventPagerAdapter(this@EventsActivity, 3, response.body()!!)
                             binding.pagerEvents.adapter = pagerAdapter
                             TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
                                 when (position) {
@@ -125,7 +126,6 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
                             binding.pagerEvents.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                                 override fun onPageSelected(position: Int) {
                                     super.onPageSelected(position)
-                                    //TODO: make the color of the filter button blurred
                                     currentPosition = position
                                     invalidateOptionsMenu()
                                     if (currentPosition != 1 && filterFragment != null) {
@@ -137,14 +137,23 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
                                 }
                             })
                         }
-                        else{
-                            //TODO: Handle other http codes
-                            Toast.makeText(applicationContext, "E", Toast.LENGTH_SHORT).show()
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
+                                    "401: Unauthorized access",true)
+                        }
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@EventsActivity,
+                                    "Error", "No events found", false)
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@EventsActivity,
+                                    "Error", "Server issue, please try again later", false)
                         }
                     }
 
                     override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
+                        Utils.instance.displayInformationalDialog(this@EventsActivity,
+                                "Error", "Can't connect to server", false)
                     }
 
                 })
@@ -152,6 +161,10 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
 
     override fun getFilteredResult(events: ArrayList<Event>) {
         onPreviousEventsReadyListener.getResult(events)
+        supportFragmentManager.commit {
+            remove(filterFragment!!)
+            filterFragment = null
+        }
     }
 
 }

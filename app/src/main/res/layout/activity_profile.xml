@@ -1,141 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ProfileActivity">
+    tools:context=".ui.ProfileActivity"
+    android:orientation="vertical">
 
-
-    <ImageView
-        android:id="@+id/ivOrgImage"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:adjustViewBounds="true"
-        android:maxWidth="128dp"
-        android:maxHeight="128dp"
-        android:minWidth="128dp"
-        android:minHeight="128dp"
-        android:scaleType="fitXY"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/avatar" />
-
-    <Button
-        android:id="@+id/btnEditProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/edit_profile"
-        app:layout_constraintStart_toEndOf="@+id/ivOrgImage"
-        app:layout_constraintTop_toBottomOf="@+id/tvOrgName" />
-
-    <Button
-        android:id="@+id/btnViewEvents"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/my_events"
-        app:layout_constraintStart_toEndOf="@+id/ivOrgImage"
-        app:layout_constraintTop_toBottomOf="@+id/btnEditProfile" />
-
-    <TextView
-        android:id="@+id/tvOrgName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:textSize="@dimen/larger_label"
-        app:layout_constraintStart_toEndOf="@+id/ivOrgImage"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvFollowers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:textSize="@dimen/large_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivOrgImage" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/followers"
-        android:textSize="@dimen/large_label"
-        app:layout_constraintStart_toEndOf="@+id/tvFollowers"
-        app:layout_constraintTop_toBottomOf="@+id/ivOrgImage" />
-
-    <Button
-        android:id="@+id/btnCreateEvent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/host_an_event"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/btnCreateEvent"
         android:layout_marginStart="@dimen/et_start_end_margin"
-        android:layout_marginEnd="@dimen/et_start_end_margin">
+        android:layout_marginEnd="@dimen/et_start_end_margin"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/ivOrgImage"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:adjustViewBounds="true"
+            android:maxWidth="128dp"
+            android:maxHeight="128dp"
+            android:minWidth="128dp"
+            android:minHeight="128dp"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/avatar" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical">
             <TextView
+                android:id="@+id/tvOrgName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/large_label"
-                android:text="@string/your_email"/>
-            <TextView
-                android:id="@+id/tvEmail"
+                android:textSize="@dimen/larger_label"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/btnEditProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:text="@string/edit_profile"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/btnViewEvents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/my_events"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/et_start_end_margin"
+        android:layout_marginEnd="@dimen/et_start_end_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/followers"
+            android:textSize="@dimen/large_label"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/tvFollowers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_label" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"/>
+
+    <Button
+        android:id="@+id/btnCreateEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/host_an_event" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/large_label"
-                android:text="@string/your_phone"/>
+                android:text="@string/your_email"
+                android:textSize="@dimen/large_label" />
+
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/your_phone"
+                android:textSize="@dimen/large_label" />
+
             <TextView
                 android:id="@+id/tvPhoneNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/large_label"
-                android:text="@string/about_you"/>
+                android:text="@string/about_you"
+                android:textSize="@dimen/large_label" />
 
             <TextView
                 android:id="@+id/tvAbout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/large_label"
-                android:text="@string/social_media_accounts"/>
+                android:text="@string/social_media_accounts"
+                android:textSize="@dimen/large_label" />
 
             <LinearLayout
                 android:id="@+id/llSocialMedia"
@@ -149,7 +159,7 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/facebook"/>
+                    android:src="@drawable/facebook" />
 
                 <ImageView
                     android:id="@+id/ivYoutube"
@@ -157,7 +167,7 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/youtube"/>
+                    android:src="@drawable/youtube" />
 
                 <ImageView
                     android:id="@+id/ivInstagram"
@@ -165,7 +175,7 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/instagram"/>
+                    android:src="@drawable/instagram" />
 
                 <ImageView
                     android:id="@+id/ivTwitter"
@@ -173,7 +183,7 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/twitter"/>
+                    android:src="@drawable/twitter" />
 
                 <ImageView
                     android:id="@+id/ivLinkedIn"
@@ -181,20 +191,10 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/linkedin"/>
+                    android:src="@drawable/linkedin" />
 
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 
-    <TextView
-        android:id="@+id/tvRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/ivOrgImage" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

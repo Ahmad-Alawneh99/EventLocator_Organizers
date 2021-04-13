@@ -126,19 +126,22 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                 .enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 201){
-                            Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(applicationContext, LoginActivity::class.java))
+                            startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
                         }
-                        else{
-                            //TODO: Display alert that server is facing issues (code 503)
+                        else if (response.code() == 409){
+                            //In theory, this should never happen
+                            Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
+                                    "Error", "Organizer already exists", false)
                         }
-
-
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
+                                    "Error", "Server issue, please try again later", false)
+                        }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(applicationContext, t.localizedMessage, Toast.LENGTH_SHORT).show()
-                        //TODO: Handle failure (display what's wrong)
+                        Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
+                                "Error", "Can't connect to server", false)
                     }
 
                 })

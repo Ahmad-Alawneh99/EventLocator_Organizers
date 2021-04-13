@@ -162,13 +162,21 @@ class CreateEventActivity : AppCompatActivity() {
                     .createEvent(eventImageMultipartBody, event).enqueue(object : Callback<ResponseBody> {
                         override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                             if (response.code() == 201) {
-                                Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
                                 finish()
+                            }
+                            else if (response.code()==401){
+                                Utils.instance.displayInformationalDialog(this@CreateEventActivity, "Error",
+                                        "401: Unauthorized access",true)
+                            }
+                            else if (response.code() == 500){
+                                Utils.instance.displayInformationalDialog(this@CreateEventActivity,
+                                        "Error", "Server issue, please try again later", false)
                             }
                         }
 
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                            Utils.instance.displayInformationalDialog(this@CreateEventActivity,
+                                    "Error", "Can't connect to server", false)
                         }
 
                     })

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.databinding.UpcomingEventBinding
@@ -14,14 +15,14 @@ import com.eventlocator.eventlocatororganizers.utilities.DateTimeFormatterFactor
 import java.lang.Exception
 import java.time.LocalDate
 
-class UpcomingEventAdapter(private val upcomingEvents: ArrayList<Event>, private val status: ArrayList<String>):
+class UpcomingEventAdapter(private val upcomingEvents: ArrayList<Event>):
         RecyclerView.Adapter<UpcomingEventAdapter.UpcomingEventHolder>() {
     lateinit var context: Context
     inner class UpcomingEventHolder(var binding: UpcomingEventBinding): RecyclerView.ViewHolder(binding.root){
         init{
             binding.root.setOnClickListener {
                 val intent = Intent(context, ViewEventActivity::class.java)
-                intent.putExtra("eventID", binding.tvEventID.text.toString().toInt())
+                intent.putExtra("eventID", binding.tvEventID.text.toString().toLong())
                 context.startActivity(intent)
 
             }
@@ -47,7 +48,7 @@ class UpcomingEventAdapter(private val upcomingEvents: ArrayList<Event>, private
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
 
-        holder.binding.tvEventStatus.text = status[position]
+        holder.binding.tvEventStatus.text = upcomingEvents[position].getStatus()
 
     }
 

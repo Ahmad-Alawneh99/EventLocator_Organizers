@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +33,6 @@ class LoginActivity : AppCompatActivity() {
             RetrofitServiceFactory.createService(OrganizerService::class.java).login(credentials)
                     .enqueue(object : Callback<String> {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
-                            Toast.makeText(applicationContext, response.code().toString(), Toast.LENGTH_SHORT).show()
                             if (response.code() == 202) {
                                 val sharedPreferenceEditor = getSharedPreferences(
                                     SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
@@ -41,15 +41,23 @@ class LoginActivity : AppCompatActivity() {
                                     response.body()
                                 )
                                 sharedPreferenceEditor.apply()
-                                startActivity(Intent(applicationContext, ProfileActivity::class.java))
-                            } else {
-                                Toast.makeText(applicationContext, "Fail", Toast.LENGTH_SHORT).show()
-                                //TODO: Handle other request codes (for incorrect credentials or not account suspended or not accepted yet)
+                                binding.tvError.visibility = View.INVISIBLE
+                                startActivity(Intent(this@LoginActivity, ProfileActivity::class.java))
+                            }
+                            else if (response.code() == 404){
+                                binding.tvError.visibility = View.VISIBLE
+                            }
+                            else if (response.code() == 500){
+                                binding.tvError.visibility = View.INVISIBLE
+                                Utils.instance.displayInformationalDialog(this@LoginActivity,
+                                        "Error", "Server issue, please try again later", false)
                             }
                         }
 
                         override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+                            binding.tvError.visibility = View.INVISIBLE
+                            Utils.instance.displayInformationalDialog(this@LoginActivity,
+                                    "Error", "Can't connect to server", false)
                         }
 
                     })

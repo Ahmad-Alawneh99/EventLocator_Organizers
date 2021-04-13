@@ -16,7 +16,7 @@
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/bomber"/>
+        android:src="@drawable/avatar"/>
 
     <TextView
         android:id="@+id/tvEventName"
@@ -25,7 +25,7 @@
         android:textSize="22sp"
         android:layout_marginStart="@dimen/et_start_end_margin"
         android:layout_marginEnd="@dimen/et_start_end_margin"
-        android:text="Placeholder Placeholder Placeholder"/>
+        android:text=""/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             android:id="@+id/tvEventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="69/69/2069 - 69/69/3069"
+            android:text=""
             android:textSize="@dimen/larger_label"/>
     </LinearLayout>
     <LinearLayout
@@ -64,14 +64,14 @@
             android:id="@+id/tvEventStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status"
+            android:text=""
             android:textSize="@dimen/larger_label"/>
     </LinearLayout>
     <TextView
         android:id="@+id/tvRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Rating (Placeholder)"
+        android:text=""
         android:textSize="@dimen/larger_label"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="@dimen/et_start_end_margin"/>
@@ -93,7 +93,7 @@
                 android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Text Text Text Text Text Text Text Text Text Text Text Text Text Text"
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
             <TextView
@@ -124,7 +124,7 @@
                     android:id="@+id/tvMaxNumOfParticipants"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="6969" />
+                    android:text="" />
             </LinearLayout>
 
             <LinearLayout
@@ -143,7 +143,7 @@
                     android:id="@+id/tvNumOfParticipants"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="6969" />
+                    android:text="" />
             </LinearLayout>
 
             <LinearLayout
@@ -162,7 +162,7 @@
                     android:id="@+id/tvCity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="City" />
+                    android:text="" />
             </LinearLayout>
 
             <LinearLayout
@@ -200,7 +200,7 @@
                     android:id="@+id/tvRegistrationCloseDateTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24/24/2424 12:00 AM"/>
+                    android:text=""/>
             </LinearLayout>
 
             <TextView
@@ -212,7 +212,7 @@
                 android:id="@+id/tvCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Educational, Entertainment, etc"
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
             <LinearLayout
@@ -231,7 +231,7 @@
                     android:id="@+id/tvCancellationDateTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24/24/2424 12:00 AM"/>
+                    android:text=""/>
             </LinearLayout>
 
             <TextView
@@ -243,7 +243,7 @@
                 android:id="@+id/tvCancellationReason"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reason Reason Reason Reason Reason Reason Reason Reason Reason Reason Reason "
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
 
@@ -256,7 +256,7 @@
                 android:id="@+id/tvWhatsAppGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="www.google.com"
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
 

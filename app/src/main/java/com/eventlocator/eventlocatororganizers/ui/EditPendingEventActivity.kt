@@ -41,7 +41,7 @@ import java.util.ArrayList
 
 class EditPendingEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityEditPendingEventBinding
-    var eventID: Int = 0
+    var eventID: Long = 0
     lateinit var event: Event
     val DATE_PERIOD_LIMIT = 6
     val INSTANCE_STATE_IMAGE = "Image"
@@ -69,7 +69,7 @@ class EditPendingEventActivity : AppCompatActivity() {
         binding = ActivityEditPendingEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        eventID = intent.getIntExtra("eventID", -1)
+        eventID = intent.getLongExtra("eventID", -1)
         getAndLoadEvent()
         setClickListenersForFirstSession()
 

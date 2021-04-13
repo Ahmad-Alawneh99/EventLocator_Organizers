@@ -16,10 +16,7 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.eventlocator.eventlocatororganizers.R
-import com.eventlocator.eventlocatororganizers.data.CanceledEventData
-import com.eventlocator.eventlocatororganizers.data.Event
-import com.eventlocator.eventlocatororganizers.data.LocatedEventData
-import com.eventlocator.eventlocatororganizers.data.Session
+import com.eventlocator.eventlocatororganizers.data.*
 import com.eventlocator.eventlocatororganizers.databinding.ActivityViewEventBinding
 import com.eventlocator.eventlocatororganizers.retrofit.EventService
 import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
@@ -61,6 +58,7 @@ class ViewEventActivity : AppCompatActivity() {
         eventID = intent.getLongExtra("eventID", -1)
         getAndLoadEvent()
 
+
     }
 
     override fun onResume() {
@@ -78,9 +76,9 @@ class ViewEventActivity : AppCompatActivity() {
         binding.tvEventDate.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
             .format(startDateFormatted) + " - " + DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
             .format(endDateFormatted)
-        binding.tvRating.text = if(isFinished())event.rating.toString()
+        binding.tvRating.text = if(event.isFinished())event.rating.toString()
             else "This event didn't finish yet"
-        binding.tvEventStatus.text = getEventStatus()
+        binding.tvEventStatus.text = event.getStatus()
         binding.tvDescription.text = event.description
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, event.sessions)
@@ -150,99 +148,23 @@ class ViewEventActivity : AppCompatActivity() {
                             loadEvent()
                             invalidateOptionsMenu()
                         }
-                        Toast.makeText(applicationContext, "Here", Toast.LENGTH_SHORT).show()
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@ViewEventActivity,
+                                    "Error", "Event not found", true)
+                        }
+                        else if (response.code() == 500) {
+                            Utils.instance.displayInformationalDialog(this@ViewEventActivity,
+                                    "Error", "Server issue, please try again later", true)
+                        }
                     }
-
                     override fun onFailure(call: Call<Event>, t: Throwable) {
-                        Log.e("MY",t.message!!)
+                        Utils.instance.displayInformationalDialog(this@ViewEventActivity,
+                                "Error", "Can't connect to server", true)
                     }
 
                 })
     }
 
-    private fun getEventStatus(): String{
-        //TODO: Add colors and convert to string resource
-        if (isCanceled()){
-            return "This event is canceled"
-        }
-        else if (isFinished()){
-            return "This event has finished"
-        }
-        else if (isRegistrationClosed()){
-            return "Registration closed"
-        }
-        else if (getCurrentSession()!=null){
-            return "Session #"+getCurrentSession()!!.id+" is happening now"
-        }
-        else if (event.status == EventStatus.PENDING.ordinal){
-            return "This event is pending and is not visible to the public yet"
-        }
-        else{
-            return "This event is active"
-        }
-    }
-
-
-    private fun isCanceled(): Boolean = event.canceledEventData != null
-
-
-    private fun isRegistrationClosed(): Boolean {
-        val registrationCloseDateTime =
-                LocalDateTime.parse(event.registrationCloseDateTime,
-                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
-        return LocalDateTime.now().isAfter(registrationCloseDateTime)
-    }
-
-    private fun isFinished(): Boolean {
-        val eventEndDate = LocalDate.parse(event.endDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-        val eventEndDateTime = eventEndDate.atTime(LocalTime.parse(event.sessions[event.sessions.size-1].endTime,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-
-        return LocalDateTime.now().isAfter(eventEndDateTime)
-    }
-
-    private fun hasStarted(): Boolean{
-        val eventStartDate = LocalDate.parse(event.startDate,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-        val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-        return LocalDateTime.now().isAfter(eventStartDateTime)
-    }
-
-    private fun isLimitedLocated():Boolean{
-        return event.maxParticipants!=-1 && event.locatedEventData!=null
-    }
-
-    private fun getCurrentSession(): Session? {
-        for(j in 0 until event.sessions.size) {
-            val sessionDate = LocalDate.parse(event.sessions[j].date,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-            val sessionStartDateTime = sessionDate.atTime(LocalTime.parse(event.sessions[j].startTime,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            val sessionEndDateTime = sessionDate.atTime(LocalTime.parse(event.sessions[j].endTime,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            if (LocalDateTime.now().isAfter(sessionStartDateTime) && LocalDateTime.now().isBefore(sessionEndDateTime)) {
-                return event.sessions[j]
-            }
-        }
-        return null
-    }
-
-    private fun getCurrentLimitedSessionIncludingCheckInTime(): Session?{
-        //never use before checking if the event was limited located
-        for(j in 0 until event.sessions.size) {
-            val sessionDate = LocalDate.parse(event.sessions[j].date,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-            val sessionCheckInDateTime = sessionDate.atTime(LocalTime.parse(event.sessions[j].checkInTime,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            val sessionEndDateTime = sessionDate.atTime(LocalTime.parse(event.sessions[j].endTime,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            if (LocalDateTime.now().isAfter(sessionCheckInDateTime) && LocalDateTime.now().isBefore(sessionEndDateTime)) {
-                return event.sessions[j]
-            }
-        }
-        return null
-    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if (this::event.isInitialized)
@@ -275,7 +197,7 @@ class ViewEventActivity : AppCompatActivity() {
                 //TODO: open edit event activity
             }
             view_participants_id -> {
-                if (isLimitedLocated() && getCurrentLimitedSessionIncludingCheckInTime()!=null){
+                if (event.isLimitedLocated() && event.getCurrentLimitedSessionIncludingCheckInTime()!=null){
                     //TODO: open view participants when there is a limited located session running
                 }
                 else{
@@ -291,15 +213,15 @@ class ViewEventActivity : AppCompatActivity() {
     fun loadMenuItems(menu: Menu?){
         //TODO: string resource
         if (menu == null) return
-        if (!isCanceled()){
-            if (isFinished()){
+        if (!event.isCanceled()){
+            if (event.isFinished()){
                 menu.add(menu_group_id, view_feedback_id,1, "View feedback")
-                if (isLimitedLocated()){
+                if (event.isLimitedLocated()){
                     menu.add(menu_group_id, view_statistics_id, 6, "View statistics")
                 }
             }
             else{
-                if (!hasStarted()){
+                if (!event.hasStarted()){
                     menu.add(menu_group_id, cancel_event_id, 10, "Cancel event")
                 }
                 val eventStartDate = LocalDate.parse(event.startDate,
@@ -381,14 +303,15 @@ class ViewEventActivity : AppCompatActivity() {
                     if (response.code() == 200){
                         finish()
                     }
-                    else{
-                        Toast.makeText(applicationContext, "Nope", Toast.LENGTH_LONG).show()
+                    else if (response.code() == 500){
+                        Utils.instance.displayInformationalDialog(this@ViewEventActivity,
+                                "Error", "Server issue, please try again later", false)
                     }
                 }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(applicationContext, t.message, Toast.LENGTH_LONG).show()
-                }
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Utils.instance.displayInformationalDialog(this@ViewEventActivity,
+                                "Error", "Can't connect to server", false)
+                    }
 
             })
     }

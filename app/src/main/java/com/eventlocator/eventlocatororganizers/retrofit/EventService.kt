@@ -12,7 +12,7 @@ interface EventService {
 
     @Multipart
     @POST("/organizers/events/create")
-    fun createEvent(@Part eventImage: MultipartBody.Part, @Part("event") event: Event): Call<ResponseBody> //change response
+    fun createEvent(@Part eventImage: MultipartBody.Part, @Part("event") event: Event): Call<ResponseBody>
 
     @GET("/organizers/events")
     fun getEvents(): Call<ArrayList<Event>>
