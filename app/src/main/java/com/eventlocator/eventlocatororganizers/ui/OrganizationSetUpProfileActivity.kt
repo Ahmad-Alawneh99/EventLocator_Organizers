@@ -62,6 +62,8 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
         }
 
         binding.btnSignUp.setOnClickListener {
+            binding.btnSignUp.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val bundle = intent.getBundleExtra("data")!!
             val organizerBuilder = Organizer.OrganizerBuilder(
                 bundle.getString("name", "name"),
@@ -118,21 +120,29 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 201){
                             startActivity(Intent(this@OrganizationSetUpProfileActivity, LoginActivity::class.java))
+                            binding.btnSignUp.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 409){
                             //In theory, this should never happen
                             Utils.instance.displayInformationalDialog(this@OrganizationSetUpProfileActivity,
                                     "Error", "Organizer already exists", true)
+                            binding.btnSignUp.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@OrganizationSetUpProfileActivity,
                                     "Error", "Server issue, please try again later", true)
+                            binding.btnSignUp.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizationSetUpProfileActivity,
                                 "Error", "Can't connect to server", true)
+                        binding.btnSignUp.isEnabled = true
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })

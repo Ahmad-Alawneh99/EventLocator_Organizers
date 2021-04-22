@@ -7,12 +7,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.ActivitySignUpBinding
+import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
+import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocatororganizers.utilities.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -47,6 +53,8 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         binding.btnNext.setOnClickListener {
+            binding.btnNext.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val bundle = Bundle()
             bundle.putString("email", binding.etEmail.text.toString())
             bundle.putString("name", binding.etName.text.toString())
@@ -54,14 +62,52 @@ class SignUpActivity : AppCompatActivity() {
             bundle.putString("phonenumber", binding.etPhoneNumber.text.toString())
             bundle.putParcelable("proofimage", image)
 
-            val intent = if (binding.rbIndividual.isChecked)
-                Intent(this, IndividualSetUpProfileActivity::class.java)
-            else
-                Intent(this, OrganizationSetUpProfileActivity::class.java)
+            val toBeChecked = ArrayList<String>()
+            toBeChecked.add(binding.etEmail.text.toString())
+            toBeChecked.add(binding.etName.text.toString())
+            toBeChecked.add(binding.etPhoneNumber.text.toString())
+            RetrofitServiceFactory.createService(OrganizerService::class.java)
+                    .checkIfExists(toBeChecked).enqueue(object: Callback<ArrayList<Int>> {
+                        override fun onResponse(call: Call<ArrayList<Int>>, response: Response<ArrayList<Int>>) {
+                            if (response.code()==200){
+                                val intent = if (binding.rbIndividual.isChecked)
+                                    Intent(this@SignUpActivity, IndividualSetUpProfileActivity::class.java)
+                                else
+                                    Intent(this@SignUpActivity, OrganizationSetUpProfileActivity::class.java)
 
-            intent.putExtra("data", bundle)
-            startActivity(intent)
-            //TODO: Handle if email or name already taken
+                                intent.putExtra("data", bundle)
+                                startActivity(intent)
+                                binding.btnNext.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+                            else if (response.code() == 201){
+                                val res: ArrayList<Int> = response.body()!!
+                                var message = "The following values already exist:\n"
+                                if (res.contains(0)) message+="-Email\n"
+                                if (res.contains(1)) message+="-Name\n"
+                                if(res.contains(2)) message+="-Phone number\n"
+                                message += "Please use different values"
+                                Utils.instance.displayInformationalDialog(this@SignUpActivity,
+                                        "Error", message, false)
+                                binding.btnNext.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+                            else if (response.code() == 500){
+                                Utils.instance.displayInformationalDialog(this@SignUpActivity,
+                                        "Error", "Server issue, please try again later", false)
+                                binding.btnNext.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ArrayList<Int>>, t: Throwable) {
+                            Utils.instance.displayInformationalDialog(this@SignUpActivity,
+                                    "Error", "Can't connect to server", false)
+                            binding.btnNext.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
+                        }
+
+                    })
         }
 
         binding.etEmail.addTextChangedListener(object : TextWatcher {

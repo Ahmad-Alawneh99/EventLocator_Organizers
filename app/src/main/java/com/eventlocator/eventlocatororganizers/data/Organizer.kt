@@ -1,22 +1,19 @@
 package com.eventlocator.eventlocatororganizers.data
 
-import okhttp3.ResponseBody
-import java.io.InputStream
-//TODO: ADD STATUS
 class Organizer (var id: Long, var name: String, var email: String, var about: String,
-                 var rating: Double,  var socialMediaAccounts: List<SocialMediaAccount>,
-                 var image: String, var numberOfFollowers: Int, var phoneNumber: String, var password: String) {
+                 var rating: Double,  var socialMediaAccounts: ArrayList<SocialMediaAccount>,
+                 var image: String, var numberOfFollowers: Int, var phoneNumber: String, var password: String, var status: Int) {
 
-
+    //status has no use as of now but it may be needed in the future
     private constructor(organizerBuilder: OrganizerBuilder): this(-1, organizerBuilder.name, organizerBuilder.email, organizerBuilder.about,
                  -1.0, organizerBuilder.socialMediaAccounts, "", -1, organizerBuilder.phoneNumber,
-                        organizerBuilder.password)
+                        organizerBuilder.password, 0)
 
     class OrganizerBuilder (var name: String, var email: String, var about:String, var phoneNumber: String, var password: String) {
 
-        lateinit var socialMediaAccounts: List<SocialMediaAccount>
+        lateinit var socialMediaAccounts: ArrayList<SocialMediaAccount>
 
-        fun setSocialMediaAccounts(socialMediaAccounts: List<SocialMediaAccount>): OrganizerBuilder{
+        fun setSocialMediaAccounts(socialMediaAccounts: ArrayList<SocialMediaAccount>): OrganizerBuilder{
             this.socialMediaAccounts = socialMediaAccounts
             return this
         }

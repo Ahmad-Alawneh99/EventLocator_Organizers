@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -63,6 +64,8 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
         }
 
         binding.btnSignUp.setOnClickListener {
+            binding.btnSignUp.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val bundle = intent.getBundleExtra("data")!!
             val organizerBuilder = Organizer.OrganizerBuilder(
                 bundle.getString("name", "name"),
@@ -127,21 +130,29 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 201){
                             startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
+                            binding.btnSignUp.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 409){
                             //In theory, this should never happen
                             Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
                                     "Error", "Organizer already exists", false)
+                            binding.btnSignUp.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
                                     "Error", "Server issue, please try again later", false)
+                            binding.btnSignUp.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
                                 "Error", "Can't connect to server", false)
+                        binding.btnSignUp.isEnabled = true
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })

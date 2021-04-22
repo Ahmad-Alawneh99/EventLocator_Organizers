@@ -15,7 +15,7 @@ interface OrganizerService {
                         @Path("type") type: Int): Call<ResponseBody>
 
     @POST("/organizers/signup/partial")
-    fun checkIfExists(@Body data: ArrayList<String>): Call<ResponseBody>
+    fun checkIfExists(@Body data: ArrayList<String>): Call<ArrayList<Int>>
 
     @POST("/organizers/login")
     fun login(@Body credentials: ArrayList<String>): Call<String>

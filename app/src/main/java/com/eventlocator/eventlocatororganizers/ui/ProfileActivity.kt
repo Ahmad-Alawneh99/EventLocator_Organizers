@@ -4,9 +4,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -28,6 +30,7 @@ import java.net.URLEncoder
 class ProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityProfileBinding
     lateinit var organizer: Organizer
+    var isValid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
@@ -35,11 +38,22 @@ class ProfileActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
         if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
             startActivity(Intent(this, WelcomeActivity::class.java))
+            finish()
         }
         if (sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY,"") ==""){
             startActivity(Intent(this,LoginActivity::class.java))
+            finish()
         }
-        //getAndLoadOrganizerInfo()
+
+        binding.svMain.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (scrollY > oldScrollY){
+                binding.btnCreateEvent.shrink()
+            }
+            else{
+                binding.btnCreateEvent.extend()
+            }
+        }
+
 
         binding.btnCreateEvent.setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
@@ -68,8 +82,8 @@ class ProfileActivity : AppCompatActivity() {
 
                     })
         }
-    }
 
+    }
 
     override fun onResume() {
         super.onResume()
@@ -107,6 +121,8 @@ class ProfileActivity : AppCompatActivity() {
                 .getOrganizerInfo().enqueue(object: Callback<Organizer> {
                     override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
                         if (response.code()==202) {
+                            binding.pbLoading.visibility = View.INVISIBLE
+                            binding.btnCreateEvent.visibility = View.VISIBLE
                             organizer = response.body()!!
                             binding.tvOrgName.text = organizer.name
                             binding.tvAbout.text = organizer.about
@@ -126,8 +142,10 @@ class ProfileActivity : AppCompatActivity() {
                                     "401: Unauthorized access",true)
                         }
                         else if (response.code() == 404){
-                            Utils.instance.displayInformationalDialog(this@ProfileActivity,
-                                    "Error", "404: Organizer not found", true)
+                            Toast.makeText(this@ProfileActivity, "404: Organizer not found", Toast.LENGTH_LONG).show()
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                    .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
+                            startActivity(Intent(this@ProfileActivity, LoginActivity::class.java))
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@ProfileActivity,

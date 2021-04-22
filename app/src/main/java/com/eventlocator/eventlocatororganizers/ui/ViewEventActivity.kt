@@ -87,7 +87,7 @@ class ViewEventActivity : AppCompatActivity() {
         binding.tvMaxNumOfParticipants.text = if(event.maxParticipants>0)event.maxParticipants.toString()
             else getString(R.string.no_limit)
 
-        binding.tvNumOfParticipants.text = event.participants.size.toString()
+        binding.tvNumOfParticipants.text = event.currentNumberOfParticipants.toString()
 
         //TODO: surround optional data with card views and hide them when there is no data
 
@@ -210,8 +210,7 @@ class ViewEventActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun loadMenuItems(menu: Menu?){
-        //TODO: string resource
+    private fun loadMenuItems(menu: Menu?){
         if (menu == null) return
         if (!event.isCanceled()){
             if (event.isFinished()){
@@ -245,15 +244,15 @@ class ViewEventActivity : AppCompatActivity() {
     private fun promptCancelEvent(){
         val layout = layoutInflater.inflate(R.layout.cancel_event,binding.root, false)
         val builder = AlertDialog.Builder(this).setTitle("Are you sure you want to cancel the event?")
-        var warningEnabled = false
+        var lateCancel = false
         val eventStartDate = LocalDate.parse(event.startDate,
             DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
         val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
             DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
         if (LocalDateTime.now().isAfter(eventStartDateTime.minusHours(24))){
-            warningEnabled = true
+            lateCancel = true
         }
-        layout.findViewById<TextView>(R.id.tvCancelWarning).isEnabled = warningEnabled
+        layout.findViewById<TextView>(R.id.tvCancelWarning).isEnabled = lateCancel
 
         val etCancellationReason = layout.findViewById<EditText>(R.id.etCancellationReason)
         builder.setView(layout)
@@ -263,7 +262,7 @@ class ViewEventActivity : AppCompatActivity() {
                 val formattedCurrentTime = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT)
                     .format(currentTime)
                 val canceledEventData = CanceledEventData(formattedCurrentTime, result)
-                cancelEvent(canceledEventData)
+                cancelEvent(canceledEventData, lateCancel)
             }
             .setNegativeButton("Cancel") { d: DialogInterface, i: Int ->
 
@@ -294,11 +293,11 @@ class ViewEventActivity : AppCompatActivity() {
         })
     }
 
-    fun cancelEvent(data: CanceledEventData){
+    private fun cancelEvent(data: CanceledEventData, lateCancel: Boolean){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
             .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-            .cancelEvent(eventID, data).enqueue(object: Callback<ResponseBody>{
+            .cancelEvent(eventID, data, lateCancel).enqueue(object: Callback<ResponseBody>{
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.code() == 200){
                         finish()

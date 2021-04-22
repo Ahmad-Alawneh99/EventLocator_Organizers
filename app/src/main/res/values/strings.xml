@@ -162,4 +162,15 @@
     <string name="active">Active</string>
     <string name="no_limit">No limit</string>
     <string name="whatsapp_group">WhatsApp group</string>
+    <string name="pending_account_error">Your account is still pending, you will get an email when an admin accepts or rejects your account</string>
+    <string name="rejected_account_error">Your account has been reject by an admin, please contact us for more information</string>
+    <string name="suspended_account_error">Your account has been suspended due to its rating going below 3 stars</string>
+    <string name="check_in_participant">Check-in participant</string>
+    <string name="scan_a_participant">Scan a participant</string>
+    <string name="total_number_of_registered_participants">Total number of registered participants:</string>
+    <string name="average_attendance_rate_for_the_selected_sessions">Average attendance rate (for the selected sessions):</string>
+    <string name="average_arrival_time_for_the_selected_sessions">Average arrival time (for the selected sessions):</string>
+    <string name="total_participants">Total participants:</string>
+    <string name="average_arrival_time">Average arrival time:</string>
+    <string name="no_sessions_selected_error">Please select at least one sessions to display data</string>
 </resources>

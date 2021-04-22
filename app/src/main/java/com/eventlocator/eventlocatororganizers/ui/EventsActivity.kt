@@ -35,7 +35,7 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
         setContentView(binding.root)
 
         //TODO: enable when done with testing
-        getAndLoadEvents()
+        //getAndLoadEvents()
 
         //For testing:
         /*pagerAdapter = EventPagerAdapter(that, 3, ArrayList())

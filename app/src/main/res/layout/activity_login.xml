@@ -58,6 +58,32 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/wrong_email_and_or_password_error"
+        android:textColor="@color/design_default_color_error"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/tlEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvLogin"
+        android:layout_marginStart="@dimen/et_start_end_margin"
+        android:layout_marginEnd="@dimen/et_start_end_margin"/>
+
+    <TextView
+        android:id="@+id/tvNeedAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Need an account? click here to sign up"
+        android:textSize="@dimen/large_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tlPassword" />
+
+
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
@@ -71,27 +97,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tvError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/wrong_email_and_or_password_error"
-        android:visibility="invisible"
-        android:textColor="@color/design_default_color_error"
-        app:layout_constraintBottom_toTopOf="@+id/tlEmail"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvLogin" />
-
-    <TextView
-        android:id="@+id/tvNeedAccount"
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Need an account? click here to sign up"
-        android:textSize="@dimen/large_label"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tlPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/tvNeedAccount" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.eventlocator.eventlocatororganizers.retrofit
 import com.eventlocator.eventlocatororganizers.data.CanceledEventData
 import com.eventlocator.eventlocatororganizers.data.Event
 import com.eventlocator.eventlocatororganizers.data.Participant
+import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -23,10 +24,21 @@ interface EventService {
     @GET("/organizers/events/{id}/participants")
     fun getParticipantsOfAnEvent(@Path("id") eventID: Long): Call<ArrayList<Participant>>
 
-    @POST("/organizers/events/{id}/cancel")
-    fun cancelEvent(@Path("id") eventID: Long, @Body cancelledEventData: CanceledEventData): Call<ResponseBody>
+    @POST("/organizers/events/{id}/cancel/{late}")
+    fun cancelEvent(@Path("id") eventID: Long, @Body cancelledEventData: CanceledEventData, @Path("late") late: Boolean): Call<ResponseBody>
 
     @GET("/organizers/events/limited/{id}/participants")
     fun getParticipantsOfALimitedEvent(@Path("id") eventID: Int): Call<ArrayList<Participant>>
+
+    @GET("/organizers/events/{eventID}/session/{sessionID}/participant/{participantID}")
+    fun prepareToCheckInParticipant(@Path("eventID") eventID: Long, @Path("sessionID") sessionID: Int,
+                                                 @Path("participantID") participantID: Long): Call<String>
+
+    @GET("/organizers/events/{eventID}/session/{sessionID}/participant/{participantID}/confirm")
+    fun checkInParticipant(@Path("eventID") eventID: Long, @Path("sessionID") sessionID: Int,
+                                                 @Path("participantID") participantID: Long): Call<ResponseBody>
+
+    @GET("/organizers/events/{id}/attendanceStatistics")
+    fun getAttendanceStatisticsForAnEvent(@Path("id") eventID: Long): Call<JsonObject>
 
 }

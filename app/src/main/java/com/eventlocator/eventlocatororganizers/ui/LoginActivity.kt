@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -26,25 +27,47 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnLogin.isEnabled = false
         binding.btnLogin.setOnClickListener {
+            binding.btnLogin.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val credentials = ArrayList<String>()
             credentials.add(binding.etEmail.text.toString())
             credentials.add(binding.etPassword.text.toString())
-
             RetrofitServiceFactory.createService(OrganizerService::class.java).login(credentials)
                     .enqueue(object : Callback<String> {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
                             if (response.code() == 202) {
-                                val sharedPreferenceEditor = getSharedPreferences(
-                                    SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
-                                sharedPreferenceEditor.putString(
-                                    SharedPreferenceManager.instance.TOKEN_KEY,
-                                    response.body()
-                                )
-                                sharedPreferenceEditor.apply()
-                                binding.tvError.visibility = View.INVISIBLE
-                                startActivity(Intent(this@LoginActivity, ProfileActivity::class.java))
+                                when(response.body()!!){
+                                    "0" -> {
+                                        binding.tvError.text = getString(R.string.pending_account_error)
+                                        binding.tvError.visibility = View.VISIBLE
+                                    }
+
+                                    "2" -> {
+                                        binding.tvError.text = getString(R.string.rejected_account_error)
+                                        binding.tvError.visibility = View.VISIBLE
+                                    }
+
+                                    "3" -> {
+                                        binding.tvError.text = getString(R.string.suspended_account_error)
+                                        binding.tvError.visibility = View.VISIBLE
+                                    }
+
+                                    else -> {
+                                        val sharedPreferenceEditor = getSharedPreferences(
+                                                SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                        sharedPreferenceEditor.putString(
+                                                SharedPreferenceManager.instance.TOKEN_KEY,
+                                                response.body()
+                                        )
+                                        sharedPreferenceEditor.apply()
+                                        binding.tvError.visibility = View.INVISIBLE
+                                        startActivity(Intent(this@LoginActivity, ProfileActivity::class.java))
+                                    }
+                                }
+
                             }
                             else if (response.code() == 404){
+                                binding.tvError.text = getString(R.string.wrong_email_and_or_password_error)
                                 binding.tvError.visibility = View.VISIBLE
                             }
                             else if (response.code() == 500){
@@ -52,12 +75,16 @@ class LoginActivity : AppCompatActivity() {
                                 Utils.instance.displayInformationalDialog(this@LoginActivity,
                                         "Error", "Server issue, please try again later", false)
                             }
+                            binding.btnLogin.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                         override fun onFailure(call: Call<String>, t: Throwable) {
                             binding.tvError.visibility = View.INVISIBLE
                             Utils.instance.displayInformationalDialog(this@LoginActivity,
                                     "Error", "Can't connect to server", false)
+                            binding.btnLogin.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                     })

@@ -26,10 +26,11 @@ class RetrofitServiceFactory {
             httpClient.addInterceptor { chain ->
                 val original = chain.request()
                 val request = original.newBuilder()
-                    .header("Authorization", token)
-                    .build()
+                        .header("Authorization", token)
+                        .build()
                 chain.proceed(request)
             }
+
 
             retrofitBuilder.client(httpClient.build()) //rebuild with the new header
             retrofit = retrofitBuilder.build()

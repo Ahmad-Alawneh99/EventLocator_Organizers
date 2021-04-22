@@ -101,7 +101,7 @@ class CreateEventActivity : AppCompatActivity() {
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
                 firstSessionStartTime.format24H(),
                 firstSessionEndTime.format24H(),
-                startDate.dayOfWeek.ordinal,
+                startDate.dayOfWeek.value,
                 if(isLimited()) if (firstSessionCheckInTime.hour>=0) firstSessionCheckInTime.format24H() else
                 firstSessionStartTime.format24H() else ""))
 
@@ -113,7 +113,7 @@ class CreateEventActivity : AppCompatActivity() {
                         DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(sessionStartDate),
                         holder.startTime.format24H(),
                         holder.endTime.format24H(),
-                        sessionStartDate.dayOfWeek.ordinal,
+                        sessionStartDate.dayOfWeek.value,
                         if (isLimited()) if(holder.checkInTime.hour>=0) holder.checkInTime.format24H() else
                             holder.startTime.format24H() else ""))
             }

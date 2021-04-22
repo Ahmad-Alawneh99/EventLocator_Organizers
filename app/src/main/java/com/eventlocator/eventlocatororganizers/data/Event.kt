@@ -8,20 +8,20 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class Event(var id: Long, var name: String, var description: String, var categories: List<Int>, var startDate: String,
+class Event(var id: Long, var name: String, var description: String, var categories: ArrayList<Int>, var startDate: String,
             var endDate: String, var registrationCloseDateTime: String, var status: Int, var maxParticipants: Int,
-            var rating: Double, var sessions: List<Session>, var participants: List<Participant>, var feedback: List<Feedback>,
-            var locatedEventData: LocatedEventData?, var canceledEventData: CanceledEventData?, var image: String, var whatsAppLink: String) {
+            var rating: Double, var sessions: ArrayList<Session>, var locatedEventData: LocatedEventData?,
+            var canceledEventData: CanceledEventData?, var image: String, var whatsAppLink: String,var currentNumberOfParticipants: Int) {
 
     //called only when creating new events.
     private constructor(eventBuilder: EventBuilder) : this(-1, eventBuilder.name, eventBuilder.description, eventBuilder.categories,
-                        eventBuilder.startDate, eventBuilder.endDate, eventBuilder.registrationCloseDateTime, EventStatus.PENDING.ordinal,
-                        eventBuilder.maxParticipants, -1.0, eventBuilder.sessions, ArrayList<Participant>(),
-                        ArrayList<Feedback>(), eventBuilder.locatedEventData, null, "", eventBuilder.whatsAppLink)
+                        eventBuilder.startDate, eventBuilder.endDate, eventBuilder.registrationCloseDateTime,
+                        EventStatus.PENDING.ordinal, eventBuilder.maxParticipants, -1.0, eventBuilder.sessions,
+                        eventBuilder.locatedEventData, null, "", eventBuilder.whatsAppLink, 0)
 
 
-    class EventBuilder(var name: String, var description: String, var categories: List<Int>,
-                       var startDate: String, var endDate: String, var sessions: List<Session>,
+    class EventBuilder(var name: String, var description: String, var categories: ArrayList<Int>,
+                       var startDate: String, var endDate: String, var sessions: ArrayList<Session>,
                        var registrationCloseDateTime: String, ){
         var maxParticipants: Int = -1
         var whatsAppLink: String = ""
