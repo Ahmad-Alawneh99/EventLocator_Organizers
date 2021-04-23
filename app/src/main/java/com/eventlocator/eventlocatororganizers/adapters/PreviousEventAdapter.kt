@@ -45,8 +45,7 @@ class PreviousEventAdapter(private val previousEvents: ArrayList<Event>):
         holder.binding.tvEventDates.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
-
-        holder.binding.tvEventRating.text = previousEvents[position].rating.toString() + "/5"
+        holder.binding.tvEventRating.text = if (previousEvents[position].rating!=0.0)previousEvents[position].rating.toString() + "/5" else "No ratings yet"
 
     }
 

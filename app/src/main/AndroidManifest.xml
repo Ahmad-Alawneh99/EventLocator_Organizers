@@ -80,7 +80,8 @@
         </activity>
         <activity
             android:name=".ui.ViewEventActivity"
-            android:parentActivityName=".ui.EventsActivity">
+            android:parentActivityName=".ui.EventsActivity"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.EventsActivity" />

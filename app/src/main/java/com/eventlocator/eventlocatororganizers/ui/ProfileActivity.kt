@@ -126,8 +126,10 @@ class ProfileActivity : AppCompatActivity() {
                             organizer = response.body()!!
                             binding.tvOrgName.text = organizer.name
                             binding.tvAbout.text = organizer.about
-                            //TODO: Set click listener to view followers
                             binding.tvFollowers.text = organizer.numberOfFollowers.toString()
+                            binding.tvFollowers.setOnClickListener {
+                                startActivity(Intent(this@ProfileActivity, ViewEventActivity::class.java))
+                            }
                             binding.tvEmail.text = organizer.email
                             binding.tvPhoneNumber.text = organizer.phoneNumber
                             binding.tvRating.text = organizer.rating.toString()
@@ -140,12 +142,14 @@ class ProfileActivity : AppCompatActivity() {
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
                                     "401: Unauthorized access",true)
-                        }
-                        else if (response.code() == 404){
-                            Toast.makeText(this@ProfileActivity, "404: Organizer not found", Toast.LENGTH_LONG).show()
                             getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
                                     .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
-                            startActivity(Intent(this@ProfileActivity, LoginActivity::class.java))
+                        }
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
+                                    "404: Organizer not found",true)
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                    .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@ProfileActivity,

@@ -28,7 +28,7 @@
             android:checked="true"
             android:text="@string/online"
             android:checkable="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cLocated"
@@ -37,7 +37,7 @@
             android:checked="true"
             android:text="@string/located"
             android:checkable="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
     </com.google.android.material.chip.ChipGroup>
 
@@ -121,7 +121,7 @@
             android:checked="true"
             android:text="@string/educational"
             android:checkable="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cbEntertainment"
@@ -130,7 +130,7 @@
             android:checked="true"
             android:text="@string/entertainment"
             android:checkable="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cbVolunteering"
@@ -139,7 +139,7 @@
             android:checked="true"
             android:text="@string/volunteering"
             android:checkable="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cbSports"
@@ -148,7 +148,7 @@
             android:checked="true"
             android:text="@string/sports"
             android:checkable="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
     </com.google.android.material.chip.ChipGroup>
 
@@ -173,7 +173,7 @@
             android:text="@string/Amman"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cZarqa"
@@ -182,7 +182,7 @@
             android:text="@string/Zarqa"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cBalqa"
@@ -191,7 +191,7 @@
             android:text="@string/Balqa"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cMadaba"
@@ -200,7 +200,7 @@
             android:text="@string/Madaba"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cIrbid"
@@ -209,7 +209,7 @@
             android:text="@string/Irbid"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cJerash"
@@ -218,7 +218,7 @@
             android:text="@string/Jerash"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cMafraq"
@@ -227,7 +227,7 @@
             android:text="@string/Mafraq"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cAjloun"
@@ -236,7 +236,7 @@
             android:text="@string/Ajloun"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cKarak"
@@ -245,7 +245,7 @@
             android:text="@string/Karak"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cAqaba"
@@ -254,7 +254,7 @@
             android:text="@string/Aqaba"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cMaan"
@@ -263,7 +263,7 @@
             android:text="@string/Maan"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/cTafila"
@@ -272,7 +272,7 @@
             android:text="@string/Tafila"
             android:checkable="true"
             android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Filter" />
+            style="@style/MyChipStyle" />
 
     </com.google.android.material.chip.ChipGroup>
 

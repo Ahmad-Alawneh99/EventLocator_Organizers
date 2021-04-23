@@ -2,6 +2,7 @@ package com.eventlocator.eventlocatororganizers.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.adapters.OnSessionCheckChangeListener
@@ -89,20 +90,25 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
                                 binding.tvAvgArrivalTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
                                         .format(dateTimeRes)
                             }
+                            binding.pbLoading.visibility = View.INVISIBLE
+                        }
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@EventStatisticsActivity, "Error",
+                                    "401: Unauthorized access",true)
 
-
-
-
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@EventStatisticsActivity,
                                     "Error", "Server issue, please try again later", true)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                     }
 
                     override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@EventStatisticsActivity,
                                 "Error", "Can't connect to server", true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })

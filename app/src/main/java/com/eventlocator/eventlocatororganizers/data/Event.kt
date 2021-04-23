@@ -49,24 +49,36 @@ class Event(var id: Long, var name: String, var description: String, var categor
     }
 
     fun getStatus(): String{
-        if (isCanceled()){
-            return "This event is canceled"
-        }
-        else if (isFinished()){
-            return "This event has finished"
-        }
-        else if (isRegistrationClosed()){
-            return "Registration closed"
-        }
-        else if (getCurrentSession()!=null){
-            return "Session #"+getCurrentSession()!!.id+" is happening now"
+        return if (isCanceled()){
+            "Canceled"
         }
         else if (status == EventStatus.PENDING.ordinal){
-            return "This event is pending and is not visible to the public yet"
+            "Pending (waiting for response from admins)"
+        }
+        else if (isFinished()){
+            "Finished"
+        }
+        else if (!isRegistrationClosed()){
+            if (isFull()){
+                return "Full"
+            }
+            else{
+                return "Registration ongoing"
+            }
+        }
+        else if (isRegistrationClosed()){
+            "Registration closed"
+        }
+        else if (getCurrentSession()!=null){
+            "Session #"+getCurrentSession()!!.id+" is happening now"
         }
         else{
-            return "This event is active"
+            "Active"
         }
+    }
+
+    private fun isFull(): Boolean {
+        return this.maxParticipants!=-1 && this.maxParticipants == this.currentNumberOfParticipants
     }
 
 

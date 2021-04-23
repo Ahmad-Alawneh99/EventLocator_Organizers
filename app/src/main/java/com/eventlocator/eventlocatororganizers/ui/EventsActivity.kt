@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
@@ -34,35 +35,6 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //TODO: enable when done with testing
-        //getAndLoadEvents()
-
-        //For testing:
-        /*pagerAdapter = EventPagerAdapter(that, 3, ArrayList())
-        binding.pagerEvents.adapter = pagerAdapter
-        TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
-            when (position){
-                0 -> tab.text = getString(R.string.upcoming_events)
-                1 -> tab.text = getString(R.string.previous_events)
-                2 -> tab.text = getString(R.string.canceled_events)
-            }
-
-        }.attach()
-
-        binding.pagerEvents.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                //TODO: make the color of the filter button blurred
-                currentPosition = position
-                if (currentPosition!= 1 && filterFragment!=null){
-                    supportFragmentManager.commit {
-                        remove(filterFragment!!)
-                        filterFragment = null
-                    }
-                }
-            }
-        })
-    */
     }
 
     override fun onResume() {
@@ -71,14 +43,13 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
     }
 
 
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         if (!this::pagerAdapter.isInitialized || currentPosition!=1)return false
-        menu?.add(1,1, Menu.NONE, "Filter").also { item ->
-            item?.icon = ContextCompat.getDrawable(this,R.drawable.ic_temp)
+            menu?.add(1,1, Menu.NONE, "Filter").also { item ->
+            item?.icon = ContextCompat.getDrawable(this,R.drawable.ic_filter)
             item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
-        return super.onPrepareOptionsMenu(menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -106,6 +77,7 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
 
 
     private fun getAndLoadEvents(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")!!
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token)
@@ -136,24 +108,30 @@ class EventsActivity : AppCompatActivity(), OnEventsFiltered{
                                     }
                                 }
                             })
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "401: Unauthorized access",true)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 404){
                             Utils.instance.displayInformationalDialog(this@EventsActivity,
                                     "Error", "No events found", false)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@EventsActivity,
-                                    "Error", "Server issue, please try again later", false)
+                                    "Error", "Server issue, please try again later",
+                                    false)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                     }
 
                     override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@EventsActivity,
                                 "Error", "Can't connect to server", false)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })

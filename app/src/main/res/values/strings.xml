@@ -104,9 +104,9 @@
     <string name="entertainment">Entertainment</string>
     <string name="volunteering">Volunteering</string>
     <string name="sports">Sports</string>
-    <string name="select_start_time">Select start time</string>
-    <string name="select_end_time">Select end time</string>
-    <string name="select_check_in_time">Select check-in time</string>
+    <string name="select_start_time">Start time</string>
+    <string name="select_end_time">End time</string>
+    <string name="select_check_in_time">Check-in time</string>
     <string name="session_time_limit_error">Session time can\'t be more than 12 hours</string>
     <string name="time_error">Time error</string>
     <string name="check_in_time_limit_error">Check-in time must be at most 3 hours before the start of the session</string>
@@ -173,4 +173,6 @@
     <string name="total_participants">Total participants:</string>
     <string name="average_arrival_time">Average arrival time:</string>
     <string name="no_sessions_selected_error">Please select at least one sessions to display data</string>
+    <string name="please_select_a_city_and_a_location_for_the_event">Please select a city and a location for the event</string>
+    <string name="select_location">Select Location</string>
 </resources>

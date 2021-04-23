@@ -2,6 +2,7 @@ package com.eventlocator.eventlocatororganizers.retrofit
 
 import com.eventlocator.eventlocatororganizers.data.CanceledEventData
 import com.eventlocator.eventlocatororganizers.data.Event
+import com.eventlocator.eventlocatororganizers.data.Feedback
 import com.eventlocator.eventlocatororganizers.data.Participant
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -40,5 +41,8 @@ interface EventService {
 
     @GET("/organizers/events/{id}/attendanceStatistics")
     fun getAttendanceStatisticsForAnEvent(@Path("id") eventID: Long): Call<JsonObject>
+
+    @GET("/organizers/events/{id}/feedback")
+    fun getEventFeedback(@Path("id") eventID: Long): Call<ArrayList<Feedback>>
 
 }

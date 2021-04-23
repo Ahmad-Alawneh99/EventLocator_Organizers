@@ -57,8 +57,6 @@ class ViewEventActivity : AppCompatActivity() {
                 ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
         eventID = intent.getLongExtra("eventID", -1)
         getAndLoadEvent()
-
-
     }
 
     override fun onResume() {
@@ -177,6 +175,7 @@ class ViewEventActivity : AppCompatActivity() {
             view_feedback_id -> {
                 val intent = Intent(this, ViewEventFeedbackActivity::class.java)
                 intent.putExtra("eventID", event.id)
+                intent.putExtra("totalParticipants",event.currentNumberOfParticipants)
                 startActivity(intent)
             }
             email_particiapnts_id -> {

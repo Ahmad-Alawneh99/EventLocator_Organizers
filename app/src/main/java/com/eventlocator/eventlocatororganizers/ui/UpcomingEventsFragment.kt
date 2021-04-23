@@ -73,9 +73,8 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
                 }
             }
         }*/
-        val layoutManager = LinearLayoutManager(requireContext())
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvUpcomingEvents.layoutManager = layoutManager
-        binding.rvUpcomingEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
 
         val adapter = UpcomingEventAdapter(events)
         binding.rvUpcomingEvents.adapter = adapter

@@ -26,4 +26,7 @@ interface OrganizerService {
     @GET("/organizers/profile/type")
     fun getOrganizerType(): Call<Int>
 
+    @GET("/organizers/followers")
+    fun getOrganizerFollowers(): Call<ArrayList<String>>
+
 }

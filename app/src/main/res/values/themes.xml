@@ -23,4 +23,13 @@
         <item name="android:indeterminateTint">@color/primaryTextColor</item>
     </style>
 
+    <style name="MyChipStyle" parent="@style/Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_background_color</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="chipStrokeWidth">4dp</item>
+        <item name="chipStrokeColor">@color/primaryColor</item>
+        <item name="chipIconEnabled">false</item>
+        <item name="checkedIcon">@null</item>
+    </style>
+
 </resources>

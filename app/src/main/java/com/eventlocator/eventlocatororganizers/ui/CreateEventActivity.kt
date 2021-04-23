@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,6 +43,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import java.time.*
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.*
 
 class CreateEventActivity : AppCompatActivity() {
@@ -82,7 +84,7 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.btnRegistrationCloseDate.isEnabled = false
         binding.btnRegistrationCloseTime.isEnabled = false
-        binding.loFirstSession.visibility = View.GONE
+        binding.cvFirstSession.visibility = View.GONE
         setClickListenersForFirstSession()
         setDateError()
         alterCityAndLocationStatus(true)
@@ -90,6 +92,8 @@ class CreateEventActivity : AppCompatActivity() {
             binding.btnRemoveImage.isEnabled = false
 
         binding.btnCreateEvent.setOnClickListener{
+            binding.btnCreateEvent.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val categories = ArrayList<Int>()
             if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
             if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
@@ -107,8 +111,8 @@ class CreateEventActivity : AppCompatActivity() {
 
             for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
                 val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
-                val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString(),
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+                val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString().split(',')[1].trim(),
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY))
                 sessions.add(Session(i+2,
                         DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(sessionStartDate),
                         holder.startTime.format24H(),
@@ -163,20 +167,28 @@ class CreateEventActivity : AppCompatActivity() {
                         override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                             if (response.code() == 201) {
                                 finish()
+                                binding.btnCreateEvent.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
                             }
                             else if (response.code()==401){
                                 Utils.instance.displayInformationalDialog(this@CreateEventActivity, "Error",
                                         "401: Unauthorized access",true)
+                                binding.btnCreateEvent.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
                             }
                             else if (response.code() == 500){
                                 Utils.instance.displayInformationalDialog(this@CreateEventActivity,
                                         "Error", "Server issue, please try again later", false)
+                                binding.btnCreateEvent.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
                             }
                         }
 
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                             Utils.instance.displayInformationalDialog(this@CreateEventActivity,
                                     "Error", "Can't connect to server", false)
+                            binding.btnCreateEvent.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                     })
@@ -200,6 +212,7 @@ class CreateEventActivity : AppCompatActivity() {
                 locationName = result.data?.getStringExtra("name")!!
                 binding.tvSelectedLocation.text = locationName
                 updateCreateEventButton()
+                updateCityAndLocationError()
             }
         }
 
@@ -289,9 +302,11 @@ class CreateEventActivity : AppCompatActivity() {
         binding.rbOnline.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked){
                 alterCityAndLocationStatus(true)
+                updateCityAndLocationError()
             }
             else{
                 alterCityAndLocationStatus(false)
+                updateCityAndLocationError()
             }
             alterLimitedLocatedSessions(isLimited())
         }
@@ -358,8 +373,9 @@ class CreateEventActivity : AppCompatActivity() {
                             .create().show()
                 }
                 else {
-                    binding.tvStartDate.text = from.toString()
-                    binding.tvEndDate.text = to.toString()
+                    val dateTimeFormatter = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
+                    binding.tvStartDate.text = dateTimeFormatter.format(from)
+                    binding.tvEndDate.text = dateTimeFormatter.format(to)
                     startDate = from
                     endDate = to
                     createRecyclerView(diff + 1) //diff = number of days - 1
@@ -381,7 +397,6 @@ class CreateEventActivity : AppCompatActivity() {
 
         val cityAdapter = ArrayAdapter(this, R.layout.city_list_item, cities)
         binding.acCityMenu.setAdapter(cityAdapter)
-        Toast.makeText(this, binding.acCityMenu.text.toString(), Toast.LENGTH_SHORT).show()
         binding.acCityMenu.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -393,6 +408,7 @@ class CreateEventActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 updateCreateEventButton()
+                updateCityAndLocationError()
             }
 
         })
@@ -440,9 +456,9 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.btnRegistrationCloseTime.setOnClickListener {
             val picker = MaterialTimePicker.Builder()
-                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
-                    .setMinute(10)
+                    .setMinute(0)
                     .setTitleText("Select registration close time")
                     .build()
 
@@ -513,20 +529,29 @@ class CreateEventActivity : AppCompatActivity() {
         updateCreateEventButton()
     }
 
+    private fun updateCityAndLocationError(){
+        if (binding.rbLocated.isChecked && (!cities.contains(binding.acCityMenu.text.toString()) || !this::locationLatLng.isInitialized)){
+            binding.tvCityAndLocationError.visibility = View.VISIBLE
+        }
+        else{
+            binding.tvCityAndLocationError.visibility = View.INVISIBLE
+        }
+    }
+
     private fun createRecyclerView(size: Int){
+        val dateTimeFormatter = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
         val dates = ArrayList<String>()
         for(i in 1 until size){
-            dates.add(startDate.plusDays(i.toLong()).toString())
+            dates.add(startDate.plusDays(i.toLong()).dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                    +",\n"+ dateTimeFormatter.format(startDate.plusDays(i.toLong())))
         }
         val adapter = SessionInputAdapter(dates, isLimited(), firstSessionStartTime, firstSessionEndTime, firstSessionCheckInTime)
         binding.rvSessions.adapter = adapter
         val layoutManager = LinearLayoutManager(binding.rvSessions.context, LinearLayoutManager.VERTICAL, false)
         binding.rvSessions.layoutManager = layoutManager
-        binding.rvSessions.addItemDecoration( DividerItemDecoration(binding.rvSessions.context, layoutManager.orientation))
-        binding.loFirstSession.visibility = View.VISIBLE
-        binding.cbEnableSession.text = startDate.toString()
+        binding.cvFirstSession.visibility = View.VISIBLE
+        binding.cbEnableSession.text = startDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())+",\n"+dateTimeFormatter.format(startDate)
         binding.cbEnableSession.isEnabled = false
-
 
     }
 
@@ -561,9 +586,9 @@ class CreateEventActivity : AppCompatActivity() {
         binding.btnCheckInTime.isEnabled = false
         binding.btnStartTime.setOnClickListener {
             val picker = MaterialTimePicker.Builder()
-                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
-                    .setMinute(10)
+                    .setMinute(0)
                     .setTitleText("Select start time")
                     .build()
             picker.addOnPositiveButtonClickListener {
@@ -593,9 +618,9 @@ class CreateEventActivity : AppCompatActivity() {
 
         binding.btnEndTime.setOnClickListener {
             val picker = MaterialTimePicker.Builder()
-                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
-                    .setMinute(10)
+                    .setMinute(0)
                     .setTitleText("Select end time")
                     .build()
             picker.addOnPositiveButtonClickListener {
@@ -631,7 +656,7 @@ class CreateEventActivity : AppCompatActivity() {
             val picker = MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(12)
-                    .setMinute(10)
+                    .setMinute(0)
                     .setTitleText("Select check-in time")
                     .build()
             picker.addOnPositiveButtonClickListener {
@@ -735,5 +760,11 @@ class CreateEventActivity : AppCompatActivity() {
 
         }
         updateCreateEventButton()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        //TODO: Do this
+        menu?.add(1,1,1,"Help")
+        return super.onCreateOptionsMenu(menu)
     }
 }

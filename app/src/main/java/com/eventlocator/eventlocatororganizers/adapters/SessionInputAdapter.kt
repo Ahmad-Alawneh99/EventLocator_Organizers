@@ -54,9 +54,9 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
             binding.cbEnableSession.isChecked = true
             binding.btnStartTime.setOnClickListener {
                 val picker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .setTimeFormat(TimeFormat.CLOCK_12H)
                         .setHour(12)
-                        .setMinute(10)
+                        .setMinute(0)
                         .setTitleText("Select start time")
                         .build()
                 picker.addOnPositiveButtonClickListener {
@@ -77,9 +77,9 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
 
             binding.btnEndTime.setOnClickListener {
                 val picker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .setTimeFormat(TimeFormat.CLOCK_12H)
                         .setHour(12)
-                        .setMinute(10)
+                        .setMinute(0)
                         .setTitleText("Select end time")
                         .build()
                 picker.addOnPositiveButtonClickListener {
@@ -111,9 +111,9 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
 
             binding.btnCheckInTime.setOnClickListener {
                 val picker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .setTimeFormat(TimeFormat.CLOCK_12H)
                         .setHour(12)
-                        .setMinute(10)
+                        .setMinute(0)
                         .setTitleText("Select check-in time")
                         .build()
                 picker.addOnPositiveButtonClickListener {
