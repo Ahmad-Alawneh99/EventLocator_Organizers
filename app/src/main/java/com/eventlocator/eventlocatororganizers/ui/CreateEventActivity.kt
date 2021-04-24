@@ -547,7 +547,9 @@ class CreateEventActivity : AppCompatActivity() {
         }
         val adapter = SessionInputAdapter(dates, isLimited(), firstSessionStartTime, firstSessionEndTime, firstSessionCheckInTime)
         binding.rvSessions.adapter = adapter
-        val layoutManager = LinearLayoutManager(binding.rvSessions.context, LinearLayoutManager.VERTICAL, false)
+        val layoutManager = object: LinearLayoutManager(this) {
+            override fun canScrollVertically():Boolean =  false
+        }
         binding.rvSessions.layoutManager = layoutManager
         binding.cvFirstSession.visibility = View.VISIBLE
         binding.cbEnableSession.text = startDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())+",\n"+dateTimeFormatter.format(startDate)

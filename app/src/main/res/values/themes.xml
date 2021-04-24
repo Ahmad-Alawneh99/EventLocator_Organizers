@@ -18,6 +18,11 @@
 
     </style>
 
+    <style name="Theme.EventLocatorOrganizers.NoActionBar" parent = "Theme.EventLocatorOrganizers">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="MyProgressBar" parent="android:Widget.ProgressBar.Horizontal">
         <item name="android:backgroundTint">@color/primaryColor</item>
         <item name="android:indeterminateTint">@color/primaryTextColor</item>

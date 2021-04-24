@@ -20,6 +20,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.math.BigDecimal
 
 class ViewParticipantsOfAnEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewParticipantsOfAnEventBinding
@@ -28,12 +29,12 @@ class ViewParticipantsOfAnEventActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewParticipantsOfAnEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        eventID = intent.getLongExtra("eventID", -1)
         getAndLoadParticipants()
 
     }
 
     private fun getAndLoadParticipants(){
-        eventID = intent.getLongExtra("eventID", -1)
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
@@ -42,10 +43,19 @@ class ViewParticipantsOfAnEventActivity : AppCompatActivity() {
                         if (response.code() == 200) {
                             val layoutManager = LinearLayoutManager(this@ViewParticipantsOfAnEventActivity,
                                     LinearLayoutManager.VERTICAL,false)
+                            val participants  = response.body()!!
                             binding.rvParticipants.layoutManager = layoutManager
-                            val adapter = ParticipantInEventAdapter(response.body()!!)
+                            val adapter = ParticipantInEventAdapter(participants)
                             binding.rvParticipants.adapter = adapter
                             binding.pbLoading.visibility = View.INVISIBLE
+                            binding.tvNumberOfParticipant.text = participants.size.toString()
+                            //Size here is always greater than 0
+                            var sum: Double = 0.0
+                            for(i in 0 until participants.size){
+                                sum+= participants[i].rating
+                            }
+                            binding.tvAvgParticipantRating.text = BigDecimal(sum/participants.size).setScale(2).toString() + "/5"
+
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ViewParticipantsOfAnEventActivity, "Error",
@@ -92,6 +102,4 @@ class ParticipantInEventAdapter(private val participants: ArrayList<Participant>
     }
 
     override fun getItemCount(): Int = participants.size
-
-
 }

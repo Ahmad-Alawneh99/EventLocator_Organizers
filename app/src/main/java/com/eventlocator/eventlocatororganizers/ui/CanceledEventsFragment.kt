@@ -14,6 +14,8 @@ import com.eventlocator.eventlocatororganizers.databinding.FragmentCanceledEvent
 class CanceledEventsFragment(var events: ArrayList<Event>): Fragment() {
     lateinit var binding: FragmentCanceledEventsBinding
 
+    constructor(): this(ArrayList<Event>())
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentCanceledEventsBinding.inflate(inflater, container, false)
         return binding.root

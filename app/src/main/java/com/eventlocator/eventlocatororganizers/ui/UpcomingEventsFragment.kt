@@ -23,6 +23,8 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
 
     lateinit var binding: FragmentUpcomingEventsBinding
 
+    constructor(): this(ArrayList<Event>())
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentUpcomingEventsBinding.inflate(inflater,container,false)
         return binding.root

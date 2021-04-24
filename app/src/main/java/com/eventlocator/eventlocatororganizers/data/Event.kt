@@ -11,7 +11,7 @@ import java.time.LocalTime
 class Event(var id: Long, var name: String, var description: String, var categories: ArrayList<Int>, var startDate: String,
             var endDate: String, var registrationCloseDateTime: String, var status: Int, var maxParticipants: Int,
             var rating: Double, var sessions: ArrayList<Session>, var locatedEventData: LocatedEventData?,
-            var canceledEventData: CanceledEventData?, var image: String, var whatsAppLink: String,var currentNumberOfParticipants: Int) {
+            var canceledEventData: CanceledEventData?, var image: String, var whatsAppLink: String?,var currentNumberOfParticipants: Int) {
 
     //called only when creating new events.
     private constructor(eventBuilder: EventBuilder) : this(-1, eventBuilder.name, eventBuilder.description, eventBuilder.categories,

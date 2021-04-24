@@ -12,13 +12,24 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_margin="8dp">
-        <TextView
-            android:id="@+id/tvRating"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sample name"
-            android:textSize="@dimen/larger_label"
-            android:layout_gravity="center_horizontal"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rating:"
+                android:layout_marginEnd="4dp"
+                android:textSize="@dimen/large_label"/>
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvFeedback"

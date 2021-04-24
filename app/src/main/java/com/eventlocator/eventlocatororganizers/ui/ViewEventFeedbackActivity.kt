@@ -17,6 +17,7 @@ import com.eventlocator.eventlocatororganizers.utilities.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.math.BigDecimal
 
 class ViewEventFeedbackActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewEventFeedbackBinding
@@ -26,13 +27,12 @@ class ViewEventFeedbackActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewEventFeedbackBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        eventID = intent.getLongExtra("eventID", -1)
         getAndLoadFeedback()
 
     }
 
     private fun getAndLoadFeedback(){
-        eventID = intent.getLongExtra("eventID", -1)
         totalParticipants = intent.getIntExtra("totalParticipants", -1)
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
@@ -44,8 +44,18 @@ class ViewEventFeedbackActivity : AppCompatActivity() {
                             val layoutManager = LinearLayoutManager(this@ViewEventFeedbackActivity,
                                     LinearLayoutManager.VERTICAL, false)
                             binding.rvEventFeedback.layoutManager = layoutManager
-                            val adapter = FeedbackAdapter(response.body()!!)
+                            val feedback = response.body()!!
+                            val adapter = FeedbackAdapter(feedback)
                             binding.rvEventFeedback.adapter = adapter
+
+                            binding.tvTotalParticipants.text = totalParticipants.toString()
+                            binding.tvTotalParticipantsWhoRated.text = feedback.size.toString()
+
+                            var sum = 0.0
+                            for(i in 0 until feedback.size){
+                                sum += feedback[i].rating
+                            }
+                            binding.tvTotalRating.text = BigDecimal(sum/feedback.size).setScale(2).toString() + "/5"
 
                             binding.pbLoading.visibility = View.INVISIBLE
                         }

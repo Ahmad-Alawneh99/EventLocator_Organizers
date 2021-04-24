@@ -115,6 +115,7 @@ class ProfileActivity : AppCompatActivity() {
 
 
     private fun getAndLoadOrganizerInfo(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")!!
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token)
@@ -137,6 +138,11 @@ class ProfileActivity : AppCompatActivity() {
                             if (organizer.image!="") {
                                 binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
                                         ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                                binding.ivOrgImage.setOnClickListener {
+                                    val intent = Intent(this@ProfileActivity, ViewImageActivity::class.java)
+                                    intent.putExtra("image",organizer.image)
+                                    startActivity(intent)
+                                }
                             }
                         }
                         else if (response.code()==401){

@@ -22,6 +22,25 @@
             android:text="KHALIL ABU MAHMOUD"
             android:layout_marginBottom="4dp"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rating:"
+            android:layout_marginEnd="4dp"
+            android:textSize="@dimen/large_label"/>
+        <TextView
+            android:id="@+id/tvParticipantRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_label" />
+
+    </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,18 +49,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rating:"
-                android:layout_marginEnd="4dp"
-                android:textSize="@dimen/large_label"/>
+                android:layout_gravity="center"
+                android:textSize="@dimen/large_label"
+                android:text="Has checked-in: "
+                android:layout_marginEnd="4dp"/>
             <TextView
-                android:id="@+id/tvParticipantRating"
+                android:id="@+id/tvHasCheckedIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:textSize="@dimen/large_label" />
 
         </LinearLayout>
-
     </LinearLayout>
-
-
 </androidx.cardview.widget.CardView>

@@ -13,7 +13,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.EditConfirmedEventActivity"></activity>
+        <activity android:name=".ui.ViewImageActivity"
+        android:theme="@style/Theme.EventLocatorOrganizers.NoActionBar"></activity>
+        <activity
+            android:name=".ui.ViewLocationActivity"
+            android:parentActivityName=".ui.ViewEventActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ViewEventActivity" />
+        </activity>
+        <activity android:name=".ui.EditConfirmedEventActivity" />
         <activity
             android:name=".ui.EditPendingEventActivity"
             android:parentActivityName=".ui.ViewEventActivity">
@@ -80,8 +89,8 @@
         </activity>
         <activity
             android:name=".ui.ViewEventActivity"
-            android:parentActivityName=".ui.EventsActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:parentActivityName=".ui.EventsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.EventsActivity" />
@@ -150,15 +159,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.SignUpActivity" />
         </activity>
-        <activity android:name=".ui.LoginActivity">
-
-        </activity>
+        <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.SignUpActivity"
             android:label="Sign Up"
-            android:launchMode="singleTask">
-
-        </activity>
+            android:launchMode="singleTask" />
         <activity
             android:name=".ui.WelcomeActivity"
             android:label="Welcome" />

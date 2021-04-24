@@ -29,7 +29,7 @@ interface EventService {
     fun cancelEvent(@Path("id") eventID: Long, @Body cancelledEventData: CanceledEventData, @Path("late") late: Boolean): Call<ResponseBody>
 
     @GET("/organizers/events/limited/{id}/participants")
-    fun getParticipantsOfALimitedEvent(@Path("id") eventID: Int): Call<ArrayList<Participant>>
+    fun getParticipantsOfALimitedEvent(@Path("id") eventID: Long): Call<ArrayList<Participant>>
 
     @GET("/organizers/events/{eventID}/session/{sessionID}/participant/{participantID}")
     fun prepareToCheckInParticipant(@Path("eventID") eventID: Long, @Path("sessionID") sessionID: Int,

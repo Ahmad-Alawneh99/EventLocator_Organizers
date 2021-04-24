@@ -37,9 +37,7 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
         super.onCreate(savedInstanceState)
         binding = ActivityEventStatisticsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        getData()
-
+        getIntentData()
         getAndPrepareStatistics()
     }
 
@@ -115,7 +113,7 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
     }
 
 
-    private fun getData(){
+    private fun getIntentData(){
         eventID = intent.getLongExtra("eventID", -1)
         eventName = intent.getStringExtra("eventName")!!
         sessions = intent.getSerializableExtra("sessions") as ArrayList<Session>
