@@ -45,16 +45,6 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.svMain.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if (scrollY > oldScrollY){
-                binding.btnCreateEvent.shrink()
-            }
-            else{
-                binding.btnCreateEvent.extend()
-            }
-        }
-
-
         binding.btnCreateEvent.setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
         }

@@ -136,43 +136,46 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/your_email"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:textSize="@dimen/large_label"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/your_phone"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <TextView
                     android:id="@+id/tvPhoneNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:textSize="@dimen/large_label"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_you"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <TextView
                     android:id="@+id/tvAbout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:textSize="@dimen/large_label"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/social_media_accounts"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <LinearLayout
                     android:id="@+id/llSocialMedia"
@@ -221,6 +224,10 @@
                         android:src="@drawable/linkedin" />
 
                 </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="48dp"/>
             </LinearLayout>
         </ScrollView>
 
@@ -232,7 +239,8 @@
         android:layout_gravity="bottom|end"
         android:text="Host"
         app:icon = "@drawable/ic_ticket_64"
-        android:layout_margin="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
         android:visibility="invisible"/>
 
     <ProgressBar

@@ -57,16 +57,6 @@ class ViewEventActivity : AppCompatActivity() {
         setContentView(binding.root)
         cities = listOf(getString(R.string.Amman), getString(R.string.Zarqa), getString(R.string.Balqa), getString(R.string.Madaba), getString(R.string.Irbid), getString(R.string.Mafraq), getString(R.string.Jerash), getString(R.string.Ajloun), getString(R.string.Karak), getString(R.string.Aqaba), getString(R.string.Maan), getString(R.string.Tafila))
         eventID = intent.getLongExtra("eventID", -1)
-
-        binding.svMain.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if (scrollY > oldScrollY){
-                binding.btnCheckInParticipant.shrink()
-            }
-            else{
-                binding.btnCheckInParticipant.extend()
-            }
-
-        }
     }
 
     override fun onResume() {
