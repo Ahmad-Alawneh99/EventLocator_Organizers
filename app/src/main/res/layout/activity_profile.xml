@@ -231,7 +231,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:text="Host"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:icon = "@drawable/ic_ticket_64"
         android:layout_margin="32dp"
         android:visibility="invisible"/>

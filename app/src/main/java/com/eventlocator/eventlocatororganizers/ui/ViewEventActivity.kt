@@ -407,5 +407,4 @@ class SessionDisplayAdapter(private val sessions: ArrayList<Session>):
 
     override fun getItemCount(): Int = sessions.size
 
-
 }

@@ -25,12 +25,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayInputStream
+import java.math.BigDecimal
 import java.net.URLEncoder
 
 class ProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityProfileBinding
     lateinit var organizer: Organizer
-    var isValid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
@@ -116,6 +116,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun getAndLoadOrganizerInfo(){
         binding.pbLoading.visibility = View.VISIBLE
+        binding.btnCreateEvent.visibility = View.INVISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")!!
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token)
@@ -125,25 +126,7 @@ class ProfileActivity : AppCompatActivity() {
                             binding.pbLoading.visibility = View.INVISIBLE
                             binding.btnCreateEvent.visibility = View.VISIBLE
                             organizer = response.body()!!
-                            binding.tvOrgName.text = organizer.name
-                            binding.tvAbout.text = organizer.about
-                            binding.tvFollowers.text = organizer.numberOfFollowers.toString()
-                            binding.tvFollowers.setOnClickListener {
-                                startActivity(Intent(this@ProfileActivity, ViewEventActivity::class.java))
-                            }
-                            binding.tvEmail.text = organizer.email
-                            binding.tvPhoneNumber.text = organizer.phoneNumber
-                            binding.tvRating.text = organizer.rating.toString()
-                            setSocialMediaAccounts()
-                            if (organizer.image!="") {
-                                binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
-                                        ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
-                                binding.ivOrgImage.setOnClickListener {
-                                    val intent = Intent(this@ProfileActivity, ViewImageActivity::class.java)
-                                    intent.putExtra("image",organizer.image)
-                                    startActivity(intent)
-                                }
-                            }
+                            loadOrganizer()
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
@@ -161,14 +144,38 @@ class ProfileActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ProfileActivity,
                                     "Error", "Server issue, please try again later", true)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ProfileActivity,
                                 "Error", "Can't connect to server", true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
+    }
+
+    private fun loadOrganizer(){
+        binding.tvOrgName.text = organizer.name
+        binding.tvAbout.text = organizer.about
+        binding.tvFollowers.text = organizer.numberOfFollowers.toString()
+        binding.tvFollowers.setOnClickListener {
+            startActivity(Intent(this@ProfileActivity, ViewEventActivity::class.java))
+        }
+        binding.tvEmail.text = organizer.email
+        binding.tvPhoneNumber.text = organizer.phoneNumber
+        binding.tvRating.text = BigDecimal(organizer.rating).setScale(2).toString() + "/5"
+        setSocialMediaAccounts()
+        if (organizer.image!="") {
+            binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
+                    ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+            binding.ivOrgImage.setOnClickListener {
+                val intent = Intent(this@ProfileActivity, ViewImageActivity::class.java)
+                intent.putExtra("image",organizer.image)
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onBackPressed() {
