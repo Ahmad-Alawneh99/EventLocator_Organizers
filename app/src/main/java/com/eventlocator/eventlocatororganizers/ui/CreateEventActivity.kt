@@ -92,106 +92,120 @@ class CreateEventActivity : AppCompatActivity() {
             binding.btnRemoveImage.isEnabled = false
 
         binding.btnCreateEvent.setOnClickListener{
-            binding.btnCreateEvent.isEnabled = false
-            binding.pbLoading.visibility = View.VISIBLE
-            val categories = ArrayList<Int>()
-            if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
-            if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
-            if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING.ordinal)
-            if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS.ordinal)
+            val alertBuilder = Utils.instance.createSimpleDialog(this, "Create event", "Are you sure that you want to create this event?")
+            alertBuilder.setPositiveButton("Yes"){ di: DialogInterface, i: Int ->
+                binding.btnCreateEvent.isEnabled = false
+                binding.pbLoading.visibility = View.VISIBLE
+                val categories = ArrayList<Int>()
+                if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
+                if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
+                if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING.ordinal)
+                if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS.ordinal)
 
-            val sessions = ArrayList<Session>()
-            sessions.add(Session(1,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
-                firstSessionStartTime.format24H(),
-                firstSessionEndTime.format24H(),
-                startDate.dayOfWeek.value,
-                if(isLimited()) if (firstSessionCheckInTime.hour>=0) firstSessionCheckInTime.format24H() else
-                firstSessionStartTime.format24H() else ""))
+                val sessions = ArrayList<Session>()
+                sessions.add(Session(1,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
+                        firstSessionStartTime.format24H(),
+                        firstSessionEndTime.format24H(),
+                        startDate.dayOfWeek.value,
+                        if(isLimited()) if (firstSessionCheckInTime.hour>=0) firstSessionCheckInTime.format24H() else
+                            firstSessionStartTime.format24H() else ""))
 
-            for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
-                val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
-                val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString().split(',')[1].trim(),
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY))
-                sessions.add(Session(i+2,
-                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(sessionStartDate),
-                        holder.startTime.format24H(),
-                        holder.endTime.format24H(),
-                        sessionStartDate.dayOfWeek.value,
-                        if (isLimited()) if(holder.checkInTime.hour>=0) holder.checkInTime.format24H() else
-                            holder.startTime.format24H() else ""))
-            }
+                for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                    val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                    val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString().split(',')[1].trim(),
+                            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY))
+                    sessions.add(Session(i+2,
+                            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(sessionStartDate),
+                            holder.startTime.format24H(),
+                            holder.endTime.format24H(),
+                            sessionStartDate.dayOfWeek.value,
+                            if (isLimited()) if(holder.checkInTime.hour>=0) holder.checkInTime.format24H() else
+                                holder.startTime.format24H() else ""))
+                }
 
-            val temp = if (this::registrationCloseDate.isInitialized)
-                registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
-            else
-                startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                val temp = if (this::registrationCloseDate.isInitialized)
+                    registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
+                else
+                    startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
 
-            val eventBuilder = Event.EventBuilder(
-                binding.etEventName.text.toString().trim(),
-                binding.etEventDescription.text.toString(),
-                categories,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(endDate),
-                sessions,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT).format(temp)
-            )
+                val eventBuilder = Event.EventBuilder(
+                        binding.etEventName.text.toString().trim(),
+                        binding.etEventDescription.text.toString(),
+                        categories,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(endDate),
+                        sessions,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT).format(temp)
+                )
 
-            if (binding.etNumberOfParticipants.text.toString().trim()!="")
-                eventBuilder.setMaxParticipants(binding.etNumberOfParticipants.text.toString().trim().toInt())
+                if (binding.etNumberOfParticipants.text.toString().trim()!="")
+                    eventBuilder.setMaxParticipants(binding.etNumberOfParticipants.text.toString().trim().toInt())
 
 
-            val locatedEventData = if (binding.rbLocated.isChecked) {
-                val location = ArrayList<Double>()
-                location.add(locationLatLng.latitude)
-                location.add(locationLatLng.longitude)
-                LocatedEventData(cities.indexOf(binding.acCityMenu.text.toString()), location)
-            }
-            else null
-            eventBuilder.setLocatedEventData(locatedEventData)
+                val locatedEventData = if (binding.rbLocated.isChecked) {
+                    val location = ArrayList<Double>()
+                    location.add(locationLatLng.latitude)
+                    location.add(locationLatLng.longitude)
+                    LocatedEventData(cities.indexOf(binding.acCityMenu.text.toString()), location)
+                }
+                else null
+                eventBuilder.setLocatedEventData(locatedEventData)
 
-            eventBuilder.setWhatsAppLink(binding.etWhatAppLink.text.toString().trim())
+                eventBuilder.setWhatsAppLink(binding.etWhatAppLink.text.toString().trim())
 
-            val event = eventBuilder.build()
-            val inputStream = contentResolver.openInputStream(image!!)
-            val eventImagePart: RequestBody = RequestBody.create(
-                    MediaType.parse("image/*"), inputStream?.readBytes()!!
-            )
-            val eventImageMultipartBody = MultipartBody.Part.createFormData("image","image", eventImagePart)
+                val event = eventBuilder.build()
+                val inputStream = contentResolver.openInputStream(image!!)
+                val eventImagePart: RequestBody = RequestBody.create(
+                        MediaType.parse("image/*"), inputStream?.readBytes()!!
+                )
+                val eventImageMultipartBody = MultipartBody.Part.createFormData("image","image", eventImagePart)
 
-            val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-                    .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+                val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                        .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
-            RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-                    .createEvent(eventImageMultipartBody, event).enqueue(object : Callback<ResponseBody> {
-                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                            if (response.code() == 201) {
-                                finish()
-                                binding.btnCreateEvent.isEnabled = true
-                                binding.pbLoading.visibility = View.INVISIBLE
+                RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
+                        .createEvent(eventImageMultipartBody, event).enqueue(object : Callback<Long> {
+                            override fun onResponse(call: Call<Long>, response: Response<Long>) {
+                                if (response.code() == 201) {
+                                    if (binding.rbOnline.isChecked) {
+                                        val startDateTime = startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                                        startDateTime.minusHours(12)
+                                        val message = "Your online event ${event.name} is starting in 12 hours, " +
+                                                "please make sure to send the meeting link to the participants of this event"
+                                        NotificationUtils.scheduleNotification(this@CreateEventActivity,
+                                                startDateTime, response.body()!!.toInt(), message, response.body()!!)
+                                    }
+                                    finish()
+                                    binding.btnCreateEvent.isEnabled = true
+                                    binding.pbLoading.visibility = View.INVISIBLE
+                                }
+                                else if (response.code()==401){
+                                    Utils.instance.displayInformationalDialog(this@CreateEventActivity, "Error",
+                                            "401: Unauthorized access",true)
+                                    binding.btnCreateEvent.isEnabled = true
+                                    binding.pbLoading.visibility = View.INVISIBLE
+                                }
+                                else if (response.code() == 500){
+                                    Utils.instance.displayInformationalDialog(this@CreateEventActivity,
+                                            "Error", "Server issue, please try again later", false)
+                                    binding.btnCreateEvent.isEnabled = true
+                                    binding.pbLoading.visibility = View.INVISIBLE
+                                }
                             }
-                            else if (response.code()==401){
-                                Utils.instance.displayInformationalDialog(this@CreateEventActivity, "Error",
-                                        "401: Unauthorized access",true)
-                                binding.btnCreateEvent.isEnabled = true
-                                binding.pbLoading.visibility = View.INVISIBLE
-                            }
-                            else if (response.code() == 500){
+
+                            override fun onFailure(call: Call<Long>, t: Throwable) {
                                 Utils.instance.displayInformationalDialog(this@CreateEventActivity,
-                                        "Error", "Server issue, please try again later", false)
+                                        "Error", "Can't connect to server", false)
                                 binding.btnCreateEvent.isEnabled = true
                                 binding.pbLoading.visibility = View.INVISIBLE
                             }
-                        }
 
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Utils.instance.displayInformationalDialog(this@CreateEventActivity,
-                                    "Error", "Can't connect to server", false)
-                            binding.btnCreateEvent.isEnabled = true
-                            binding.pbLoading.visibility = View.INVISIBLE
-                        }
+                        })
+            }
+            alertBuilder.setNegativeButton("No"){di: DialogInterface, i: Int ->}
+            alertBuilder.create().show()
 
-                    })
         }
 
         val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->

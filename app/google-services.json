@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "361027753967",
+    "project_id": "event-locator-945fd",
+    "storage_bucket": "event-locator-945fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361027753967:android:62d9f6b5653dfe8e87881a",
+        "android_client_info": {
+          "package_name": "com.eventlocator.eventlocator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361027753967-cem9gs1s3bkpsr4uniuso8r5sk4doda1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrI0P2auy9tIAheDKrLhd6LxpxgsE3LRI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361027753967-cem9gs1s3bkpsr4uniuso8r5sk4doda1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361027753967:android:fd91bc834ccf9dfe87881a",
+        "android_client_info": {
+          "package_name": "com.eventlocator.eventlocatororganizers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361027753967-cem9gs1s3bkpsr4uniuso8r5sk4doda1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrI0P2auy9tIAheDKrLhd6LxpxgsE3LRI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361027753967-cem9gs1s3bkpsr4uniuso8r5sk4doda1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

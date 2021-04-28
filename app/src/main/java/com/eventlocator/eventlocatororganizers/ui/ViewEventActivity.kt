@@ -302,12 +302,18 @@ class ViewEventActivity : AppCompatActivity() {
         val etCancellationReason = layout.findViewById<EditText>(R.id.etCancellationReason)
         builder.setView(layout)
             .setPositiveButton("Confirm") { d: DialogInterface, i: Int ->
-                val result = etCancellationReason.text.toString().trim()
-                val currentTime = LocalDateTime.now()
-                val formattedCurrentTime = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT)
-                    .format(currentTime)
-                val canceledEventData = CanceledEventData(formattedCurrentTime, result)
-                cancelEvent(canceledEventData, lateCancel)
+                val alertDialog = Utils.instance.createSimpleDialog(this, "Cancel event", "Are you sure that you want to cancel this event?")
+                alertDialog.setPositiveButton("Yes"){di: DialogInterface, i: Int ->
+                    val result = etCancellationReason.text.toString().trim()
+                    val currentTime = LocalDateTime.now()
+                    val formattedCurrentTime = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT)
+                            .format(currentTime)
+                    val canceledEventData = CanceledEventData(formattedCurrentTime, result)
+                    cancelEvent(canceledEventData, lateCancel)
+                }
+                alertDialog.setNegativeButton("No"){di: DialogInterface, i2: Int ->}
+                alertDialog.create().show()
+
             }
             .setNegativeButton("Cancel") { d: DialogInterface, i: Int ->
 
@@ -344,6 +350,7 @@ class ViewEventActivity : AppCompatActivity() {
             .cancelEvent(eventID, data, lateCancel).enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 200) {
+                            NotificationUtils.cancelNotification(this@ViewEventActivity, event.id)
                             finish()
                         } else if (response.code() == 500) {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,

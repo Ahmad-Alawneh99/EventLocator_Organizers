@@ -82,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
                         override fun onFailure(call: Call<String>, t: Throwable) {
                             binding.tvError.visibility = View.INVISIBLE
                             Utils.instance.displayInformationalDialog(this@LoginActivity,
-                                    "Error", "Can't connect to server", false)
+                                    "Error",t.message!!, false)
                             binding.btnLogin.isEnabled = true
                             binding.pbLoading.visibility = View.INVISIBLE
                         }

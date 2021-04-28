@@ -95,4 +95,8 @@ class Utils {
         { di, i -> if (finish) (context as Activity).finish() }.create().show()
     }
 
+    fun createSimpleDialog(context: Context, title: String, message: String): AlertDialog.Builder{
+        return AlertDialog.Builder(context).setTitle(title).setMessage(message)
+    }
+
 }

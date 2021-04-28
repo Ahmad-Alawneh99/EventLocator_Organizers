@@ -34,7 +34,7 @@ class ViewFollowersActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
                 .getOrganizerFollowers().enqueue(object: Callback<ArrayList<String>>{
                     override fun onResponse(call: Call<ArrayList<String>>, response: Response<ArrayList<String>>) {
-                        if (response.code()==200){
+                        if (response.code()==202){
                             val layoutManager = LinearLayoutManager(this@ViewFollowersActivity, LinearLayoutManager.VERTICAL, false)
                             binding.rvFollowers.layoutManager = layoutManager
                             val adapter = ParticipantAsFollowerAdapter(response.body()!!)

@@ -19,6 +19,7 @@ import com.eventlocator.eventlocatororganizers.data.Organizer
 import com.eventlocator.eventlocatororganizers.databinding.ActivityProfileBinding
 import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
 import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocatororganizers.utilities.NotificationUtils
 import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import retrofit2.Call
@@ -27,6 +28,8 @@ import retrofit2.Response
 import java.io.ByteArrayInputStream
 import java.math.BigDecimal
 import java.net.URLEncoder
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class ProfileActivity : AppCompatActivity() {
     lateinit var binding: ActivityProfileBinding
@@ -72,6 +75,9 @@ class ProfileActivity : AppCompatActivity() {
 
                     })
         }
+
+        NotificationUtils.scheduleNotification(this, LocalDateTime.now(),1, "Hello this is a notification", 1)
+        NotificationUtils.cancelNotification(this, 1)
 
     }
 
@@ -151,8 +157,12 @@ class ProfileActivity : AppCompatActivity() {
         binding.tvAbout.text = organizer.about
         binding.tvFollowers.text = organizer.numberOfFollowers.toString()
         binding.tvFollowers.setOnClickListener {
-            startActivity(Intent(this@ProfileActivity, ViewEventActivity::class.java))
+            startActivity(Intent(this@ProfileActivity, ViewFollowersActivity::class.java))
         }
+        binding.tvTextFollowers.setOnClickListener {
+            startActivity(Intent(this@ProfileActivity, ViewFollowersActivity::class.java))
+        }
+
         binding.tvEmail.text = organizer.email
         binding.tvPhoneNumber.text = organizer.phoneNumber
         binding.tvRating.text = BigDecimal(organizer.rating).setScale(2).toString() + "/5"
