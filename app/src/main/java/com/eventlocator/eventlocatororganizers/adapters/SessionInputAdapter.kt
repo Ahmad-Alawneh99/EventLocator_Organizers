@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.databinding.SessionInputBinding
 import com.eventlocator.eventlocatororganizers.ui.CreateEventActivity
+import com.eventlocator.eventlocatororganizers.utilities.DateErrorUtil
 import com.eventlocator.eventlocatororganizers.utilities.TimeStamp
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -20,7 +21,8 @@ import com.google.android.material.timepicker.TimeFormat
 
 class SessionInputAdapter(var dates: ArrayList<String>, var isLimited: Boolean, val initialStartTime: TimeStamp,
 val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.Adapter<SessionInputAdapter.SessionInputHolder>() {
-    lateinit var context: CreateEventActivity
+    lateinit var context: Context
+    lateinit var activityAsDateErrorUtil: DateErrorUtil
 
     inner class SessionInputHolder(var binding: SessionInputBinding): RecyclerView.ViewHolder(binding.root) {
         var startTime = TimeStamp()
@@ -68,7 +70,7 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
                     endTime = TimeStamp(-1,-1)
                     checkInTime = TimeStamp(-1,-1)
                     setLimited(isLimited)
-                    context.setDateError()
+                    activityAsDateErrorUtil.setDateError()
                 }
 
                 picker.show((context as AppCompatActivity).supportFragmentManager, "sessionStartTime")
@@ -100,7 +102,7 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
                     else {
                         endTime = TimeStamp(picker.hour, picker.minute)
                         binding.tvEndTime.text = endTime.format12H()
-                        context.setDateError()
+                        activityAsDateErrorUtil.setDateError()
                     }
                 }
 
@@ -152,7 +154,7 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
                         setLimited(isLimited)
                     }
                 }
-                context.setDateError()
+                activityAsDateErrorUtil.setDateError()
             }
         }
 
@@ -175,7 +177,8 @@ val initialEndTime: TimeStamp, val initialCheckInTime: TimeStamp): RecyclerView.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SessionInputHolder {
         val binding = SessionInputBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        context = parent.context as CreateEventActivity
+        context = parent.context
+        activityAsDateErrorUtil = parent.context as DateErrorUtil
         return SessionInputHolder(binding)
     }
 

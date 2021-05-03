@@ -15,7 +15,6 @@ class TimeStamp(var hour: Int, var minute: Int) {
     }
 
     fun format12H(): String{
-        //TODO: Make it work for Arabic
         val isPM = hour>12
         val tempH = if (isPM)hour-12 else hour
         val h = if(tempH<10)"0"+tempH.toString() else tempH.toString()

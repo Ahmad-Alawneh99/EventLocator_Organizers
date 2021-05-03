@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
@@ -23,6 +24,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.adapters.SessionInputAdapter
 import com.eventlocator.eventlocatororganizers.data.Event
+import com.eventlocator.eventlocatororganizers.data.LocatedEventData
+import com.eventlocator.eventlocatororganizers.data.Session
 import com.eventlocator.eventlocatororganizers.databinding.ActivityEditPendingEventBinding
 import com.eventlocator.eventlocatororganizers.retrofit.EventService
 import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
@@ -33,20 +36,27 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayInputStream
 import java.time.*
-import java.util.ArrayList
+import java.time.format.TextStyle
+import java.util.*
 
-class EditPendingEventActivity : AppCompatActivity() {
+class EditPendingEventActivity : AppCompatActivity(), DateErrorUtil {
     lateinit var binding: ActivityEditPendingEventBinding
     var eventID: Long = 0
     lateinit var event: Event
     val DATE_PERIOD_LIMIT = 6
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
-
+    var imageChanged = false
+    var sessionCount = -1
 
     lateinit var startDate: LocalDate
     lateinit var endDate: LocalDate
@@ -70,16 +80,151 @@ class EditPendingEventActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         eventID = intent.getLongExtra("eventID", -1)
+        sessionCount = intent.getIntExtra("sessionCount", -1)
+        prepareRecyclerView()
         getAndLoadEvent()
         setClickListenersForFirstSession()
+        binding.btnSave.isEnabled = false
+
+        binding.btnSave.setOnClickListener {
+            val dialogAlert = Utils.instance.createSimpleDialog(this, "Edit event",
+                    "Are you sure that you want to save these changes?")
+
+            dialogAlert.setPositiveButton("Yes"){di: DialogInterface, i:Int->
+                binding.btnSave.isEnabled = false
+                binding.pbLoading.visibility = View.VISIBLE
+                val categories = ArrayList<Int>()
+                if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
+                if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
+                if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING.ordinal)
+                if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS.ordinal)
+
+                val sessions = ArrayList<Session>()
+                sessions.add(Session(1,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
+                        firstSessionStartTime.format24H(),
+                        firstSessionEndTime.format24H(),
+                        startDate.dayOfWeek.value,
+                        if(isLimited()) if (firstSessionCheckInTime.hour>=0) firstSessionCheckInTime.format24H() else
+                            firstSessionStartTime.format24H() else ""))
+
+                for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                    val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                    if(!holder.binding.cbEnableSession.isChecked)continue
+                    val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString().split(',')[1].trim(),
+                            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY))
+                    sessions.add(Session(i+2,
+                            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(sessionStartDate),
+                            holder.startTime.format24H(),
+                            holder.endTime.format24H(),
+                            sessionStartDate.dayOfWeek.value,
+                            if (isLimited()) if(holder.checkInTime.hour>=0) holder.checkInTime.format24H() else
+                                holder.startTime.format24H() else ""))
+                }
+
+                val temp = if (this::registrationCloseDate.isInitialized)
+                    if (registrationCloseTime.hour == -1)
+                        registrationCloseDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                    else registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
+                else
+                    startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+
+                val eventBuilder = Event.EventBuilder(
+                        binding.etEventName.text.toString().trim(),
+                        binding.etEventDescription.text.toString(),
+                        categories,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(startDate),
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).format(endDate),
+                        sessions,
+                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT).format(temp)
+                )
+
+                if (binding.etNumberOfParticipants.text.toString().trim()!="")
+                    eventBuilder.setMaxParticipants(binding.etNumberOfParticipants.text.toString().trim().toInt())
+
+
+                val locatedEventData = if (binding.rbLocated.isChecked) {
+                    val location = ArrayList<Double>()
+                    location.add(locationLatLng.latitude)
+                    location.add(locationLatLng.longitude)
+                    LocatedEventData(cities.indexOf(binding.acCityMenu.text.toString()), location)
+                }
+                else null
+                eventBuilder.setLocatedEventData(locatedEventData)
+
+                eventBuilder.setWhatsAppLink(binding.etWhatAppLink.text.toString().trim())
+
+                val newEvent = eventBuilder.build()
+                var eventImageMultipartBody: MultipartBody.Part? = null
+                if (image!=null) {
+                    val inputStream = contentResolver.openInputStream(image!!)
+                    val eventImagePart: RequestBody = RequestBody.create(
+                            MediaType.parse("image/*"), inputStream?.readBytes()!!
+                    )
+                    eventImageMultipartBody = MultipartBody.Part.createFormData("image","image", eventImagePart)
+                }
+
+
+                val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                        .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+
+                RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
+                        .editPendingEvent(event.id, newEvent, eventImageMultipartBody)
+                        .enqueue(object: Callback<String>{
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                if (response.code() == 201) {
+                                    if (binding.rbOnline.isChecked) {
+                                        var startDateTime = startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                                        startDateTime = startDateTime.minusHours(12)
+                                        val message = "Your online event ${event.name} is starting in 12 hours, " +
+                                                "please make sure to send the meeting link to the participants of this event"
+                                        NotificationUtils.scheduleNotification(this@EditPendingEventActivity,
+                                                startDateTime, response.body()!!.toInt(), message, response.body()!!.toLong())
+
+                                        NotificationUtils.cancelNotification(this@EditPendingEventActivity, event.id)
+                                    }
+                                    val intent = Intent();
+                                    intent.putExtra("newEventId", response.body()!!.toLong())
+                                    setResult(RESULT_OK,intent)
+                                    NotificationUtils.cancelNotification(this@EditPendingEventActivity, event.id)
+                                    Utils.instance.displayInformationalDialog(this@EditPendingEventActivity, "Success",
+                                            "Changes saved",true)
+                                }
+                                else if (response.code()==401){
+                                    Utils.instance.displayInformationalDialog(this@EditPendingEventActivity, "Error",
+                                            "401: Unauthorized access",true)
+                                }
+                                else if (response.code() == 500){
+                                    Utils.instance.displayInformationalDialog(this@EditPendingEventActivity,
+                                            "Error", "Server issue, please try again later", false)
+                                }
+                                binding.btnSave.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Utils.instance.displayInformationalDialog(this@EditPendingEventActivity,
+                                        "Error", "Can't connect to server", false)
+                                binding.btnSave.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+
+                        })
+            }
+
+            dialogAlert.setNegativeButton("No"){di:DialogInterface, i:Int ->}
+
+            dialogAlert.create().show()
+
+        }
 
         val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
                     binding.ivImagePreview.setImageBitmap(bitmap)
-                    binding.btnRemoveImage.isEnabled = true
                     image = result.data!!.data
+                    imageChanged = true
                     updateSaveButton()
                 }
             }
@@ -91,6 +236,7 @@ class EditPendingEventActivity : AppCompatActivity() {
                 locationName = result.data?.getStringExtra("name")!!
                 binding.tvSelectedLocation.text = locationName
                 updateSaveButton()
+                updateCityAndLocationError()
             }
         }
 
@@ -170,19 +316,14 @@ class EditPendingEventActivity : AppCompatActivity() {
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
-        binding.btnRemoveImage.setOnClickListener {
-            binding.ivImagePreview.setImageBitmap(null)
-            binding.btnRemoveImage.isEnabled = false
-            image = null
-            updateSaveButton()
-        }
-
         binding.rbOnline.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked){
                 alterCityAndLocationStatus(true)
+                updateCityAndLocationError()
             }
             else{
                 alterCityAndLocationStatus(false)
+                updateCityAndLocationError()
             }
             alterLimitedLocatedSessions(isLimited())
         }
@@ -190,6 +331,7 @@ class EditPendingEventActivity : AppCompatActivity() {
         binding.rbLocated.setOnCheckedChangeListener { buttonView, isChecked ->
             alterLimitedLocatedSessions(isLimited()) //needed because the other one will be called before the check actually changes
             updateSaveButton()
+            updateCityAndLocationError()
         }
 
         binding.etNumberOfParticipants.addTextChangedListener(object : TextWatcher {
@@ -255,8 +397,11 @@ class EditPendingEventActivity : AppCompatActivity() {
                     binding.tvEndDate.text = to.toString()
                     startDate = from
                     endDate = to
+                    registrationCloseDate = LocalDate.from(startDate)
                     createRecyclerView(diff + 1) //diff = number of days - 1
-                    binding.tvDateError.text = getString(R.string.session_times_error)
+                    if (firstSessionStartTime.hour ==-1 && firstSessionEndTime.hour == -1)
+                        binding.tvDateError.text = getString(R.string.session_times_error)
+                    else binding.tvDateError.text = ""
                     binding.btnRegistrationCloseDate.isEnabled = true
                     binding.btnRegistrationCloseTime.isEnabled = false
                     binding.tvRegistrationCloseDate.text = getString(R.string.select_date)
@@ -274,7 +419,6 @@ class EditPendingEventActivity : AppCompatActivity() {
 
         val cityAdapter = ArrayAdapter(this, R.layout.city_list_item, cities)
         binding.acCityMenu.setAdapter(cityAdapter)
-        Toast.makeText(this, binding.acCityMenu.text.toString(), Toast.LENGTH_SHORT).show()
         binding.acCityMenu.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -286,6 +430,7 @@ class EditPendingEventActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 updateSaveButton()
+                updateCityAndLocationError()
             }
 
         })
@@ -294,8 +439,8 @@ class EditPendingEventActivity : AppCompatActivity() {
         binding.btnRegistrationCloseDate.setOnClickListener {
             val builder: MaterialDatePicker.Builder<Long> = MaterialDatePicker.Builder.datePicker()
             val calendarConstraints = CalendarConstraints.Builder()
-            val startConstraint = LocalDate.now().minusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val endConstraint = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val startConstraint = startDate.minusDays(2).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val endConstraint = startDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             calendarConstraints.setStart(startConstraint)
             calendarConstraints.setEnd(endConstraint)
             calendarConstraints.setValidator(object: CalendarConstraints.DateValidator{
@@ -309,8 +454,6 @@ class EditPendingEventActivity : AppCompatActivity() {
 
                 override fun isValid(date: Long): Boolean = !(startConstraint > date || endConstraint < date)
 
-
-
             })
             builder.setCalendarConstraints(calendarConstraints.build())
             builder.setTitleText(getString(R.string.select_registration_close_date))
@@ -318,7 +461,7 @@ class EditPendingEventActivity : AppCompatActivity() {
 
             picker.addOnPositiveButtonClickListener {
                 registrationCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it!!), ZoneId.systemDefault()).toLocalDate()
-                binding.tvRegistrationCloseDate.text = registrationCloseDate.toString()
+                binding.tvRegistrationCloseDate.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(registrationCloseDate)
                 binding.btnRegistrationCloseTime.isEnabled = true
                 registrationCloseTime = TimeStamp(firstSessionStartTime.hour,firstSessionStartTime.minute)
                 binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
@@ -331,9 +474,9 @@ class EditPendingEventActivity : AppCompatActivity() {
 
         binding.btnRegistrationCloseTime.setOnClickListener {
             val picker = MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setTimeFormat(TimeFormat.CLOCK_12H)
                 .setHour(12)
-                .setMinute(10)
+                .setMinute(0)
                 .setTitleText("Select registration close time")
                 .build()
 
@@ -370,19 +513,36 @@ class EditPendingEventActivity : AppCompatActivity() {
 
 
     private fun getAndLoadEvent(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
-
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
                 .getEvent(eventID).enqueue(object: Callback<Event> {
                     override fun onResponse(call: Call<Event>, response: Response<Event>) {
-                        //TODO: check http codes
-                        event = response.body()!!
-                        loadEvent()
+                        if (response.code() == 200){
+                            event = response.body()!!
+                            loadEvent()
+                            binding.btnSave.isEnabled = true
+                        }
+                        else if (response.code() == 401){
+                            Utils.instance.displayInformationalDialog(this@EditPendingEventActivity,
+                                    "Error", "401: Unauthorized access", true)
+                        }
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@EditPendingEventActivity,
+                                    "Error", "Event not found", true)
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@EditPendingEventActivity,
+                                    "Error", "Server issue, please try again later", true)
+                        }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<Event>, t: Throwable) {
-
+                        Utils.instance.displayInformationalDialog(this@EditPendingEventActivity,
+                                "Error", "Can't connect to server", true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
@@ -394,14 +554,14 @@ class EditPendingEventActivity : AppCompatActivity() {
         binding.etEventDescription.setText(event.description, TextView.BufferType.EDITABLE)
         binding.tvEventCategoryError.visibility = View.INVISIBLE
 
-        if (event.categories.contains(EventCategory.EDUCATIONAL)) binding.cbEducational.isChecked = true
-        if (event.categories.contains(EventCategory.ENTERTAINMENT)) binding.cbEntertainment.isChecked = true
-        if (event.categories.contains(EventCategory.VOLUNTEERING)) binding.cbVolunteering.isChecked = true
-        if (event.categories.contains(EventCategory.SPORTS)) binding.cbSports.isChecked = true
+        if (event.categories.contains(EventCategory.EDUCATIONAL.ordinal)) binding.cbEducational.isChecked = true
+        if (event.categories.contains(EventCategory.ENTERTAINMENT.ordinal)) binding.cbEntertainment.isChecked = true
+        if (event.categories.contains(EventCategory.VOLUNTEERING.ordinal)) binding.cbVolunteering.isChecked = true
+        if (event.categories.contains(EventCategory.SPORTS.ordinal)) binding.cbSports.isChecked = true
 
         binding.ivImagePreview.setImageBitmap(
                 BitmapFactory.
-                decodeStream(applicationContext.contentResolver.openInputStream(Uri.parse(event.image))))
+                decodeStream(ByteArrayInputStream(Base64.decode(event.image, Base64.DEFAULT))))
 
         if(event.locatedEventData!=null)binding.rbLocated.isChecked = true
 
@@ -417,19 +577,33 @@ class EditPendingEventActivity : AppCompatActivity() {
         binding.tvEndDate.text =
             DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
 
-        //TODO: Find a way to load session times
+        loadSessions()
 
         alterCityAndLocationStatus(event.locatedEventData==null)
-        alterLimitedLocatedSessions(isLimited())
+        alterLimitedLocatedSessions(event.isLimitedLocated())
         if (event.locatedEventData!=null){
-            binding.acCityMenu.setText(cities[event.locatedEventData!!.city], TextView.BufferType.EDITABLE)
-            binding.tvSelectedLocation.text = Geocoder(this).getFromLocation(
-                event.locatedEventData!!.location[0],
-                event.locatedEventData!!.location[1], 1)[0].getAddressLine(0)
+            locationLatLng = LatLng(event.locatedEventData!!.location[0],event.locatedEventData!!.location[0])
+            val locationData = Geocoder(applicationContext).getFromLocation(locationLatLng.latitude,
+                    locationLatLng.longitude, 1)
+            val locationName = if (locationData.size == 0) "Unnamed location" else locationData[0].featureName
+            binding.acCityMenu.setText(cities[event.locatedEventData!!.city])
+            val cityAdapter = ArrayAdapter(this, R.layout.city_list_item, cities)
+            binding.acCityMenu.setAdapter(cityAdapter)
+            binding.tvSelectedLocation.text = locationName
         }
+
+        registrationCloseDate = LocalDateTime.parse(event.registrationCloseDateTime,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT)).toLocalDate()
+        val temp = LocalDateTime.parse(event.registrationCloseDateTime,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT)).toLocalTime()
+        registrationCloseTime = TimeStamp(temp.hour, temp.minute)
+
+        binding.tvRegistrationCloseDate.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(registrationCloseDate)
+        binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
 
         binding.etWhatAppLink.setText(event.whatsAppLink, TextView.BufferType.EDITABLE)
 
+        updateSaveButton()
 
     }
 
@@ -437,7 +611,7 @@ class EditPendingEventActivity : AppCompatActivity() {
     private fun updateSaveButton(){
         var enabled = binding.etEventName.text.toString().trim() != "" && binding.tlEventName.error == null
                 && binding.etEventDescription.text.toString().trim() !="" && binding.tlEventDescription.error == null
-                && image!=null /*&& binding.rvSessions.adapter!=null*/
+                && binding.rvSessions.adapter!=null
 
         enabled = enabled && binding.tvEventCategoryError.visibility == View.INVISIBLE
                 && binding.tvDateError.text == ""
@@ -446,12 +620,8 @@ class EditPendingEventActivity : AppCompatActivity() {
                     && this::locationLatLng.isInitialized
         }
 
-        var hasChanged = (binding.etEventName.text.toString().trim() == event.name
-                && binding.etEventDescription.text.toString().trim() == event.description
-                && binding.etNumberOfParticipants.text.toString().trim() == event.maxParticipants.toString())
-        //TODO: handle sessions and other dates
 
-        binding.btnSave.isEnabled = binding.btnSave.isEnabled && !hasChanged
+        binding.btnSave.isEnabled = enabled
     }
 
     private fun updateEventCategoryStatus(){
@@ -473,18 +643,87 @@ class EditPendingEventActivity : AppCompatActivity() {
     }
 
     private fun createRecyclerView(size: Int){
+        val dateTimeFormatter = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
         val dates = ArrayList<String>()
         for(i in 1 until size){
-            dates.add(startDate.plusDays(i.toLong()).toString())
+            dates.add(startDate.plusDays(i.toLong()).dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                    +",\n"+ dateTimeFormatter.format(startDate.plusDays(i.toLong())))
         }
         val adapter = SessionInputAdapter(dates, isLimited(), firstSessionStartTime, firstSessionEndTime, firstSessionCheckInTime)
         binding.rvSessions.adapter = adapter
-        val layoutManager = LinearLayoutManager(binding.rvSessions.context, LinearLayoutManager.VERTICAL, false)
+        val layoutManager = object: LinearLayoutManager(this) {
+            override fun canScrollVertically():Boolean =  false
+        }
         binding.rvSessions.layoutManager = layoutManager
-        binding.rvSessions.addItemDecoration( DividerItemDecoration(binding.rvSessions.context, layoutManager.orientation))
-        binding.loFirstSession.visibility = View.VISIBLE
-        binding.cbEnableSession.text = startDate.toString()
+        binding.cvFirstSession.visibility = View.VISIBLE
+        binding.cbEnableSession.text = startDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())+",\n"+dateTimeFormatter.format(startDate)
         binding.cbEnableSession.isEnabled = false
+
+    }
+
+    private fun prepareRecyclerView(){
+        val dates = ArrayList<String>()
+        for(i in 0 until sessionCount-1){
+            dates.add("Loading")
+        }
+        val adapter = SessionInputAdapter(dates, false,
+                TimeStamp(-1,-1),TimeStamp(-1,-1),TimeStamp(-1,-1))
+        binding.rvSessions.adapter = adapter
+        val layoutManager = object: LinearLayoutManager(this) {
+            override fun canScrollVertically():Boolean =  false
+        }
+        binding.rvSessions.layoutManager = layoutManager
+    }
+
+    private fun loadSessions(){
+        val dateTimeFormatterDateDisplay = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
+        val dateTimeFormatterDateDefault = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT)
+        val dateTimeFormatterTimeDefault = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)
+        val firstSessionStartTimeTemp = LocalTime.parse(event.sessions[0].startTime, dateTimeFormatterTimeDefault)
+        firstSessionStartTime = TimeStamp(firstSessionStartTimeTemp.hour, firstSessionStartTimeTemp.minute)
+        val firstSessionEndTimeTemp = LocalTime.parse(event.sessions[0].endTime, dateTimeFormatterTimeDefault)
+        firstSessionEndTime = TimeStamp(firstSessionEndTimeTemp.hour, firstSessionEndTimeTemp.minute)
+
+        if (event.isLimitedLocated()) {
+            val firstSessionCheckInTimeTemp = LocalTime.parse(event.sessions[0].checkInTime, dateTimeFormatterTimeDefault)
+            firstSessionCheckInTime = TimeStamp(firstSessionCheckInTimeTemp.hour, firstSessionCheckInTimeTemp.minute)
+        }
+        binding.cbEnableSession.isEnabled = false
+        binding.cbEnableSession.text = startDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())+",\n"+
+                dateTimeFormatterDateDisplay.format(startDate)
+        binding.tvStartTime.text = TimeStamp(firstSessionStartTime.hour, firstSessionStartTime.minute).format12H()
+        binding.btnEndTime.isEnabled = true
+        binding.tvEndTime.text = TimeStamp(firstSessionEndTime.hour, firstSessionEndTime.minute).format12H()
+
+        if (event.isLimitedLocated()){
+            binding.btnCheckInTime.isEnabled = true
+            binding.tvCheckInTime.text = TimeStamp(firstSessionCheckInTime.hour, firstSessionCheckInTime.minute).format12H()
+        }
+
+        for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+            val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+            val sTime = LocalTime.parse(event.sessions[i+1].startTime, dateTimeFormatterTimeDefault)
+            val eTime = LocalTime.parse(event.sessions[i+1].endTime, dateTimeFormatterTimeDefault)
+            holder.startTime = TimeStamp(sTime.hour, sTime.minute)
+            holder.binding.tvStartTime.text = holder.startTime.format12H()
+            holder.binding.btnEndTime.isEnabled = true
+
+            holder.endTime = TimeStamp(eTime.hour, eTime.minute)
+            holder.binding.tvEndTime.text = holder.endTime.format12H()
+
+            if (event.isLimitedLocated()){
+                val cTime = LocalTime.parse(event.sessions[i+1].checkInTime, dateTimeFormatterTimeDefault)
+                holder.binding.btnCheckInTime.isEnabled = true
+                holder.checkInTime = TimeStamp(cTime.hour, cTime.minute)
+                holder.binding.tvCheckInTime.text = holder.checkInTime.format12H()
+            }
+
+            val date = LocalDate.parse(event.sessions[i+1].date,dateTimeFormatterDateDefault)
+            holder.binding.cbEnableSession.text = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())+",\n"+
+                    dateTimeFormatterDateDisplay.format(date)
+
+            holder.binding.cbEnableSession.isEnabled = i != (binding.rvSessions.adapter?.itemCount!!) - 1
+        }
 
 
     }
@@ -508,11 +747,6 @@ class EditPendingEventActivity : AppCompatActivity() {
         }
     }
 
-    fun isLimited(): Boolean{
-        return binding.rbLocated.isChecked && binding.etNumberOfParticipants.text.toString().trim()!=""
-                && binding.tlNumberOfParticipants.error == null
-    }
-
     private fun setClickListenersForFirstSession(){
 
         binding.cbEnableSession.isChecked = true
@@ -520,9 +754,9 @@ class EditPendingEventActivity : AppCompatActivity() {
         binding.btnCheckInTime.isEnabled = false
         binding.btnStartTime.setOnClickListener {
             val picker = MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setTimeFormat(TimeFormat.CLOCK_12H)
                 .setHour(12)
-                .setMinute(10)
+                .setMinute(0)
                 .setTitleText("Select start time")
                 .build()
             picker.addOnPositiveButtonClickListener {
@@ -552,9 +786,9 @@ class EditPendingEventActivity : AppCompatActivity() {
 
         binding.btnEndTime.setOnClickListener {
             val picker = MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setTimeFormat(TimeFormat.CLOCK_12H)
                 .setHour(12)
-                .setMinute(10)
+                .setMinute(0)
                 .setTitleText("Select end time")
                 .build()
             picker.addOnPositiveButtonClickListener {
@@ -590,7 +824,7 @@ class EditPendingEventActivity : AppCompatActivity() {
             val picker = MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_12H)
                 .setHour(12)
-                .setMinute(10)
+                .setMinute(0)
                 .setTitleText("Select check-in time")
                 .build()
             picker.addOnPositiveButtonClickListener {
@@ -662,7 +896,7 @@ class EditPendingEventActivity : AppCompatActivity() {
         }
     }
 
-    fun setDateError(){
+    override fun setDateError(){
         if (binding.rvSessions.adapter==null){
             binding.tvDateError.text = getString(R.string.no_date_error)
         }
@@ -694,5 +928,19 @@ class EditPendingEventActivity : AppCompatActivity() {
 
         }
         updateSaveButton()
+    }
+
+    private fun updateCityAndLocationError(){
+        if (binding.rbLocated.isChecked && (!cities.contains(binding.acCityMenu.text.toString()) || !this::locationLatLng.isInitialized)){
+            binding.tvCityAndLocationError.visibility = View.VISIBLE
+        }
+        else{
+            binding.tvCityAndLocationError.visibility = View.INVISIBLE
+        }
+    }
+
+    fun isLimited(): Boolean{
+        return binding.rbLocated.isChecked && binding.etNumberOfParticipants.text.toString().trim()!=""
+                && binding.tlNumberOfParticipants.error == null
     }
 }

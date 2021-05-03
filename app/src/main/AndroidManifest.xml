@@ -13,40 +13,52 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocatorOrganizers"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.ViewImageActivity"
-        android:theme="@style/Theme.EventLocatorOrganizers.NoActionBar"></activity>
+        <activity android:name=".ui.CreateEventHelpActivity"
+            android:label="Help"></activity>
+        <activity
+            android:name=".ui.ViewImageActivity"
+            android:theme="@style/Theme.EventLocatorOrganizers.NoActionBar" />
         <activity
             android:name=".ui.ViewLocationActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="View Location">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
-        <activity android:name=".ui.EditConfirmedEventActivity" />
+        <activity
+            android:name=".ui.EditConfirmedEventActivity"
+            android:launchMode="singleTask"
+            android:label="Edit Event"/>
         <activity
             android:name=".ui.EditPendingEventActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Edit event"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
         <activity
             android:name=".ui.ViewParticipantsDuringALimitedLocatedSession"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Participants">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
         <activity
             android:name=".ui.EventStatisticsActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Event Statistics">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
         <activity
             android:name=".ui.ViewEventFeedbackActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Event Feedback">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
@@ -61,28 +73,32 @@
             android:label="Long tap to select a location" />
         <activity
             android:name=".ui.CheckInParticipantActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Check-in Participants">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
         <activity
             android:name=".ui.EmailParticipantsOfAnEvent"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Email Participants">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
         <activity
             android:name=".ui.ViewFollowersActivity"
-            android:parentActivityName=".ui.ProfileActivity">
+            android:parentActivityName=".ui.ProfileActivity"
+            android:label="Followers">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ProfileActivity" />
         </activity>
         <activity
             android:name=".ui.ViewParticipantsOfAnEventActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="Participants">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
@@ -90,7 +106,8 @@
         <activity
             android:name=".ui.ViewEventActivity"
             android:launchMode="singleTask"
-            android:parentActivityName=".ui.EventsActivity">
+            android:parentActivityName=".ui.EventsActivity"
+            android:label="Event">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.EventsActivity" />
@@ -120,6 +137,7 @@
         <activity
             android:name=".ui.IndividualEditProfileActivity"
             android:label="Edit Profile"
+            android:launchMode="singleTask"
             android:parentActivityName=".ui.ProfileActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -128,6 +146,7 @@
         <activity
             android:name=".ui.OrganizationEditProfileActivity"
             android:label="Edit Profile"
+            android:launchMode="singleTask"
             android:parentActivityName=".ui.ProfileActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -145,7 +164,7 @@
         </activity>
         <activity
             android:name=".ui.IndividualSetUpProfileActivity"
-            android:label="Setup Your Profile"
+            android:label="Setup Profile"
             android:parentActivityName=".ui.SignUpActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -153,13 +172,14 @@
         </activity>
         <activity
             android:name=".ui.OrganizationSetUpProfileActivity"
-            android:label="Setup Your Profile"
+            android:label="Setup Profile"
             android:parentActivityName=".ui.SignUpActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.SignUpActivity" />
         </activity>
-        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.LoginActivity"
+            android:label="Login"/>
         <activity
             android:name=".ui.SignUpActivity"
             android:label="Sign Up"

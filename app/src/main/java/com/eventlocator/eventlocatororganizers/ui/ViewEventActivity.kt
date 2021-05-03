@@ -1,16 +1,20 @@
 package com.eventlocator.eventlocatororganizers.ui
 
 import android.R.attr.bitmap
+import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
 import android.view.*
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +34,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayInputStream
 import java.math.BigDecimal
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -50,13 +56,20 @@ class ViewEventActivity : AppCompatActivity() {
     private val edit_whole_event_id = 5
     private val view_statistics_id = 6
     private val email_particiapnts_id = 7
+    private val share_on_twitter_id = 8
     lateinit var cities: List<String>
+    lateinit var editEventLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
         cities = listOf(getString(R.string.Amman), getString(R.string.Zarqa), getString(R.string.Balqa), getString(R.string.Madaba), getString(R.string.Irbid), getString(R.string.Mafraq), getString(R.string.Jerash), getString(R.string.Ajloun), getString(R.string.Karak), getString(R.string.Aqaba), getString(R.string.Maan), getString(R.string.Tafila))
         eventID = intent.getLongExtra("eventID", -1)
+        editEventLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result ->
+            if (result.resultCode == RESULT_OK){
+                eventID = result.data!!.getLongExtra("newEventId",-1)
+            }
+        }
     }
 
     override fun onResume() {
@@ -235,10 +248,16 @@ class ViewEventActivity : AppCompatActivity() {
                 promptCancelEvent()
             }
             edit_whole_event_id -> {
-                //TODO: open edit whole event activity
+                val intent = Intent(this, EditPendingEventActivity::class.java)
+                intent.putExtra("eventID", event.id)
+                intent.putExtra("sessionCount", event.sessions.size)
+                editEventLauncher.launch(intent)
             }
             edit_event_id -> {
-                //TODO: open edit event activity
+                val intent = Intent(this, EditConfirmedEventActivity::class.java)
+                intent.putExtra("eventID", event.id)
+                intent.putExtra("sessionCount", event.sessions.size)
+                editEventLauncher.launch(intent)
             }
             view_participants_id -> {
                 if (event.isLimitedLocated() && event.getCurrentLimitedSessionIncludingCheckInTime() != null) {
@@ -248,6 +267,21 @@ class ViewEventActivity : AppCompatActivity() {
                 } else {
                     val intent = Intent(this, ViewParticipantsOfAnEventActivity::class.java)
                     intent.putExtra("eventID", event.id)
+                    startActivity(intent)
+                }
+            }
+            share_on_twitter_id -> {
+                val message = "I'm organizing ${event.name} on EventLocator app, register in my event through the app!"
+                var intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.setPackage("com.twitter.android")
+                intent.putExtra(Intent.EXTRA_TEXT, message)
+                try {
+                    startActivity(intent)
+                } catch (ex: ActivityNotFoundException) {
+                    val tweetUrl = "https://twitter.com/intent/tweet?text=" + URLEncoder.encode(message, StandardCharsets.UTF_8.toString())
+                    val uri: Uri = Uri.parse(tweetUrl)
+                    intent = Intent(Intent.ACTION_VIEW, uri)
                     startActivity(intent)
                 }
             }
@@ -272,15 +306,16 @@ class ViewEventActivity : AppCompatActivity() {
                         DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
                 val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
                         DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-                if (LocalDateTime.now().isBefore(eventStartDateTime.minusHours(24))){
-                    menu.add(menu_group_id, edit_event_id, 4, "Edit event")
-                }
-                else if (event.status == EventStatus.PENDING.ordinal){
+                if (event.status == EventStatus.PENDING.ordinal){
                     menu.add(menu_group_id, edit_whole_event_id, 4, "Edit event")
+                }
+                else if (LocalDateTime.now().isBefore(eventStartDateTime.minusHours(24))){
+                    menu.add(menu_group_id, edit_event_id, 4, "Edit event")
                 }
                 menu.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
             }
             menu.add(menu_group_id, view_participants_id, 2, "View participants")
+            menu.add(menu_group_id, share_on_twitter_id, 9, "Share on Twitter")
         }
 
 

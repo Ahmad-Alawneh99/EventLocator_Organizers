@@ -31,7 +31,7 @@ class ViewLocationActivity : AppCompatActivity() {
             map = mp
             val locationData = Geocoder(applicationContext).getFromLocation(selectedLatLng.latitude,
                 selectedLatLng.longitude, 1)
-            val locationName = if (locationData.size == 0) "Unknown" else locationData[0].featureName
+            val locationName = if (locationData.size == 0) "Unnamed location" else locationData[0].featureName
             map.moveCamera(CameraUpdateFactory.newLatLng(selectedLatLng))
             map.animateCamera(CameraUpdateFactory.zoomTo(20f))
             map.addMarker(MarkerOptions()

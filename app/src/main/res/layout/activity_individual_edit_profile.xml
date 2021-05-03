@@ -1,273 +1,288 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.IndividualEditProfileActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/main_button_height">
 
-        <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="@dimen/et_start_end_margin"
-            android:layout_marginEnd="@dimen/et_start_end_margin"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/main_button_height">
 
-            <Button
-                android:id="@+id/btnUpdateEmail"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/button_size"
-                android:text="@string/update_email"
-                android:layout_marginBottom="4dp"/>
-
-            <Button
-                android:id="@+id/btnChangePassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/button_size"
-                android:text="@string/change_password"
-                android:layout_marginBottom="16dp"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlAbout"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAbout"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:hint="@string/about_you"
-                    android:inputType="textMultiLine"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlPhoneNumber"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPhoneNumber"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:hint="@string/phone_number"
-                    android:inputType="phone"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/update_profile_picture_hint"
-                android:textSize="@dimen/larger_label"/>
-
-            <Button
-                android:id="@+id/btnUploadProfilePicture"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/upload"
-                android:layout_marginBottom="8dp"
-                android:textSize="@dimen/button_size"/>
-
-            <ImageView
-                android:id="@+id/ivProfilePicturePreview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:layout_marginBottom="16dp"/>
-
-            <Button
-                android:id="@+id/btnRemoveImage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/remove_image"
-                android:layout_marginBottom="16dp"
-                android:textSize="@dimen/button_size"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/social_media_accounts"
-                android:textSize="18sp"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlFacebookName"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/et_start_end_margin"
+                android:layout_marginEnd="@dimen/et_start_end_margin"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFacebookName"
+                <Button
+                    android:id="@+id/btnUpdateEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/button_size"
+                    android:text="@string/update_email"
+                    android:layout_marginBottom="4dp"/>
+
+                <Button
+                    android:id="@+id/btnChangePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/button_size"
+                    android:text="@string/change_password"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlAbout"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/facebook_page_name"
-                    android:inputType="textPersonName"/>
+                    android:layout_marginBottom="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAbout"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/about_you"
+                        android:inputType="textMultiLine"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlFacebookURL"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFacebookURL"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlPhoneNumber"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/facebook_page_url"
-                    android:inputType="text"/>
+                    android:layout_marginBottom="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPhoneNumber"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/phone_number"
+                        android:inputType="phone"/>
 
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlYoutubeName"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="8dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/update_profile_picture_hint"
+                    android:textSize="@dimen/larger_label"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etYoutubeName"
+                <Button
+                    android:id="@+id/btnUploadProfilePicture"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload"
+                    android:layout_marginBottom="8dp"
+                    android:textSize="@dimen/button_size"/>
+
+                <ImageView
+                    android:id="@+id/ivProfilePicturePreview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <Button
+                    android:id="@+id/btnRemoveImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remove_image"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="@dimen/button_size"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/social_media_accounts"
+                    android:textSize="18sp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlFacebookName"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/youtube_channel_name"
-                    android:inputType="textPersonName"/>
+                    android:layout_marginBottom="8dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFacebookName"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/facebook_page_name"
+                        android:inputType="textPersonName"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlYoutubeURL"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etYoutubeURL"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlFacebookURL"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/youtube_channel_url"
-                    android:inputType="text"/>
+                    android:layout_marginBottom="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFacebookURL"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/facebook_page_url"
+                        android:inputType="text"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlInstagramName"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etInstagramName"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlYoutubeName"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/instagram_page_name"
-                    android:inputType="textPersonName"/>
+                    android:layout_marginBottom="8dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etYoutubeName"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/youtube_channel_name"
+                        android:inputType="textPersonName"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlInstagramURL"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etInstagramURL"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlYoutubeURL"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/instagram_page_url"
-                    android:inputType="text"/>
+                    android:layout_marginBottom="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etYoutubeURL"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/youtube_channel_url"
+                        android:inputType="text"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlTwitterName"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTwitterName"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlInstagramName"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/twitter_page_name"
-                    android:inputType="textPersonName"/>
+                    android:layout_marginBottom="8dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etInstagramName"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/instagram_page_name"
+                        android:inputType="textPersonName"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlTwitterURL"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="16dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTwitterURL"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlInstagramURL"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/twitter_page_url"
-                    android:inputType="text"/>
+                    android:layout_marginBottom="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etInstagramURL"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/instagram_page_url"
+                        android:inputType="text"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlLinkedInName"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="8dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etLinkedInName"
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlTwitterName"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/linkedin_profile_name"
-                    android:inputType="textPersonName"/>
+                    android:layout_marginBottom="8dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTwitterName"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/twitter_page_name"
+                        android:inputType="textPersonName"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tlLinkedInURL"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="24dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etLinkedInURL"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlTwitterURL"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:hint="@string/linkedin_profile_url"
-                    android:inputType="text"/>
+                    android:layout_marginBottom="16dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-    </ScrollView>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTwitterURL"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/twitter_page_url"
+                        android:inputType="text"/>
 
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/main_button_height"
-        android:text="@string/save_changes"
-        android:textSize="@dimen/button_size"
-        android:minHeight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlLinkedInName"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLinkedInName"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/linkedin_profile_name"
+                        android:inputType="textPersonName"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tlLinkedInURL"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="24dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLinkedInURL"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="@string/linkedin_profile_url"
+                        android:inputType="text"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_button_height"
+            android:text="@string/save_changes"
+            android:textSize="@dimen/button_size"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="48dp" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

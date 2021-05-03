@@ -29,4 +29,14 @@ interface OrganizerService {
     @GET("/organizers/followers")
     fun getOrganizerFollowers(): Call<ArrayList<String>>
 
+    @PATCH("/organizers/updateEmail")
+    fun updateOrganizerEmail(@Body data: ArrayList<String>): Call<String>
+
+    @PATCH("/organizers/changePassword")
+    fun changeOrganizerPassword(@Body data: ArrayList<String>): Call<ResponseBody>
+
+    @Multipart
+    @PATCH("/organizers/editProfile")
+    fun editOrganizerProfile(@Part("organizer") organizer: Organizer, @Part image: MultipartBody.Part?, @Part("flag") flag: Int): Call<String>
+
 }

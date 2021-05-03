@@ -6,7 +6,7 @@
     android:id="@+id/llCancel"
     android:padding="24dp">
 
-    <!--TODO: change color -->
+
     <TextView
         android:id="@+id/tvCancelWarning"
         android:layout_width="wrap_content"

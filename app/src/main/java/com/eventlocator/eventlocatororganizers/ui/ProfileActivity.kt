@@ -13,6 +13,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.get
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.data.Organizer
@@ -57,20 +59,42 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.btnEditProfile.setOnClickListener {
+            binding.pbLoading.visibility = View.VISIBLE
             val token = sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
             RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
                     .getOrganizerType().enqueue(object: Callback<Int>{
                         override fun onResponse(call: Call<Int>, response: Response<Int>) {
-                            //TODO: Check if successful
-                            if (response.body()!! == 0){
-                                //TODO: open organization edit profile
+                            if (response.code() == 202){
+                                if (response.body()!! == 0){
+                                    startActivity(Intent(this@ProfileActivity, OrganizationEditProfileActivity::class.java))
+                                }
+                                else if (response.body()!! == 1){
+                                    startActivity(Intent(this@ProfileActivity, IndividualEditProfileActivity::class.java))
+                                }
                             }
-                            else{
-                                //TODO: open individual edit profile
+                            else if (response.code()==401){
+                                Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
+                                        "401: Unauthorized access",true)
+                                getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                        .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
                             }
+                            else if (response.code() == 404){
+                                Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
+                                        "404: Organizer not found",true)
+                                getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                        .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
+                            }
+                            else if (response.code() == 500){
+                                Utils.instance.displayInformationalDialog(this@ProfileActivity,
+                                        "Error", "Server issue, please try again later", true)
+                            }
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                         override fun onFailure(call: Call<Int>, t: Throwable) {
+                            Utils.instance.displayInformationalDialog(this@ProfileActivity,
+                                    "Error", "Can't connect to server", true)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                     })
@@ -99,7 +123,6 @@ class ProfileActivity : AppCompatActivity() {
                         getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
                 sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, null)
                 sharedPreferenceEditor.apply()
-                //TODO: add confirmation box for logout
                 startActivity(Intent(this, LoginActivity::class.java))
             }
         }
@@ -127,6 +150,12 @@ class ProfileActivity : AppCompatActivity() {
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
                                     "401: Unauthorized access",true)
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                    .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
+                        }
+                        else if (response.code() == 403){
+                            Utils.instance.displayInformationalDialog(this@ProfileActivity, "Error",
+                                    "Your account has been suspended",true)
                             getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
                                     .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
                         }
@@ -186,18 +215,19 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(a)
     }
 
-    fun setSocialMediaAccounts(){
+    private fun setSocialMediaAccounts(){
         for(i in 0 until organizer.socialMediaAccounts.size){
             if (organizer.socialMediaAccounts[i].accountName=="" && organizer.socialMediaAccounts[i].url==""){
                 binding.llSocialMedia[i].visibility = View.GONE
             }
             else{
+                binding.llSocialMedia[i].visibility = View.VISIBLE
                 when (i){
                     0 -> {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                Uri.parse(organizer.socialMediaAccounts[i].url))
+                                Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -212,7 +242,7 @@ class ProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -227,7 +257,7 @@ class ProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -242,7 +272,7 @@ class ProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -257,7 +287,7 @@ class ProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){

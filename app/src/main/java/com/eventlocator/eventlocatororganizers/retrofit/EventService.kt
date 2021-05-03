@@ -14,7 +14,7 @@ interface EventService {
 
     @Multipart
     @POST("/organizers/events/create")
-    fun createEvent(@Part eventImage: MultipartBody.Part, @Part("event") event: Event): Call<Long>
+    fun createEvent(@Part eventImage: MultipartBody.Part, @Part("event") event: Event): Call<String>
 
     @GET("/organizers/events")
     fun getEvents(): Call<ArrayList<Event>>
@@ -48,4 +48,11 @@ interface EventService {
     @POST("/organizers/events/{id}/emailParticipants")
     fun emailParticipantsOfAnEvent(@Path("id")eventID: Long, @Body email: ArrayList<String>): Call<ResponseBody>
 
+    @Multipart
+    @PATCH("/organizers/events/{id}/editPending")
+    fun editPendingEvent(@Path("id") eventID: Long, @Part("event") event:Event, @Part image: MultipartBody.Part?): Call<String>
+
+
+    @PATCH("/organizers/events/{id}/editConfirmed")
+    fun editConfirmedEvent(@Path("id") eventID: Long, @Body event: Event): Call<ResponseBody>
 }

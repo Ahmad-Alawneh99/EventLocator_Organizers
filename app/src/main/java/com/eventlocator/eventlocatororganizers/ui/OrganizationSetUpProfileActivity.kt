@@ -46,15 +46,12 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             }
         }
         binding.btnSignUp.isEnabled = false
-        if (image==null)
-            binding.btnRemoveImage.isEnabled = false
 
         val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
                     binding.ivLogoPreview.setImageBitmap(bitmap)
-                    binding.btnRemoveImage.isEnabled = true
                     image = result.data!!.data
                     updateSignUpButton()
                 }
@@ -111,7 +108,6 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             inputStream = contentResolver.openInputStream(image!!)
             val profilePicturePart = RequestBody.create(MediaType.parse("image/*"), inputStream?.readBytes()!!)
             profilePictureMultipartBody = MultipartBody.Part.createFormData("image", "image", profilePicturePart)
-
             val organizer = organizerBuilder.build()
 
             RetrofitServiceFactory.createService(OrganizerService::class.java).createOrganizer(proofImageMultipartBody,
@@ -183,12 +179,6 @@ class OrganizationSetUpProfileActivity : AppCompatActivity() {
             intent.type = "image/*"
             intent.action = Intent.ACTION_PICK
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
-        }
-
-        binding.btnRemoveImage.setOnClickListener {
-            binding.ivLogoPreview.setImageBitmap(null)
-            binding.btnRemoveImage.isEnabled = false
-            updateSignUpButton()
         }
 
         binding.etFacebookName.addTextChangedListener(createTextWatcherForAccountNames(binding.etFacebookName,

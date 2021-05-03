@@ -62,14 +62,6 @@
                     android:adjustViewBounds="true"
                     android:layout_marginBottom="16dp"/>
 
-                <Button
-                    android:id="@+id/btnRemoveImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/remove_image"
-                    android:layout_marginBottom="16dp"
-                    android:textSize="@dimen/button_size"/>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

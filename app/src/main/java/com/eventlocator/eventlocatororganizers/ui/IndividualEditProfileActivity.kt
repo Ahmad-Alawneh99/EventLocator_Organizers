@@ -1,6 +1,7 @@
 package com.eventlocator.eventlocatororganizers.ui
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -11,11 +12,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.data.Organizer
+import com.eventlocator.eventlocatororganizers.data.SocialMediaAccount
 import com.eventlocator.eventlocatororganizers.databinding.ActivityIndividualEditProfileBinding
 import com.eventlocator.eventlocatororganizers.databinding.ActivityOrganizationEditProfileBinding
 import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
@@ -23,6 +26,9 @@ import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocatororganizers.utilities.SharedPreferenceManager
 import com.eventlocator.eventlocatororganizers.utilities.Utils
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,6 +39,7 @@ class IndividualEditProfileActivity : AppCompatActivity() {
     val INSTANCE_STATE_IMAGE = "Image"
     var image: Uri? = null
     lateinit var organizer: Organizer
+    var imageChanged = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityIndividualEditProfileBinding.inflate(layoutInflater)
@@ -56,21 +63,124 @@ class IndividualEditProfileActivity : AppCompatActivity() {
                     binding.ivProfilePicturePreview.setImageBitmap(bitmap)
                     binding.btnRemoveImage.isEnabled = true
                     image = result.data!!.data
+                    imageChanged = true
                     updateSaveButton()
                 }
             }
         }
 
         binding.btnSave.setOnClickListener{
-            //TODO: Handle save
+            val dialogAlert = Utils.instance.createSimpleDialog(this, "Edit profile",
+                    "Are you sure that you want to save these changes?")
+            dialogAlert.setPositiveButton("Yes"){ di: DialogInterface, i: Int ->
+                binding.btnSave.isEnabled = false
+                binding.pbLoading.visibility = View.VISIBLE
+                val organizerBuilder = Organizer.OrganizerBuilder(
+                        "WILL NOT BE USED",
+                        "WILL NOT BE USED",
+                        binding.etAbout.text.toString(),
+                        binding.etPhoneNumber.text.toString(),
+                        "WILL NOT BE USED"
+                )
+
+                val socialMediaAccounts = ArrayList<SocialMediaAccount>()
+                socialMediaAccounts.add(
+                        SocialMediaAccount(
+                                binding.etFacebookName.text.toString().trim(),
+                                binding.etFacebookURL.text.toString().trim()
+                        )
+                )
+                socialMediaAccounts.add(
+                        SocialMediaAccount(
+                                binding.etYoutubeName.text.toString().trim(),
+                                binding.etYoutubeURL.text.toString().trim()
+                        )
+                )
+                socialMediaAccounts.add(
+                        SocialMediaAccount(
+                                binding.etInstagramName.text.toString().trim(),
+                                binding.etInstagramURL.text.toString().trim()
+                        )
+                )
+                socialMediaAccounts.add(
+                        SocialMediaAccount(
+                                binding.etTwitterName.text.toString().trim(),
+                                binding.etTwitterURL.text.toString().trim()
+                        )
+                )
+                socialMediaAccounts.add(
+                        SocialMediaAccount(
+                                binding.etLinkedInName.text.toString().trim(),
+                                binding.etLinkedInURL.text.toString().trim()
+                        )
+                )
+
+                organizerBuilder.setSocialMediaAccounts(socialMediaAccounts)
+                val organizer = organizerBuilder.build()
+
+                var profilePictureMultipartBody: MultipartBody.Part? = null
+                if (image!=null){
+                    val inputStream = contentResolver.openInputStream(image!!)
+                    val profilePicturePart = RequestBody.create(MediaType.parse("image/*"), inputStream?.readBytes()!!)
+                    profilePictureMultipartBody = MultipartBody.Part.createFormData("image", "image", profilePicturePart)
+                }
+                var flag = 0
+                if (imageChanged && image==null)
+                    flag = 1
+                val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                        .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+                RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
+                        .editOrganizerProfile(organizer, profilePictureMultipartBody, flag).enqueue(object: Callback<String>{
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                if (response.code() == 200){
+                                    getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                                            .edit().putString(SharedPreferenceManager.instance.TOKEN_KEY, response.body()!!)
+                                            .apply()
+                                    Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                            "Success",
+                                            "Changes saved",true)
+                                }
+                                else if (response.code() == 401){
+
+                                    Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                            "Error",
+                                            "401: Unauthorized access",true)
+                                }
+                                else if (response.code() == 409){
+                                    Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                            "Error",
+                                            "The new phone number already exists, please use a different one",false)
+                                }
+                                else if (response.code() == 500){
+                                    Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                            "Error",
+                                            "Server issue, please try again later",false)
+                                }
+                                binding.btnSave.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                        "Error",
+                                        "Can't connect to server",false)
+                                binding.btnSave.isEnabled = true
+                                binding.pbLoading.visibility = View.INVISIBLE
+                            }
+
+                        })
+            }
+
+            dialogAlert.setNegativeButton("No"){ di: DialogInterface, i: Int ->}
+            dialogAlert.create().show()
         }
 
         binding.btnUpdateEmail.setOnClickListener {
-            //TODO: Handle email activity
+            startActivity(Intent(this, UpdateEmailActivity::class.java))
         }
 
         binding.btnChangePassword.setOnClickListener {
-            //TODO: Handle password activity
+            startActivity(Intent(this, ChangePasswordActivity::class.java))
         }
 
         binding.etAbout.addTextChangedListener(object: TextWatcher {
@@ -142,6 +252,8 @@ class IndividualEditProfileActivity : AppCompatActivity() {
         binding.btnRemoveImage.setOnClickListener {
             binding.ivProfilePicturePreview.setImageBitmap(null)
             binding.btnRemoveImage.isEnabled = false
+            imageChanged = true
+            image = null
             updateSaveButton()
         }
 
@@ -267,7 +379,7 @@ class IndividualEditProfileActivity : AppCompatActivity() {
                 && binding.etTwitterURL.text.toString() == organizer.socialMediaAccounts[3].url
                 && binding.etLinkedInName.text.toString() == organizer.socialMediaAccounts[4].accountName
                 && binding.etLinkedInURL.text.toString() == organizer.socialMediaAccounts[4].url)
-                //&& image == Uri.parse(organizer.image))
+                && !imageChanged
 
         binding.btnSave.isEnabled = binding.btnSave.isEnabled && !noChanges
 
@@ -338,41 +450,62 @@ class IndividualEditProfileActivity : AppCompatActivity() {
     }
 
     private fun getAndLoadOrganizerInfo(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
                 .getOrganizerInfo().enqueue(object: Callback<Organizer> {
                     override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
-                        //TODO: check http code
-                        organizer = response.body()!!
-                        binding.etAbout.setText (organizer.about, TextView.BufferType.EDITABLE)
+                        if (response.code() == 202) {
+                            organizer = response.body()!!
+                            binding.etAbout.setText(organizer.about, TextView.BufferType.EDITABLE)
 
-                        binding.etPhoneNumber.setText(organizer.phoneNumber, TextView.BufferType.EDITABLE)
+                            binding.etPhoneNumber.setText(organizer.phoneNumber, TextView.BufferType.EDITABLE)
 
-                        binding.etFacebookName.setText(organizer.socialMediaAccounts[0].accountName, TextView.BufferType.EDITABLE)
-                        binding.etFacebookURL.setText(organizer.socialMediaAccounts[0].url, TextView.BufferType.EDITABLE)
+                            binding.etFacebookName.setText(organizer.socialMediaAccounts[0].accountName, TextView.BufferType.EDITABLE)
+                            binding.etFacebookURL.setText(organizer.socialMediaAccounts[0].url, TextView.BufferType.EDITABLE)
 
-                        binding.etYoutubeName.setText(organizer.socialMediaAccounts[1].accountName, TextView.BufferType.EDITABLE)
-                        binding.etYoutubeURL.setText(organizer.socialMediaAccounts[1].url, TextView.BufferType.EDITABLE)
+                            binding.etYoutubeName.setText(organizer.socialMediaAccounts[1].accountName, TextView.BufferType.EDITABLE)
+                            binding.etYoutubeURL.setText(organizer.socialMediaAccounts[1].url, TextView.BufferType.EDITABLE)
 
-                        binding.etInstagramName.setText(organizer.socialMediaAccounts[2].accountName, TextView.BufferType.EDITABLE)
-                        binding.etInstagramURL.setText(organizer.socialMediaAccounts[2].url, TextView.BufferType.EDITABLE)
+                            binding.etInstagramName.setText(organizer.socialMediaAccounts[2].accountName, TextView.BufferType.EDITABLE)
+                            binding.etInstagramURL.setText(organizer.socialMediaAccounts[2].url, TextView.BufferType.EDITABLE)
 
-                        binding.etTwitterName.setText(organizer.socialMediaAccounts[3].accountName, TextView.BufferType.EDITABLE)
-                        binding.etTwitterURL.setText(organizer.socialMediaAccounts[3].url, TextView.BufferType.EDITABLE)
+                            binding.etTwitterName.setText(organizer.socialMediaAccounts[3].accountName, TextView.BufferType.EDITABLE)
+                            binding.etTwitterURL.setText(organizer.socialMediaAccounts[3].url, TextView.BufferType.EDITABLE)
 
-                        binding.etLinkedInName.setText(organizer.socialMediaAccounts[4].accountName, TextView.BufferType.EDITABLE)
-                        binding.etLinkedInURL.setText(organizer.socialMediaAccounts[4].url, TextView.BufferType.EDITABLE)
+                            binding.etLinkedInName.setText(organizer.socialMediaAccounts[4].accountName, TextView.BufferType.EDITABLE)
+                            binding.etLinkedInURL.setText(organizer.socialMediaAccounts[4].url, TextView.BufferType.EDITABLE)
 
-                        //TODO: Test Bitmaps
-                        binding.ivProfilePicturePreview.setImageBitmap(BitmapFactory.
-                        decodeStream(ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
-                        //image = Uri.parse(organizer.image)
+
+                            binding.ivProfilePicturePreview.setImageBitmap(BitmapFactory.decodeStream(
+                                    ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                            updateSaveButton()
+                        }
+                        else if (response.code()== 401){
+                            Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity, "Error",
+                                    "401: Unauthorized access",true)
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                    .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
+                        }
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity, "Error",
+                                    "404: Organizer not found",true)
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                    .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                    "Error", "Server issue, please try again later", true)
+                        }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
-
+                        Utils.instance.displayInformationalDialog(this@IndividualEditProfileActivity,
+                                "Error", "Can't connect to server", true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })

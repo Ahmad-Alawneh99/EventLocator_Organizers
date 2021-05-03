@@ -12,9 +12,11 @@ import android.os.Parcel
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,7 +48,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
-class CreateEventActivity : AppCompatActivity() {
+class CreateEventActivity : AppCompatActivity(), DateErrorUtil {
     lateinit var binding: ActivityCreateEventBinding
     val DATE_PERIOD_LIMIT = 6
     val INSTANCE_STATE_IMAGE = "Image"
@@ -88,8 +90,7 @@ class CreateEventActivity : AppCompatActivity() {
         setClickListenersForFirstSession()
         setDateError()
         alterCityAndLocationStatus(true)
-        if (image == null)
-            binding.btnRemoveImage.isEnabled = false
+
 
         binding.btnCreateEvent.setOnClickListener{
             val alertBuilder = Utils.instance.createSimpleDialog(this, "Create event", "Are you sure that you want to create this event?")
@@ -113,6 +114,7 @@ class CreateEventActivity : AppCompatActivity() {
 
                 for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
                     val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
+                    if(!holder.binding.cbEnableSession.isChecked)continue
                     val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString().split(',')[1].trim(),
                             DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY))
                     sessions.add(Session(i+2,
@@ -125,7 +127,9 @@ class CreateEventActivity : AppCompatActivity() {
                 }
 
                 val temp = if (this::registrationCloseDate.isInitialized)
-                    registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
+                    if (registrationCloseTime.hour == -1)
+                        registrationCloseDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                    else registrationCloseDate.atTime(registrationCloseTime.hour, registrationCloseTime.minute)
                 else
                     startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
 
@@ -165,18 +169,19 @@ class CreateEventActivity : AppCompatActivity() {
                         .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
                 RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-                        .createEvent(eventImageMultipartBody, event).enqueue(object : Callback<Long> {
-                            override fun onResponse(call: Call<Long>, response: Response<Long>) {
+                        .createEvent(eventImageMultipartBody, event).enqueue(object : Callback<String> {
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
                                 if (response.code() == 201) {
                                     if (binding.rbOnline.isChecked) {
-                                        val startDateTime = startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
-                                        startDateTime.minusHours(12)
+                                        var startDateTime = startDate.atTime(firstSessionStartTime.hour, firstSessionStartTime.minute)
+                                        startDateTime = startDateTime.minusHours(12)
                                         val message = "Your online event ${event.name} is starting in 12 hours, " +
                                                 "please make sure to send the meeting link to the participants of this event"
                                         NotificationUtils.scheduleNotification(this@CreateEventActivity,
-                                                startDateTime, response.body()!!.toInt(), message, response.body()!!)
+                                                startDateTime, response.body()!!.toInt(), message, response.body()!!.toLong())
                                     }
-                                    finish()
+                                    Utils.instance.displayInformationalDialog(this@CreateEventActivity, "Success",
+                                            "Event created",true)
                                     binding.btnCreateEvent.isEnabled = true
                                     binding.pbLoading.visibility = View.INVISIBLE
                                 }
@@ -194,7 +199,7 @@ class CreateEventActivity : AppCompatActivity() {
                                 }
                             }
 
-                            override fun onFailure(call: Call<Long>, t: Throwable) {
+                            override fun onFailure(call: Call<String>, t: Throwable) {
                                 Utils.instance.displayInformationalDialog(this@CreateEventActivity,
                                         "Error", "Can't connect to server", false)
                                 binding.btnCreateEvent.isEnabled = true
@@ -213,7 +218,6 @@ class CreateEventActivity : AppCompatActivity() {
                 Activity.RESULT_OK -> {
                     val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
                     binding.ivImagePreview.setImageBitmap(bitmap)
-                    binding.btnRemoveImage.isEnabled = true
                     image = result.data!!.data
                     updateCreateEventButton()
                 }
@@ -306,13 +310,6 @@ class CreateEventActivity : AppCompatActivity() {
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
-        binding.btnRemoveImage.setOnClickListener {
-            binding.ivImagePreview.setImageBitmap(null)
-            binding.btnRemoveImage.isEnabled = false
-            image = null
-            updateCreateEventButton()
-        }
-
         binding.rbOnline.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked){
                 alterCityAndLocationStatus(true)
@@ -393,7 +390,9 @@ class CreateEventActivity : AppCompatActivity() {
                     startDate = from
                     endDate = to
                     createRecyclerView(diff + 1) //diff = number of days - 1
-                    binding.tvDateError.text = getString(R.string.session_times_error)
+                    if (firstSessionStartTime.hour ==-1 && firstSessionEndTime.hour == -1)
+                        binding.tvDateError.text = getString(R.string.session_times_error)
+                    else binding.tvDateError.text = ""
                     binding.btnRegistrationCloseDate.isEnabled = true
                     binding.btnRegistrationCloseTime.isEnabled = false
                     binding.tvRegistrationCloseDate.text = getString(R.string.select_date)
@@ -455,7 +454,7 @@ class CreateEventActivity : AppCompatActivity() {
 
             picker.addOnPositiveButtonClickListener {
                 registrationCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(it!!), ZoneId.systemDefault()).toLocalDate()
-                binding.tvRegistrationCloseDate.text = registrationCloseDate.toString()
+                binding.tvRegistrationCloseDate.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(registrationCloseDate)
                 binding.btnRegistrationCloseTime.isEnabled = true
                 registrationCloseTime = TimeStamp(firstSessionStartTime.hour,firstSessionStartTime.minute)
                 if (registrationCloseTime.hour>-1) {
@@ -744,7 +743,7 @@ class CreateEventActivity : AppCompatActivity() {
         }
     }
 
-    fun setDateError(){
+    override fun setDateError(){
         if (binding.rvSessions.adapter==null){
             binding.tvDateError.text = getString(R.string.no_date_error)
         }
@@ -779,8 +778,20 @@ class CreateEventActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        //TODO: Do this
-        menu?.add(1,1,1,"Help")
+        menu?.add(1,1,1,"Help").also { menuItem ->
+            menuItem!!.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            menuItem.icon = ContextCompat.getDrawable(this, R.drawable.ic_help)
+        }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            1 -> {
+                startActivity(Intent(this, CreateEventHelpActivity::class.java))
+            }
+        }
+        return super.onOptionsItemSelected(item)
+
     }
 }

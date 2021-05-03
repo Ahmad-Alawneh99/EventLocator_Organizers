@@ -209,6 +209,7 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
         binding.btnRemoveImage.setOnClickListener {
             binding.ivProfilePicturePreview.setImageBitmap(null)
             binding.btnRemoveImage.isEnabled = false
+            image = null
             updateSignUpButton()
         }
 

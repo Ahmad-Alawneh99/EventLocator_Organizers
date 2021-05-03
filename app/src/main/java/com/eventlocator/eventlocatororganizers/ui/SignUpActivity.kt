@@ -37,20 +37,18 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
         binding.btnNext.isEnabled = false
-        if (image==null)
-            binding.btnRemoveImage.isEnabled = false
 
         val imageActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     val bitmap = Utils.instance.uriToBitmap(result.data?.data!!, this)
                     binding.ivImagePreview.setImageBitmap(bitmap)
-                    binding.btnRemoveImage.isEnabled = true
                     image = result.data!!.data
                     updateNextButton()
                 }
             }
         }
+
 
         binding.btnNext.setOnClickListener {
             binding.btnNext.isEnabled = false
@@ -292,12 +290,6 @@ class SignUpActivity : AppCompatActivity() {
             imageActivityResult.launch(Intent.createChooser(intent, getString(R.string.select_an_image)))
         }
 
-        binding.btnRemoveImage.setOnClickListener {
-            binding.ivImagePreview.setImageBitmap(null)
-            binding.btnRemoveImage.isEnabled = false
-            image = null
-            updateNextButton()
-        }
     }
 
     fun updateNextButton(){
