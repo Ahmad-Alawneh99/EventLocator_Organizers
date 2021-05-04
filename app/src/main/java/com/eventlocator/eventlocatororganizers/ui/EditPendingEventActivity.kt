@@ -651,6 +651,7 @@ class EditPendingEventActivity : AppCompatActivity(), DateErrorUtil {
         }
         val adapter = SessionInputAdapter(dates, isLimited(), firstSessionStartTime, firstSessionEndTime, firstSessionCheckInTime)
         binding.rvSessions.adapter = adapter
+        binding.rvSessions.adapter!!.notifyDataSetChanged()
         val layoutManager = object: LinearLayoutManager(this) {
             override fun canScrollVertically():Boolean =  false
         }

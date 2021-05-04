@@ -129,6 +129,10 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                 .enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 201){
+                            Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
+                                    "Success",
+                                    "Account created, however, it will be reviewed by admins before you can use it," +
+                                            " you will receive an email once an admin accept or rejects the account.", false)
                             startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
                             binding.btnSignUp.isEnabled = true
                             binding.pbLoading.visibility = View.INVISIBLE

@@ -12,6 +12,7 @@ import android.os.Parcel
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
@@ -71,6 +72,7 @@ class EditConfirmedEventActivity : AppCompatActivity(), DateErrorUtil {
 
     lateinit var locationActivityResult: ActivityResultLauncher<Intent>
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditConfirmedEventBinding.inflate(layoutInflater)
@@ -110,6 +112,7 @@ class EditConfirmedEventActivity : AppCompatActivity(), DateErrorUtil {
                             firstSessionStartTime.format24H() else ""))
 
                 for (i in 0 until (binding.rvSessions.adapter?.itemCount!!)) {
+                    Log.e("KOS OMK",binding.rvSessions.findViewHolderForAdapterPosition(i).toString())
                     val holder = binding.rvSessions.findViewHolderForLayoutPosition(i) as SessionInputAdapter.SessionInputHolder
                     if (!holder.binding.cbEnableSession.isChecked) continue
                     val sessionStartDate = LocalDate.parse(holder.binding.cbEnableSession.text.toString().split(',')[1].trim(),

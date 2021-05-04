@@ -181,7 +181,8 @@ class CreateEventActivity : AppCompatActivity(), DateErrorUtil {
                                                 startDateTime, response.body()!!.toInt(), message, response.body()!!.toLong())
                                     }
                                     Utils.instance.displayInformationalDialog(this@CreateEventActivity, "Success",
-                                            "Event created",true)
+                                            "Event created, it will reviewed by admins, and you will receive an email once an admin accepts or rejects the event.",
+                                            true)
                                     binding.btnCreateEvent.isEnabled = true
                                     binding.pbLoading.visibility = View.INVISIBLE
                                 }

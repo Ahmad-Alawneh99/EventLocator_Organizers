@@ -386,7 +386,8 @@ class ViewEventActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 200) {
                             NotificationUtils.cancelNotification(this@ViewEventActivity, event.id)
-                            finish()
+                            Utils.instance.displayInformationalDialog(this@ViewEventActivity,
+                                    "Success", "Event canceled", true)
                         } else if (response.code() == 500) {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Server issue, please try again later", false)
