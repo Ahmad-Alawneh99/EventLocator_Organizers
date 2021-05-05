@@ -22,17 +22,5 @@
     <color name="secondaryTextColor">#000000</color>
     <color name="backgroundColor">#e8eaf6</color>
 
-    <!-- Cyan
-    <color name="primaryColor">#4dd0e1</color>
-    <color name="primaryLightColor">#88ffff</color>
-    <color name="primaryDarkColor">#009faf</color>
-    <color name="secondaryColor">#80deea</color>
-    <color name="secondaryLightColor">#b4ffff</color>
-    <color name="secondaryDarkColor">#4bacb8</color>
-    <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">#000000</color>
-    <color name="backgroundColor">#e0f7fa</color> -->
-
-
 
 </resources>

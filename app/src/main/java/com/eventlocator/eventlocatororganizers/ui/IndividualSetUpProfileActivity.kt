@@ -132,7 +132,7 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
                                     "Success",
                                     "Account created, however, it will be reviewed by admins before you can use it," +
-                                            " you will receive an email once an admin accept or rejects the account.", false)
+                                            " you will receive an email once an admin accepts or rejects the account.", false)
                             startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
                             binding.btnSignUp.isEnabled = true
                             binding.pbLoading.visibility = View.INVISIBLE

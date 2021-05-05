@@ -32,49 +32,6 @@ class UpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val status = ArrayList<String>()
-        /*for(i in 0 until events.size){
-            if (events[i].status == EventStatus.PENDING.ordinal){
-                status.add(getString(R.string.pending))
-            }
-            else{
-                val registrationCloseDateTime =
-                        LocalDateTime.parse(events[i].registrationCloseDateTime,
-                                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
-                val startDate = LocalDate.parse(events[i].startDate,
-                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-                val startDateTime = startDate.atTime(LocalTime.parse(events[i].sessions[0].startTime,
-                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-
-                if (LocalDateTime.now().isBefore(registrationCloseDateTime)){
-                    status.add(getString(R.string.registration_ongoing))
-                }
-                else if (LocalDateTime.now().isBefore(startDateTime) && LocalDateTime.now().isAfter(registrationCloseDateTime)){
-                    status.add(getString(R.string.registration_closed))
-                }
-                else{
-                    var found = false
-                    for(j in 0 until events[i].sessions.size){
-                        val sessionDate = LocalDate.parse(events[i].sessions[j].date,
-                                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-                        val sessionStartDateTime = sessionDate.atTime(LocalTime.parse(events[i].sessions[j].startTime,
-                                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-                        val sessionEndDateTime = sessionDate.atTime(LocalTime.parse(events[i].sessions[j].endTime,
-                                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-
-                        if (LocalDateTime.now().isAfter(sessionStartDateTime) && LocalDateTime.now().isBefore(sessionEndDateTime)){
-                            status.add(getString(R.string.session_happening_right_now))
-                            found = true
-                            break;
-                        }
-                    }
-
-                    if (!found){
-                        status.add(getString(R.string.active))
-                    }
-                }
-            }
-        }*/
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvUpcomingEvents.layoutManager = layoutManager
 

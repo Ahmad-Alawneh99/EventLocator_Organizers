@@ -31,20 +31,4 @@ class TimeStamp(var hour: Int, var minute: Int) {
 
     }
 
-    fun minusMinutes(minutes: Int): TimeStamp{
-        var i = minutes
-        var newMinute = this.minute
-        var newHour = this.hour
-        while(i--> 0){
-            if (newMinute == 0){
-                if (newHour == 0){
-                    newHour = 23
-                }
-                else newHour --
-                newMinute = 60
-            }
-            newMinute --
-        }
-        return TimeStamp(newHour, newMinute)
-    }
 }

@@ -149,6 +149,9 @@ class CheckInParticipantActivity : AppCompatActivity() {
     }
 
     private fun getData(){
+        eventID = intent.getLongExtra("eventID",-1)
+        eventName = intent.getStringExtra("eventName")!!
+        currentSession = intent.getSerializableExtra("currentSession") as Session
 
     }
 }

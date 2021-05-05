@@ -94,6 +94,20 @@ class ViewEventActivity : AppCompatActivity() {
             .format(startDateFormatted) + " - " + DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
             .format(endDateFormatted)
 
+        if (event.isLimitedLocated() && event.getCurrentLimitedSessionIncludingCheckInTime()!=null){
+            binding.btnCheckInParticipant.visibility = View.VISIBLE
+            binding.btnCheckInParticipant.setOnClickListener{
+                val intent = Intent(this, CheckInParticipantActivity::class.java)
+                intent.putExtra("eventName", event.name)
+                intent.putExtra("eventID", event.id)
+                intent.putExtra("currentSession", event.getCurrentLimitedSessionIncludingCheckInTime())
+                startActivity(intent)
+            }
+        }
+        else{
+            binding.btnCheckInParticipant.visibility = View.INVISIBLE
+        }
+
 
         binding.tvRating.text = if(event.isFinished()) {
             if (event.rating == 0.0) "No ratings yet"
