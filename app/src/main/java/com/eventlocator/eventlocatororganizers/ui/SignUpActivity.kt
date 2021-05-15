@@ -16,6 +16,7 @@ import com.eventlocator.eventlocatororganizers.databinding.ActivitySignUpBinding
 import com.eventlocator.eventlocatororganizers.retrofit.OrganizerService
 import com.eventlocator.eventlocatororganizers.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocatororganizers.utilities.Utils
+import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -306,12 +307,5 @@ class SignUpActivity : AppCompatActivity() {
         outState.putParcelable(INSTANCE_STATE_IMAGE, image)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val a = Intent(Intent.ACTION_MAIN)
-        a.addCategory(Intent.CATEGORY_HOME)
-        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(a)
-    }
 
 }

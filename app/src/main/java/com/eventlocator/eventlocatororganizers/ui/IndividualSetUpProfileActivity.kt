@@ -1,6 +1,7 @@
 package com.eventlocator.eventlocatororganizers.ui
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -129,11 +130,13 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                 .enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code() == 201){
-                            Utils.instance.displayInformationalDialog(this@IndividualSetUpProfileActivity,
-                                    "Success",
-                                    "Account created, however, it will be reviewed by admins before you can use it," +
-                                            " you will receive an email once an admin accepts or rejects the account.", false)
-                            startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
+                            val dialogAlert = Utils.instance.createSimpleDialog(this@IndividualSetUpProfileActivity,
+                                "Success","Account created, however, it will be reviewed by admins before you can use it," +
+                                        " you will receive an email once an admin accepts or rejects the account.")
+                            dialogAlert.setPositiveButton("OK"){di: DialogInterface, i: Int ->
+                                startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
+                            }
+                            dialogAlert.create().show()
                             binding.btnSignUp.isEnabled = true
                             binding.pbLoading.visibility = View.INVISIBLE
                         }

@@ -41,7 +41,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-        if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
+        if (!sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
         }
@@ -49,7 +49,7 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent(this,LoginActivity::class.java))
             finish()
         }
-
+        title = "Profile"
         binding.btnCreateEvent.setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
         }
@@ -124,6 +124,7 @@ class ProfileActivity : AppCompatActivity() {
                 sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, null)
                 sharedPreferenceEditor.apply()
                 startActivity(Intent(this, LoginActivity::class.java))
+                finish()
             }
         }
 
