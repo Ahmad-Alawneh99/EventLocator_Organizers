@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.firebase-perf'
 }
 
 android {
@@ -52,7 +53,8 @@ dependencies {
     implementation 'com.google.zxing:core:3.4.1'
     implementation 'com.google.zxing:zxing-parent:3.4.1'
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
-    implementation platform('com.google.firebase:firebase-bom:27.1.0')
+    implementation platform('com.google.firebase:firebase-bom:28.0.1')
+    implementation 'com.google.firebase:firebase-perf-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

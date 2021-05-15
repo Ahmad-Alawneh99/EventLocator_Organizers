@@ -20,5 +20,4 @@ class DatePeriodFilter(var startDate: LocalDate, var endDate: LocalDate): Filter
         return result
     }
 
-
 }

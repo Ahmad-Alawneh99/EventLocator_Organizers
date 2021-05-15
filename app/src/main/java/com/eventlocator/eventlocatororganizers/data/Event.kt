@@ -22,7 +22,7 @@ class Event(var id: Long, var name: String, var description: String, var categor
 
     class EventBuilder(var name: String, var description: String, var categories: ArrayList<Int>,
                        var startDate: String, var endDate: String, var sessions: ArrayList<Session>,
-                       var registrationCloseDateTime: String, ){
+                       var registrationCloseDateTime: String){
         var maxParticipants: Int = -1
         var whatsAppLink: String = ""
         var locatedEventData: LocatedEventData? = null

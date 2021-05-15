@@ -13,7 +13,7 @@ class RetrofitServiceFactory {
         private val httpClient = OkHttpClient.Builder()
         private val gson = GsonBuilder().setLenient().create()
         private val retrofitBuilder: Retrofit.Builder = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:3000/")
+            .baseUrl("https://eventlocatorjo.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient.build())
 
