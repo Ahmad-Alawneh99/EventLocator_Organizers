@@ -135,6 +135,7 @@ class IndividualSetUpProfileActivity : AppCompatActivity() {
                                         " you will receive an email once an admin accepts or rejects the account.")
                             dialogAlert.setPositiveButton("OK"){di: DialogInterface, i: Int ->
                                 startActivity(Intent(this@IndividualSetUpProfileActivity, LoginActivity::class.java))
+                                finishAndRemoveTask()
                             }
                             dialogAlert.create().show()
                             binding.btnSignUp.isEnabled = true

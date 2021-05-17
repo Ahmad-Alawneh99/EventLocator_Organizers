@@ -25,21 +25,18 @@ class Utils {
         if (s.indexOf('@') == -1 || s.indexOf('.') == -1)return false
         else if (!isChar(s[0]) || !isChar(s[s.length - 1])) return false
         var at = -1
-        var firstDot = -1
+        var lastDot = -1
         var atCount = 0
         for(i in s.length-1 downTo 0){
             if (s[i] == '@'){
                 if (at == -1)at = i
                 atCount++
             }
+            if (s[i] == '.' && lastDot == -1)
+                lastDot = i
+
         }
-        for(i in 0 until s.length){
-            if (s[i] == '.'){
-                firstDot = i
-                break
-            }
-        }
-        if (atCount> 1 || at > firstDot) return false
+        if (atCount> 1 || at > lastDot) return false
         return true
     }
 

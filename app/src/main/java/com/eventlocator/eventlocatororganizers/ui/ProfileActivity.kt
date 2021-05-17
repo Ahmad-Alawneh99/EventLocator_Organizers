@@ -232,7 +232,7 @@ class ProfileActivity : AppCompatActivity() {
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
-                                val url = "https://www.facebook.com/search/top?q="+
+                                val url = "https://www.facebook.com/"+
                                         URLEncoder.encode(organizer.socialMediaAccounts[i].accountName, "UTF-8")
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                 startActivity(intent)
