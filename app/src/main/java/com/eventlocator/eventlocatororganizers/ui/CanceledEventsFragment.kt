@@ -25,7 +25,6 @@ class CanceledEventsFragment(var events: ArrayList<Event>): Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvCanceledEvents.layoutManager = layoutManager
-        binding.rvCanceledEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = CanceledEventAdapter(events)
         binding.rvCanceledEvents.adapter = adapter
 

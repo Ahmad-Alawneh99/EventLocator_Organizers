@@ -311,6 +311,7 @@ class ViewEventActivity : AppCompatActivity() {
                 if (event.isLimitedLocated()){
                     menu.add(menu_group_id, view_statistics_id, 6, "View statistics")
                 }
+                menu.add(menu_group_id, view_participants_id, 2, "View participants")
             }
             else{
                 if (!event.hasStarted()){
@@ -326,10 +327,14 @@ class ViewEventActivity : AppCompatActivity() {
                 else if (LocalDateTime.now().isBefore(eventStartDateTime.minusHours(24))){
                     menu.add(menu_group_id, edit_event_id, 4, "Edit event")
                 }
-                menu.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
+
+                if (event.status != EventStatus.PENDING.ordinal) {
+                    menu.add(menu_group_id, view_participants_id, 2, "View participants")
+                    menu.add(menu_group_id, email_particiapnts_id, 3, "Send email to participants")
+                    menu.add(menu_group_id, share_on_twitter_id, 9, "Share on Twitter")
+                }
             }
-            menu.add(menu_group_id, view_participants_id, 2, "View participants")
-            menu.add(menu_group_id, share_on_twitter_id, 9, "Share on Twitter")
+
         }
 
 

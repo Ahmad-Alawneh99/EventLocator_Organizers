@@ -52,7 +52,7 @@ class UpcomingEventAdapter(private val upcomingEvents: ArrayList<Event>):
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
         val status = upcomingEvents[position].getStatus()
         holder.binding.tvEventStatus.text = status
-        if (status == "Full" || status == "Registration closed"){
+        if (status == "This event is full" || status == "Registration closed"){
             holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.design_default_color_error))
         }
         else if (status == "Pending (waiting for response from admins)"){

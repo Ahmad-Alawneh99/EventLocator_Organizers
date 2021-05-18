@@ -25,7 +25,6 @@ class PreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPrevio
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvPreviousEvents.layoutManager = layoutManager
-        binding.rvPreviousEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = PreviousEventAdapter(events)
         binding.rvPreviousEvents.adapter = adapter
         (activity as EventsActivity).onPreviousEventsReadyListener = this

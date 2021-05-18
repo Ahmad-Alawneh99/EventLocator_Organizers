@@ -138,11 +138,16 @@
                     android:textSize="@dimen/larger_label"
                     android:text="@string/sessions"/>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvSessions"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_height="wrap_content">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSessions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp" />
+                </RelativeLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"

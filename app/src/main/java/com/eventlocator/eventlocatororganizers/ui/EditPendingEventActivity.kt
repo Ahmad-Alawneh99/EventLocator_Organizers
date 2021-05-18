@@ -407,6 +407,7 @@ class EditPendingEventActivity : AppCompatActivity(), DateErrorUtil {
                     binding.tvRegistrationCloseDate.text = getString(R.string.select_date)
                     binding.tvRegistrationCloseTime.text = getString(R.string.select_time)
                     registrationCloseTime = TimeStamp(-1,-1)
+                    registrationCloseDate = LocalDate.from(startDate)
                 }
             }
             picker.show(supportFragmentManager, builder.build().toString())
@@ -482,12 +483,25 @@ class EditPendingEventActivity : AppCompatActivity(), DateErrorUtil {
 
             picker.addOnPositiveButtonClickListener {
                 if (startDate.minusDays(2).dayOfMonth == registrationCloseDate.dayOfMonth){
-                    if (TimeStamp(picker.hour, picker.minute).minusInMinutes(firstSessionStartTime)<0){
+                    if (firstSessionStartTime.hour!=-1 && TimeStamp(picker.hour, picker.minute).minusInMinutes(firstSessionStartTime)<0){
                         AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.time_error))
-                            .setMessage(getString(R.string.registration_close_time_error))
-                            .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
-                            .create().show()
+                                .setTitle(getString(R.string.time_error))
+                                .setMessage(getString(R.string.registration_close_time_error))
+                                .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                                .create().show()
+                    }
+                    else{
+                        registrationCloseTime = TimeStamp(picker.hour, picker.minute)
+                        binding.tvRegistrationCloseTime.text = registrationCloseTime.format12H()
+                    }
+                }
+                else if (startDate.dayOfMonth == registrationCloseDate.dayOfMonth){
+                    if (firstSessionStartTime.hour!=-1 && TimeStamp(picker.hour, picker.minute).minusInMinutes(firstSessionStartTime)>0){
+                        AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.time_error))
+                                .setMessage("Registration must close before the event starts")
+                                .setPositiveButton(getString(R.string.ok)){ dialogInterface: DialogInterface, i: Int -> }
+                                .create().show()
                     }
                     else{
                         registrationCloseTime = TimeStamp(picker.hour, picker.minute)
@@ -777,6 +791,8 @@ class EditPendingEventActivity : AppCompatActivity(), DateErrorUtil {
                     binding.tvCheckInTime.text = getString(R.string.select_time)
                     firstSessionCheckInTime = TimeStamp(-1,-1)
                 }
+                binding.tvRegistrationCloseTime.text = getString(R.string.select_time)
+                registrationCloseTime = TimeStamp(-1,-1)
                 applyStatusToAllSessions()
                 setDateError()
             }

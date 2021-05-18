@@ -13,7 +13,8 @@ class DatePeriodFilter(var startDate: LocalDate, var endDate: LocalDate): Filter
             val eventStartDate = LocalDate.parse(events[i].startDate,
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
 
-            if (eventStartDate.isAfter(startDate) && eventStartDate.isBefore(endDate)){
+            if ((eventStartDate.isAfter(startDate) || eventStartDate.isEqual(startDate))
+                    && (eventStartDate.isBefore(endDate) || startDate.isEqual(endDate))){
                 result.add(events[i])
             }
         }

@@ -50,17 +50,17 @@ class Event(var id: Long, var name: String, var description: String, var categor
 
     fun getStatus(): String{
         return if (isCanceled()){
-            "Canceled"
+            "This event is canceled"
         }
         else if (status == EventStatus.PENDING.ordinal){
             "Pending (waiting for response from admins)"
         }
         else if (isFinished()){
-            "Finished"
+            "This event has finished"
         }
         else if (!isRegistrationClosed()){
             if (isFull()){
-                return "Full"
+                return "This event is full"
             }
             else{
                 return "Registration ongoing"
@@ -73,7 +73,7 @@ class Event(var id: Long, var name: String, var description: String, var categor
             "Session #"+getCurrentSession()!!.id+" is happening now"
         }
         else{
-            "Active"
+            "This event is active"
         }
     }
 

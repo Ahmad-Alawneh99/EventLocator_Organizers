@@ -66,7 +66,7 @@ class ViewEventFeedbackActivity : AppCompatActivity() {
                         }
                         else if (response.code() == 404){
                             Utils.instance.displayInformationalDialog(this@ViewEventFeedbackActivity, "Error",
-                                    "404: No participants found",true)
+                                    "No feedback found",true)
                             binding.pbLoading.visibility = View.INVISIBLE
                         }
                         else if (response.code() == 500){

@@ -89,7 +89,7 @@ class FilterPreviousEventsFragment(var events: ArrayList<Event>): Fragment() {
             val calendarConstraints = CalendarConstraints.Builder()
             val endConstraint = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
                 .toInstant().toEpochMilli()
-            calendarConstraints.setStart(endConstraint)
+            calendarConstraints.setEnd(endConstraint)
             calendarConstraints.setValidator(DateValidatorPointBackward.before(endConstraint))
             builder.setCalendarConstraints(calendarConstraints.build())
             builder.setTitleText("Select start and end dates")
