@@ -12,6 +12,7 @@ import com.eventlocator.eventlocatororganizers.databinding.PreviousEventBinding
 import com.eventlocator.eventlocatororganizers.ui.ViewEventActivity
 import com.eventlocator.eventlocatororganizers.utilities.DateTimeFormat
 import com.eventlocator.eventlocatororganizers.utilities.DateTimeFormatterFactory
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class PreviousEventAdapter(private val previousEvents: ArrayList<Event>):
@@ -45,7 +46,7 @@ class PreviousEventAdapter(private val previousEvents: ArrayList<Event>):
         holder.binding.tvEventDates.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
-        holder.binding.tvEventRating.text = if (previousEvents[position].rating>0.0)previousEvents[position].rating.toString() + "/5" else "No ratings yet"
+        holder.binding.tvEventRating.text =  if (previousEvents[position].rating>0.0) BigDecimal(previousEvents[position].rating).setScale(2).toString() + "/5" else "No ratings yet"
 
     }
 

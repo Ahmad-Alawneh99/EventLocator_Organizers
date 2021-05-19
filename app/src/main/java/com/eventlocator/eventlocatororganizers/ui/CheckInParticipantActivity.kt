@@ -3,6 +3,7 @@ package com.eventlocator.eventlocatororganizers.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.data.Session
 import com.eventlocator.eventlocatororganizers.databinding.ActivityCheckInParticipantBinding
@@ -105,10 +106,10 @@ class CheckInParticipantActivity : AppCompatActivity() {
                                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
                         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
                                 .prepareToCheckInParticipant(scannedEventID, scannedSessionID, scannedParticipantID)
-                                .enqueue(object: Callback<String> {
-                                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                                .enqueue(object: Callback<ArrayList<String>> {
+                                    override fun onResponse(call: Call<ArrayList<String>>, response: Response<ArrayList<String>>) {
                                         if (response.code()== 200){
-                                            participantName = response.body()!!
+                                            participantName = response.body()!![0]
 
                                             binding.btnConfirm.isEnabled = true
                                             binding.tvParticipantName.text = participantName
@@ -132,9 +133,9 @@ class CheckInParticipantActivity : AppCompatActivity() {
                                         }
                                     }
 
-                                    override fun onFailure(call: Call<String>, t: Throwable) {
+                                    override fun onFailure(call: Call<ArrayList<String>>, t: Throwable) {
                                         Utils.instance.displayInformationalDialog(this@CheckInParticipantActivity,
-                                                "Error", "Can't connect to server", false)
+                                                "Error", t.message!!, false)
                                     }
 
                                 })

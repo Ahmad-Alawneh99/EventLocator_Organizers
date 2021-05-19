@@ -36,13 +36,10 @@ class EventPagerAdapter(fa: FragmentActivity, var numberOfTabs: Int, events: Arr
 
     private fun filterEvents(events: ArrayList<Event>){
         for(i in 0 until events.size){
-            val eventDate = LocalDate.parse(events[i].endDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-            val eventDateTime = eventDate.atTime(LocalTime.parse(events[i].sessions[events[i].sessions.size-1].endTime,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            if (events[i].canceledEventData!=null){
+            if (events[i].isCanceled()){
                 canceledEvents.add(events[i])
             }
-            else if (LocalDateTime.now().isAfter(eventDateTime)){
+            else if (events[i].isFinished()){
                 previousEvents.add(events[i])
             }
             else{

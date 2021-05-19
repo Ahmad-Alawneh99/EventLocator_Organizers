@@ -66,11 +66,14 @@ class Event(var id: Long, var name: String, var description: String, var categor
                 return "Registration ongoing"
             }
         }
-        else if (isRegistrationClosed()){
-            "Registration closed"
-        }
         else if (getCurrentSession()!=null){
             "Session #"+getCurrentSession()!!.id+" is happening now"
+        }
+        else if (hasStarted()){
+            "This event is active"
+        }
+        else if (isRegistrationClosed()){
+            "Registration closed"
         }
         else{
             "This event is active"

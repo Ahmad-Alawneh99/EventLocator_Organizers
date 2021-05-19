@@ -46,7 +46,7 @@ import java.util.*
 class ViewEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewEventBinding
     lateinit var event: Event
-    var eventID:Long = 0
+    var eventID:Long = -1
 
     private val menu_group_id = 1
     private val view_feedback_id = 1
@@ -64,7 +64,7 @@ class ViewEventActivity : AppCompatActivity() {
         binding = ActivityViewEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
         cities = listOf(getString(R.string.Amman), getString(R.string.Zarqa), getString(R.string.Balqa), getString(R.string.Madaba), getString(R.string.Irbid), getString(R.string.Mafraq), getString(R.string.Jerash), getString(R.string.Ajloun), getString(R.string.Karak), getString(R.string.Aqaba), getString(R.string.Maan), getString(R.string.Tafila))
-        eventID = intent.getLongExtra("eventID", -1)
+        if (eventID== (-1).toLong())eventID = intent.getLongExtra("eventID", -1)
         editEventLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result ->
             if (result.resultCode == RESULT_OK){
                 eventID = result.data!!.getLongExtra("newEventId",-1)
@@ -110,7 +110,7 @@ class ViewEventActivity : AppCompatActivity() {
 
 
         binding.tvRating.text = if(event.isFinished()) {
-            if (event.rating == 0.0) "No ratings yet"
+            if (event.rating <= 0.0) "No ratings yet"
             else BigDecimal(event.rating).setScale(2).toString() + "/5"
         }
         else ""
@@ -145,6 +145,7 @@ class ViewEventActivity : AppCompatActivity() {
                 intent.putExtra("latLng", latLng)
                 startActivity(intent)
             }
+            binding.tvLocation.text = "Tap to view location"
         }
         else{
             binding.llCity.visibility = View.GONE
@@ -200,6 +201,7 @@ class ViewEventActivity : AppCompatActivity() {
 
     private fun getAndLoadEvent(){
         binding.pbLoading.visibility = View.VISIBLE
+        binding.btnCheckInParticipant.visibility = View.INVISIBLE
         val sharedPreference = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
         val token = sharedPreference.getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)

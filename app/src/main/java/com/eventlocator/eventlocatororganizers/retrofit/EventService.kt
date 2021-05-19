@@ -33,7 +33,7 @@ interface EventService {
 
     @GET("/organizers/events/{eventID}/session/{sessionID}/participant/{participantID}")
     fun prepareToCheckInParticipant(@Path("eventID") eventID: Long, @Path("sessionID") sessionID: Int,
-                                                 @Path("participantID") participantID: Long): Call<String>
+                                                 @Path("participantID") participantID: Long): Call<ArrayList<String>>
 
     @GET("/organizers/events/{eventID}/session/{sessionID}/participant/{participantID}/confirm")
     fun checkInParticipant(@Path("eventID") eventID: Long, @Path("sessionID") sessionID: Int,
