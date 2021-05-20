@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.EditText
@@ -124,9 +125,10 @@ class IndividualEditProfileActivity : AppCompatActivity() {
                     val profilePicturePart = RequestBody.create(MediaType.parse("image/*"), inputStream?.readBytes()!!)
                     profilePictureMultipartBody = MultipartBody.Part.createFormData("image", "image", profilePicturePart)
                 }
-                var flag = 0
-                if (imageChanged && image==null)
-                    flag = 1
+                var flag = 1
+                if (imageChanged)
+                    flag = 0
+
                 val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                         .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
                 RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
@@ -478,9 +480,11 @@ class IndividualEditProfileActivity : AppCompatActivity() {
                             binding.etLinkedInName.setText(organizer.socialMediaAccounts[4].accountName, TextView.BufferType.EDITABLE)
                             binding.etLinkedInURL.setText(organizer.socialMediaAccounts[4].url, TextView.BufferType.EDITABLE)
 
-
-                            binding.ivProfilePicturePreview.setImageBitmap(BitmapFactory.decodeStream(
-                                    ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                            if (organizer.image!="") {
+                                binding.ivProfilePicturePreview.setImageBitmap(BitmapFactory.decodeStream(
+                                        ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                                binding.btnRemoveImage.isEnabled = true
+                            }
                             updateSaveButton()
                         }
                         else if (response.code()== 401){

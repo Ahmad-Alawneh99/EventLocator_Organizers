@@ -23,6 +23,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.*
+import java.time.format.TextStyle
+import java.util.*
+import kotlin.collections.ArrayList
 
 class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListener {
     lateinit var binding: ActivityEventStatisticsBinding
@@ -53,14 +56,18 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
 
                             for(i in 0 until resultArray.length()){
                                 val date = LocalDate.parse(sessions[i].date, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-                                val day = DayOfWeek.of(sessions[i].dayOfWeek).name
-                                daysAndDates.add(day+","+ DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
-                                        .format(date))
+                                daysAndDates.add(date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()) +",\n"+
+                                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(date))
                                 numbersOfParticipants.add(resultArray.getJSONObject(i).getInt("total"))
-                                val dt = LocalDateTime.parse(resultArray.getJSONObject(i).getString("avgArrivalTime"),
-                                        DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
-                                zonedDateTimeArrivalTimes.add(dt.atZone(ZoneId.systemDefault()))
-                                averageArrivalTimes.add(DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY).format(dt))
+                                if (resultArray.getJSONObject(i).getString("avgArrivalTime")!="") {
+                                    val dt = LocalTime.parse(resultArray.getJSONObject(i).getString("avgArrivalTime"),
+                                            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)).atDate(LocalDate.now())
+                                    zonedDateTimeArrivalTimes.add(dt.atZone(ZoneId.systemDefault()))
+                                    averageArrivalTimes.add(DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DISPLAY).format(dt))
+                                }
+                                else{
+                                    averageArrivalTimes.add("")
+                                }
                             }
                             val layoutManager = LinearLayoutManager(this@EventStatisticsActivity)
                             val adapter = SessionStatisticsAdapter(daysAndDates,numbersOfParticipants, averageArrivalTimes)
@@ -75,6 +82,7 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
                             val res = if(numbersOfParticipants.size == 0) 0 else sum/numbersOfParticipants.size
                             binding.tvAvgParticipants.text = res.toString()
 
+                            binding.tvTotalParticipants.text = responseAsJSON.getInt("total").toString()
                             var dateTimeSum: Long = 0
 
                             for(i in 0 until zonedDateTimeArrivalTimes.size){
@@ -85,7 +93,7 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
                                 else ZonedDateTime.ofInstant(Instant.ofEpochMilli(dateTimeSum/zonedDateTimeArrivalTimes.size),
                                     ZoneId.systemDefault())
                             if (dateTimeRes!= null){
-                                binding.tvAvgArrivalTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
+                                binding.tvAvgArrivalTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DISPLAY)
                                         .format(dateTimeRes)
                             }
                             binding.pbLoading.visibility = View.INVISIBLE
@@ -125,24 +133,35 @@ class EventStatisticsActivity : AppCompatActivity(), OnSessionCheckChangeListene
         var participantSum = 0
         var arrivalTimeSum: Long = 0
         var count = 0
+        var timeCount = 0;
         for(i in 0 until binding.rvSessions.adapter!!.itemCount){
             val holder = binding.rvSessions.findViewHolderForAdapterPosition(i) as SessionStatisticsAdapter.SessionStatisticsHolder
             if (holder.binding.cbIncludeSession.isChecked){
                 participantSum += numbersOfParticipants[i]
-                arrivalTimeSum += zonedDateTimeArrivalTimes[i].toInstant().toEpochMilli()
+                if (averageArrivalTimes[i] != "") {
+                    arrivalTimeSum += zonedDateTimeArrivalTimes[i].toInstant().toEpochMilli()
+                    timeCount++
+                }
                 count++
             }
         }
-        if (count > 0) {
-            binding.tvAvgParticipants.text = (participantSum/count).toString()
-            val dt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(arrivalTimeSum/zonedDateTimeArrivalTimes.size),
+        if (timeCount > 0){
+            val dt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(arrivalTimeSum/timeCount),
                     ZoneId.systemDefault())
-            binding.tvAvgArrivalTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
+            binding.tvAvgArrivalTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DISPLAY)
                     .format(dt)
         }
         else{
-            binding.tvAvgArrivalTime.text = getString(R.string.no_sessions_selected_error)
-            binding.tvAvgArrivalTime.text = getString(R.string.no_sessions_selected_error)
+            if (count>0) binding.tvAvgArrivalTime.text ="-"
+            else binding.tvAvgArrivalTime.text = getString(R.string.no_sessions_selected_error)
+        }
+        if (count > 0) {
+            binding.tvAvgParticipants.text = (participantSum/count).toString()
+
+        }
+        else{
+
+            binding.tvAvgParticipants.text = getString(R.string.no_sessions_selected_error)
         }
     }
 }

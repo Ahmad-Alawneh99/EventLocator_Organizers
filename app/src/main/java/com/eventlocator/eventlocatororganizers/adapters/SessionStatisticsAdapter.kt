@@ -29,7 +29,7 @@ class SessionStatisticsAdapter(private val daysAndDates: ArrayList<String>, priv
         holder.setIsRecyclable(false)
         holder.binding.cbIncludeSession.text = daysAndDates[position]
         holder.binding.tvTotalParticipants.text = numbersOfParticipants[position].toString()
-        holder.binding.tvAvgArrivalTime.text = averageArrivalTimes[position]
+        holder.binding.tvAvgArrivalTime.text = if (averageArrivalTimes[position]=="") "-" else averageArrivalTimes[position]
     }
 
     override fun getItemCount(): Int = daysAndDates.size

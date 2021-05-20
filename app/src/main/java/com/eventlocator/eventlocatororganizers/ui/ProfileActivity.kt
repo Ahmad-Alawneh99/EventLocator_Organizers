@@ -206,6 +206,9 @@ class ProfileActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+        else{
+            binding.ivOrgImage.setImageResource(R.drawable.avatar)
+        }
     }
 
     override fun onBackPressed() {

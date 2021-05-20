@@ -22,6 +22,9 @@ import retrofit2.Retrofit
 import java.lang.Exception
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CheckInParticipantActivity : AppCompatActivity() {
     lateinit var binding: ActivityCheckInParticipantBinding
@@ -41,9 +44,8 @@ class CheckInParticipantActivity : AppCompatActivity() {
 
         binding.tvEventName.text = eventName
         val date = LocalDate.parse(currentSession.date, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-        val day = DayOfWeek.of(if(currentSession.dayOfWeek==0)6 else currentSession.dayOfWeek-1).name
-        binding.tvSessionDateAndDay.text =day+","+ DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
-                .format(date)
+        binding.tvSessionDateAndDay.text =date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()) +", "+
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(date)
 
         binding.btnScan.setOnClickListener {
             val integrator = IntentIntegrator(this)

@@ -33,67 +33,50 @@
                     android:layout_gravity="center"
                     android:layout_marginBottom="16dp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/large_label"
-                        android:text="@string/total_number_of_registered_participants"
-                        android:layout_marginEnd="4dp"/>
+                        android:text="@string/total_number_of_registered_participants" />
 
                     <TextView
                         android:id="@+id/tvTotalParticipants"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/large_label" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
+                        android:textSize="@dimen/large_label"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/large_label"
-                        android:text="@string/average_attendance_rate_for_the_selected_sessions"
-                        android:layout_marginEnd="4dp"/>
+                        android:text="Average number of participants who attended (for the selected sessions):"/>
 
                     <TextView
                         android:id="@+id/tvAvgParticipants"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/large_label" />
+                        android:textSize="@dimen/large_label"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp"/>
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/large_label"
-                        android:text="@string/average_arrival_time_for_the_selected_sessions"
-                        android:layout_marginEnd="4dp"/>
+                        android:text="@string/average_arrival_time_for_the_selected_sessions" />
 
                     <TextView
                         android:id="@+id/tvAvgArrivalTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/large_label" />
+                        android:textSize="@dimen/large_label"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp"/>
 
-                </LinearLayout>
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
