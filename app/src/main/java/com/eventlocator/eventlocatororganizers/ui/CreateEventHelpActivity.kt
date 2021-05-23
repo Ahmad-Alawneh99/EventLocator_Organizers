@@ -10,6 +10,7 @@ class CreateEventHelpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateEventHelpBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 
 }

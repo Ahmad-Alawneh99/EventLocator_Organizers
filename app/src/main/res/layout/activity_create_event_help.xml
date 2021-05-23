@@ -1,9 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.CreateEventHelpActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="In this page, you will find all the help you need for creating an event."
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="Events consist of up to 7 sessions, each session happens during one day, sessions can last at most for 12 hours."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="There are three types of events: online, located, and limited located. Online events happen virtually on a platform that you decide, you must provide participants of your event with a way to access it (i.e. a join link)."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="Located events happen at a specific location, you must specify the location when creating the event so that participants can see it."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="The check in time for a located event is the time when participants can arrive at the place of the event before the event starts, it is optional for located events and not available for online events."/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="Limited located events are located events but with a limited number of participants, when participants register in your limited located event, they will get QR-codes for each session of that event, when the check in time starts for a session, you will be able to scan the QR-code for participants, this will allow you to track who attended the session and who didn't, and it will provide you with useful statistics after the event finishes."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="The registration close date and time are optional fields that determine when registration for your event closes, it can be up to 48 hours before the start of the first session of your event, if you don't specify it, registration will close when the first session starts."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="For the whatsApp group link, you can create a whatsApp group and put the invite link in this field, it will be sent to participants who register in the event so they can join it, it is optional to provide an invite for a whatsApp group."/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="\n"
+            android:layout_marginBottom="4dp"/>
+    </LinearLayout>
+
+</ScrollView>

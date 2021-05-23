@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import com.eventlocator.eventlocatororganizers.R
 import com.eventlocator.eventlocatororganizers.data.Session
 import com.eventlocator.eventlocatororganizers.databinding.ActivityCheckInParticipantBinding
@@ -59,6 +60,9 @@ class CheckInParticipantActivity : AppCompatActivity() {
         binding.btnConfirm.isEnabled = false
 
         binding.btnConfirm.setOnClickListener {
+            binding.btnConfirm.isEnabled = false
+            binding.btnScan.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                     .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
             RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
@@ -75,11 +79,17 @@ class CheckInParticipantActivity : AppCompatActivity() {
                                 Utils.instance.displayInformationalDialog(this@CheckInParticipantActivity,
                                         "Error", "Server issue, please try again later", false)
                             }
+                            binding.btnConfirm.isEnabled = true
+                            binding.btnScan.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                             Utils.instance.displayInformationalDialog(this@CheckInParticipantActivity,
                                     "Error", "Can't connect to server", false)
+                            binding.btnConfirm.isEnabled = true
+                            binding.btnScan.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                     })
@@ -104,6 +114,8 @@ class CheckInParticipantActivity : AppCompatActivity() {
                         Utils.instance.displayInformationalDialog(this, "Error", "The current session does not match the scanned QR code", false)
                     }
                     else{
+                        binding.btnScan.isEnabled = false
+                        binding.pbLoading.visibility = View.VISIBLE
                         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
                         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
@@ -133,11 +145,15 @@ class CheckInParticipantActivity : AppCompatActivity() {
                                             Utils.instance.displayInformationalDialog(this@CheckInParticipantActivity,
                                                     "Error", "Server issue, please try again later", false)
                                         }
+                                        binding.btnScan.isEnabled = true
+                                        binding.pbLoading.visibility = View.INVISIBLE
                                     }
 
                                     override fun onFailure(call: Call<ArrayList<String>>, t: Throwable) {
                                         Utils.instance.displayInformationalDialog(this@CheckInParticipantActivity,
                                                 "Error", t.message!!, false)
+                                        binding.btnScan.isEnabled = true
+                                        binding.pbLoading.visibility = View.INVISIBLE
                                     }
 
                                 })
